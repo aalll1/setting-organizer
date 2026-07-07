@@ -1,0 +1,76 @@
+const STORAGE_KEY = 'setting-organizer.settings.v1';
+
+export const DEFAULT_SETTINGS = Object.freeze({
+    sourceText: '',
+    targets: {
+        character: true,
+        lorebook: true,
+    },
+    tokenBudgetMode: 'standard',
+    customBudget: {
+        character: 2000,
+        lorebookEntry: 350,
+        constantLore: 1200,
+    },
+});
+
+export function loadSettings() {
+    try {
+        const raw = window.localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+            return cloneDefaultSettings();
+        }
+
+        return normalizeSettings(JSON.parse(raw));
+    } catch (error) {
+        console.warn('[setting-organizer] failed to load settings, using defaults', error);
+        return cloneDefaultSettings();
+    }
+}
+
+export function saveSettings(settings) {
+    try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizeSettings(settings)));
+    } catch (error) {
+        console.warn('[setting-organizer] failed to save settings', error);
+    }
+}
+
+export function normalizeSettings(settings) {
+    const safeSettings = settings && typeof settings === 'object' ? settings : {};
+    const safeTargets = safeSettings.targets && typeof safeSettings.targets === 'object' ? safeSettings.targets : {};
+    const safeCustomBudget = safeSettings.customBudget && typeof safeSettings.customBudget === 'object'
+        ? safeSettings.customBudget
+        : {};
+
+    return {
+        sourceText: typeof safeSettings.sourceText === 'string' ? safeSettings.sourceText : DEFAULT_SETTINGS.sourceText,
+        targets: {
+            character: typeof safeTargets.character === 'boolean' ? safeTargets.character : DEFAULT_SETTINGS.targets.character,
+            lorebook: typeof safeTargets.lorebook === 'boolean' ? safeTargets.lorebook : DEFAULT_SETTINGS.targets.lorebook,
+        },
+        tokenBudgetMode: normalizeBudgetMode(safeSettings.tokenBudgetMode),
+        customBudget: {
+            character: normalizePositiveInteger(safeCustomBudget.character, DEFAULT_SETTINGS.customBudget.character),
+            lorebookEntry: normalizePositiveInteger(safeCustomBudget.lorebookEntry, DEFAULT_SETTINGS.customBudget.lorebookEntry),
+            constantLore: normalizePositiveInteger(safeCustomBudget.constantLore, DEFAULT_SETTINGS.customBudget.constantLore),
+        },
+    };
+}
+
+function cloneDefaultSettings() {
+    return JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+}
+
+function normalizeBudgetMode(value) {
+    return ['light', 'standard', 'long', 'custom'].includes(value) ? value : DEFAULT_SETTINGS.tokenBudgetMode;
+}
+
+function normalizePositiveInteger(value, fallback) {
+    const numberValue = Number(value);
+    if (!Number.isFinite(numberValue) || numberValue <= 0) {
+        return fallback;
+    }
+
+    return Math.round(numberValue);
+}
