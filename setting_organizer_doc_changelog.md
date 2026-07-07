@@ -386,6 +386,50 @@
 - 继续执行 `TC-09 JSON 导出`。
 - 导出格式转换必须放在 adapter 中，保持内部草稿格式与 SillyTavern 兼容格式分离。
 
+### 2026-07-07：完成 TC-09 JSON 导出
+
+变更类型：新增 / 修改
+
+涉及文件：
+
+- `setting-organizer/src/adapters/characterAdapter.js`
+- `setting-organizer/src/adapters/lorebookAdapter.js`
+- `setting-organizer/src/core/exporter.js`
+- `setting-organizer/tests/exporter.test.mjs`
+- `setting-organizer/src/ui/results.js`
+- `setting-organizer/style.css`
+- `setting-organizer/README.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 完成 MVP-A 的安全导出闭环，并保持内部草稿格式与 SillyTavern 兼容导出格式分离。
+
+主要变化：
+
+- 新增角色导出 adapter。
+- 新增世界书导出 adapter。
+- 新增统一 exporter，支持完整草稿、角色草稿、世界书草稿、SillyTavern 兼容角色、SillyTavern 兼容世界书。
+- 结果页新增导出按钮和导出错误反馈。
+
+影响范围：
+
+- 只导出 JSON 文件，不写入 SillyTavern。
+- UI 不直接构造 SillyTavern 格式，格式转换由 adapters 负责。
+
+验证情况：
+
+- `node --check` 已覆盖新增导出相关模块。
+- `node setting-organizer/tests/exporter.test.mjs` 已通过。
+- warnings、prompt、tokenEstimate、validator 回归测试仍通过。
+
+后续建议：
+
+- MVP-A 已基本形成“粘贴文本 -> mock/候选模型 -> 校验 -> 编辑 -> 导出”闭环。
+- 真实模型调用仍需在目标 SillyTavern 环境验证。
+- 下一步可进入 `TC-10 备份能力` 或先做运行环境验证。
+
 ## 变更记录模板
 
 ```text

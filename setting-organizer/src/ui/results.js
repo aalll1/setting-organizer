@@ -1,4 +1,6 @@
 import { formatKeywordList, parseKeywordList, removeArrayItem, updateArrayItem } from './editor.js';
+import { formatError } from '../core/errors.js';
+import { buildExportJson, EXPORT_TYPES } from '../core/exporter.js';
 
 const RESULT_TABS = [
     { id: 'overview', label: '总览' },
@@ -28,6 +30,14 @@ function render(container, state) {
         <div class="setting-organizer-tab-panel">
             ${renderActiveTab(state)}
         </div>
+        <div class="setting-organizer-export-actions">
+            <button type="button" data-export="${EXPORT_TYPES.INTERNAL_FULL}">导出完整草稿</button>
+            <button type="button" data-export="${EXPORT_TYPES.CHARACTER_DRAFTS}">导出角色草稿</button>
+            <button type="button" data-export="${EXPORT_TYPES.LOREBOOK_DRAFTS}">导出世界书草稿</button>
+            <button type="button" data-export="${EXPORT_TYPES.SILLYTAVERN_CHARACTERS}">导出 ST 角色</button>
+            <button type="button" data-export="${EXPORT_TYPES.SILLYTAVERN_WORLD_INFO}">导出 ST 世界书</button>
+        </div>
+        <div class="setting-organizer-export-error" data-export-error hidden></div>
     `;
 
     bindResults(container, state);
@@ -85,6 +95,20 @@ function bindResults(container, state) {
         button.addEventListener('click', () => {
             state.result.lorebookEntries = removeArrayItem(state.result.lorebookEntries, button.dataset.removeLore);
             render(container, state);
+        });
+    });
+
+    container.querySelectorAll('[data-export]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const errorBox = container.querySelector('[data-export-error]');
+            try {
+                errorBox.hidden = true;
+                errorBox.textContent = '';
+                downloadJson(buildExportJson(state.result, button.dataset.export), `${button.dataset.export}.json`);
+            } catch (error) {
+                errorBox.hidden = false;
+                errorBox.textContent = formatError(error);
+            }
         });
     });
 }
@@ -201,6 +225,16 @@ function renderTextArea(item, field, label, type) {
 
 function cloneResult(result) {
     return JSON.parse(JSON.stringify(result));
+}
+
+function downloadJson(jsonText, filename) {
+    const blob = new Blob([jsonText], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
 }
 
 function escapeHtml(value) {

@@ -136,6 +136,18 @@
     gap: 12px;
 }
 
+.setting-organizer-export-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.setting-organizer-export-error {
+    padding: 10px;
+    border: 1px solid #b85c5c;
+    border-radius: 6px;
+}
+
 .setting-organizer-summary {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));

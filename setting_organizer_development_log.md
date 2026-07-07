@@ -60,6 +60,13 @@
   - analyzer 在 parser / validator / normalizer 后统一调用 `applyWarnings()`。
   - results UI 只展示顶层和条目 warnings，不内联警告规则。
   - 覆盖空名称、空标题、空正文、空关键词、短关键词、重复关键词、常驻过多、内容超预算等规则。
+- 完成 `TC-09 JSON 导出`：
+  - 新增 `setting-organizer/src/adapters/characterAdapter.js`。
+  - 新增 `setting-organizer/src/adapters/lorebookAdapter.js`。
+  - 新增 `setting-organizer/src/core/exporter.js`。
+  - 新增 `setting-organizer/tests/exporter.test.mjs`。
+  - results UI 增加 5 类导出按钮：完整草稿、角色草稿、世界书草稿、SillyTavern 兼容角色、SillyTavern 兼容世界书。
+  - 导出格式转换集中在 adapters / exporter，UI 只负责触发下载和显示错误。
 - 初始化本地 Git 仓库并提交首个开发快照：
   - `7836dc2 chore: initialize setting organizer extension`
 
@@ -104,6 +111,11 @@
   - 关键词过短和重复。
   - 常驻世界书过多。
   - 条目 warnings 与顶层 warnings 同步展示。
+- `setting-organizer/tests/exporter.test.mjs` 已通过，覆盖：
+  - 内部完整草稿可序列化。
+  - 角色草稿转 SillyTavern 兼容字段。
+  - 世界书草稿转 SillyTavern World Info entries。
+  - 内部 warnings 不会进入 SillyTavern 兼容角色顶层。
 - 当前目录已初始化为 Git 仓库。
 - MuMu 模拟器进程存在，MuMu 自带 ADB 可用。
 - 已连接 MuMu ADB：
@@ -156,6 +168,6 @@
 
 ### 下一步建议
 
-- 继续执行 `TC-09 JSON 导出`。
-- 导出 adapter 应与内部草稿格式解耦，SillyTavern 兼容格式只在 adapter 中生成。
+- MVP-A 主链路已覆盖到导出，但真实模型调用仍需目标 SillyTavern 运行环境确认。
+- 下一步可根据实际优先级进入 `TC-10 备份能力`，或先做真实 SillyTavern 页面运行验证。
 - 如果要做真机运行验证，需要提供 SillyTavern 安装路径或在模拟器内打开可访问的 SillyTavern 页面。
