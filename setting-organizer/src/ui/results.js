@@ -133,6 +133,7 @@ function renderCharacters(characters) {
             ${renderTextArea(character, 'scenario', '场景', 'character')}
             ${renderTextArea(character, 'firstMes', '首条消息', 'character')}
             ${renderTextArea(character, 'creatorNotes', '创作者备注', 'character')}
+            ${renderItemWarnings(character.warnings)}
         </article>
     `).join('');
 }
@@ -155,6 +156,7 @@ function renderLorebook(entries) {
             ${renderTextInput(entry, 'title', '标题', 'lore')}
             ${renderTextInput({ ...entry, keys: formatKeywordList(entry.keys) }, 'keys', '关键词', 'lore')}
             ${renderTextArea(entry, 'content', '正文', 'lore')}
+            ${renderItemWarnings(entry.warnings)}
         </article>
     `).join('');
 }
@@ -162,6 +164,16 @@ function renderLorebook(entries) {
 function renderWarnings(warnings) {
     if (!warnings.length) {
         return '<p class="setting-organizer-empty">暂无警告。</p>';
+    }
+
+    return `<ul class="setting-organizer-warning-list">
+        ${warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join('')}
+    </ul>`;
+}
+
+function renderItemWarnings(warnings) {
+    if (!Array.isArray(warnings) || !warnings.length) {
+        return '';
     }
 
     return `<ul class="setting-organizer-warning-list">

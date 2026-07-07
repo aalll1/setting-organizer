@@ -54,6 +54,12 @@
   - 新增 `setting-organizer/tests/tokenEstimate.test.mjs`。
   - analyzer 内部不再自行估算 token，统一调用 `estimateAnalysisTokens()`。
   - 预算预设和自定义预算解析集中在 tokenEstimate 模块。
+- 完成 `TC-08 基础警告`：
+  - 新增 `setting-organizer/src/core/warnings.js`。
+  - 新增 `setting-organizer/tests/warnings.test.mjs`。
+  - analyzer 在 parser / validator / normalizer 后统一调用 `applyWarnings()`。
+  - results UI 只展示顶层和条目 warnings，不内联警告规则。
+  - 覆盖空名称、空标题、空正文、空关键词、短关键词、重复关键词、常驻过多、内容超预算等规则。
 - 初始化本地 Git 仓库并提交首个开发快照：
   - `7836dc2 chore: initialize setting organizer extension`
 
@@ -92,6 +98,12 @@
   - 混合文本粗估。
   - 分析结果输入 / 输出 / 总量统计。
   - 轻量、自定义和默认预算解析。
+- `setting-organizer/tests/warnings.test.mjs` 已通过，覆盖：
+  - 角色名称为空。
+  - 世界书标题 / 正文 / 关键词为空。
+  - 关键词过短和重复。
+  - 常驻世界书过多。
+  - 条目 warnings 与顶层 warnings 同步展示。
 - 当前目录已初始化为 Git 仓库。
 - MuMu 模拟器进程存在，MuMu 自带 ADB 可用。
 - 已连接 MuMu ADB：
@@ -144,6 +156,6 @@
 
 ### 下一步建议
 
-- 继续执行 `TC-08 基础警告`。
-- 基础警告应放入 `core/warnings.js`，并由结果页消费，不应把规则写进 UI 控件事件里。
+- 继续执行 `TC-09 JSON 导出`。
+- 导出 adapter 应与内部草稿格式解耦，SillyTavern 兼容格式只在 adapter 中生成。
 - 如果要做真机运行验证，需要提供 SillyTavern 安装路径或在模拟器内打开可访问的 SillyTavern 页面。

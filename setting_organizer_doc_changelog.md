@@ -344,6 +344,48 @@
 - 继续执行 `TC-08 基础警告`。
 - 警告规则应集中在 `core/warnings.js`，保持 UI 只负责展示。
 
+### 2026-07-07：完成 TC-08 基础警告
+
+变更类型：新增 / 修改
+
+涉及文件：
+
+- `setting-organizer/src/core/warnings.js`
+- `setting-organizer/tests/warnings.test.mjs`
+- `setting-organizer/src/core/analyzer.js`
+- `setting-organizer/src/ui/results.js`
+- `setting-organizer/README.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 实现规则级警告，并保持警告规则位于 core 层，UI 只负责展示。
+
+主要变化：
+
+- 新增 `applyWarnings()`。
+- 支持输入过长、角色名称为空、世界书标题为空、正文为空、关键词为空、关键词过短、关键词重复、常驻条目过多和内容超预算等提示。
+- analyzer 在校验规范化后统一附加警告。
+- 结果页显示角色和世界书条目级 warnings。
+
+影响范围：
+
+- 影响分析结果展示中的 warnings。
+- 不阻止用户继续编辑。
+- 未写入 SillyTavern 数据。
+
+验证情况：
+
+- `node --check setting-organizer/src/core/warnings.js` 已通过。
+- `node setting-organizer/tests/warnings.test.mjs` 已通过。
+- token、adapter、validator 测试仍通过。
+
+后续建议：
+
+- 继续执行 `TC-09 JSON 导出`。
+- 导出格式转换必须放在 adapter 中，保持内部草稿格式与 SillyTavern 兼容格式分离。
+
 ## 变更记录模板
 
 ```text
