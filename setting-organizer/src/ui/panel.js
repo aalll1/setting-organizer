@@ -1,4 +1,5 @@
 import { analyzeSettingText } from '../core/analyzer.js';
+import { formatError } from '../core/errors.js';
 import { loadSettings, saveSettings } from '../storage/settings.js';
 import { mountResults } from './results.js';
 
@@ -143,7 +144,7 @@ function bindPanel(panel, settings) {
             mountResults(elements.resultsMount, result);
         } catch (error) {
             console.error('[setting-organizer] mock analysis failed', error);
-            showError(elements, '模拟分析失败，请查看浏览器控制台。');
+            showError(elements, formatError(error));
             setStatus(elements, 'failed');
         } finally {
             isAnalyzing = false;

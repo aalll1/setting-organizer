@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Setting Organizer Analysis Result",
+  "type": "object",
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "promptVersion": { "type": "string" },
+    "characters": {
+      "type": "array",
+      "items": { "$ref": "./characterDraft.schema.json" }
+    },
+    "lorebookEntries": {
+      "type": "array",
+      "items": { "$ref": "./lorebookDraft.schema.json" }
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "tokenEstimate": {
+      "type": "object",
+      "properties": {
+        "inputTokens": { "type": "number" },
+        "outputTokens": { "type": "number" },
+        "totalTokens": { "type": "number" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

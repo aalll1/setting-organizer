@@ -1,10 +1,12 @@
+import { validateAndNormalizeAnalysisResult } from './validator.js';
+
 export async function analyzeSettingText(sourceText, options) {
     await wait(250);
 
     const trimmedText = sourceText.trim();
     const firstLine = trimmedText.split(/\r?\n/).find(Boolean) || trimmedText;
 
-    return {
+    const rawResult = {
         schemaVersion: '0.1.0',
         promptVersion: 'mock-analysis-v0.1.0',
         characters: [
@@ -45,6 +47,8 @@ export async function analyzeSettingText(sourceText, options) {
             totalTokens: estimateTokens(trimmedText),
         },
     };
+
+    return validateAndNormalizeAnalysisResult(rawResult);
 }
 
 function inferCharacterName(text) {

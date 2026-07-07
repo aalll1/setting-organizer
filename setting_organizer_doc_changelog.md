@@ -162,6 +162,63 @@
 - 继续执行 `TC-04 JSON Schema 与解析校验`。
 - 后续每完成任务卡，都同步更新 `setting_organizer_development_log.md`。
 
+### 2026-07-07：完成 TC-04 解析校验与 Git 初始化
+
+变更类型：新增 / 修改
+
+涉及文件：
+
+- `setting-organizer/src/core/errors.js`
+- `setting-organizer/src/core/parser.js`
+- `setting-organizer/src/core/normalizer.js`
+- `setting-organizer/src/core/validator.js`
+- `setting-organizer/src/schemas/analysisResult.schema.json`
+- `setting-organizer/src/schemas/characterDraft.schema.json`
+- `setting-organizer/src/schemas/lorebookDraft.schema.json`
+- `setting-organizer/tests/validator.test.mjs`
+- `setting-organizer/test-samples/bad-json-response.txt`
+- `setting-organizer/test-samples/markdown-wrapped-json.txt`
+- `setting-organizer/test-samples/wrong-field-types.json`
+- `setting-organizer/src/core/analyzer.js`
+- `setting-organizer/src/ui/panel.js`
+- `setting-organizer/README.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 接入真实 AI 前必须建立模型输出的安全入口，避免非 JSON、空结果或字段异常直接进入 UI 状态。
+- 用户授权初始化 Git 仓库并追踪开发进度。
+
+主要变化：
+
+- 新增错误码常量和扩展专用错误类型。
+- 新增 JSON 解析器，支持剥离 Markdown JSON 代码块。
+- 新增 normalizer，补全缺失数组、修正字符串关键词、截断 confidence、补默认字段。
+- 新增 validator，拦截顶层非对象和空结果。
+- 新增 schema JSON 文件作为数据格式契约。
+- 新增 validator 测试脚本和测试样例。
+- mock analyzer 输出改为经过 validator/normalizer 后再进入 UI。
+- 初始化本地 Git 仓库并提交初始快照。
+
+影响范围：
+
+- 只影响扩展本地分析和校验链路。
+- 未接入真实 AI 模型。
+- 未写入 SillyTavern 角色、世界书或聊天数据。
+- 未推送远程仓库。
+
+验证情况：
+
+- 新增核心 JS 文件已通过 `node --check`。
+- `analysisResult.schema.json` 已通过 JSON 解析。
+- `node setting-organizer/tests/validator.test.mjs` 已通过。
+
+后续建议：
+
+- 继续执行 `TC-05 Prompt 模板`。
+- 后续可考虑引入轻量 JSON Schema validator，但需注意浏览器扩展环境依赖体积。
+
 ## 变更记录模板
 
 ```text

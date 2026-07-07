@@ -1,0 +1,3 @@
+```json
+{"characters":[{"name":"林月"}],"lorebookEntries":[]}
+```
