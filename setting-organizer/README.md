@@ -2,7 +2,7 @@
 
 SillyTavern 设定整理器扩展。
 
-当前已完成到 `TC-04` JSON Schema 与解析校验。扩展提供基础面板、文本输入、整理目标选择、Token 预算模式、本地设置保存、分析状态、mock 角色草稿、mock 世界书草稿、基础编辑、JSON 解析、字段规范化和错误码。此阶段不调用模型、不创建角色、不写入世界书，也不会修改任何 SillyTavern 数据。
+当前已完成到 `TC-05` Prompt 模板。扩展提供基础面板、文本输入、整理目标选择、Token 预算模式、本地设置保存、分析状态、mock 角色草稿、mock 世界书草稿、基础编辑、JSON 解析、字段规范化、错误码和版本化整理 prompt。此阶段不调用模型、不创建角色、不写入世界书，也不会修改任何 SillyTavern 数据。
 
 ## 安装
 
@@ -24,12 +24,14 @@ SillyTavern 设定整理器扩展。
 - 解析 JSON 或 Markdown 代码块包裹的 JSON。
 - 对缺失字段、字符串关键词、异常 confidence 做规范化。
 - 对非 JSON、顶层非对象、空结果返回错误码。
+- 提供 `extract-setting-v0.1.0` Prompt 模板。
 
 ## 已知限制
 
 - 尚未接入 SillyTavern API 探针。
 - 尚未接入 AI 模型调用。
 - 当前 schema 文件已建立，但尚未引入完整 JSON Schema 引擎。
+- 尚未将 Prompt 接入真实模型调用。
 - 尚未实现导出。
 - 尚未实现备份或导入。
 

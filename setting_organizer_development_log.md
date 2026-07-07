@@ -34,6 +34,11 @@
   - 新增 `setting-organizer/src/schemas/lorebookDraft.schema.json`。
   - 新增 `setting-organizer/tests/validator.test.mjs` 和部分测试样例。
   - mock analyzer 输出已接入 `validateAndNormalizeAnalysisResult()`。
+- 完成 `TC-05 Prompt 模板`：
+  - 新增 `setting-organizer/src/prompts/extractSetting.js`。
+  - 新增 `setting-organizer/tests/prompt.test.mjs`。
+  - Prompt 版本为 `extract-setting-v0.1.0`。
+  - Prompt 明确只输出 JSON、禁止 Markdown 代码块、禁止编造、禁止 AI 执行写入操作。
 - 初始化本地 Git 仓库并提交首个开发快照：
   - `7836dc2 chore: initialize setting organizer extension`
 
@@ -56,6 +61,13 @@
   - 空结果返回 `E004`。
   - 字符串关键词转数组。
   - confidence 超界截断。
+- `setting-organizer/tests/prompt.test.mjs` 已通过，覆盖：
+  - prompt 版本号。
+  - 只输出 JSON。
+  - 禁止 Markdown 代码块。
+  - 禁止编造。
+  - 禁止 AI 执行写入。
+  - 包含 characters / lorebookEntries 目标结构。
 - 当前目录已初始化为 Git 仓库。
 - MuMu 模拟器进程存在，MuMu 自带 ADB 可用。
 - 已连接 MuMu ADB：
@@ -104,6 +116,6 @@
 
 ### 下一步建议
 
-- 继续执行 `TC-05 Prompt 模板`。
-- 在接入真实 AI 前，继续保持 parser / validator / normalizer 作为唯一模型输出入口。
+- 继续执行 `TC-06 SillyTavern 模型调用适配`。
+- 由于 `API_COMPATIBILITY.md` 已标记模型调用接口仍需运行时确认，TC-06 应先实现集中 adapter 和降级路径，避免业务代码直接依赖未验证内部对象。
 - 如果要做真机运行验证，需要提供 SillyTavern 安装路径或在模拟器内打开可访问的 SillyTavern 页面。
