@@ -26,7 +26,8 @@ export function getCompatibilitySnapshot() {
         hasGenerate: Boolean(context && typeof context.generate === 'function'),
         hasGenerateQuietPrompt: Boolean(context && typeof context.generateQuietPrompt === 'function'),
         hasExtensionSettings: Boolean(context && context.extensionSettings),
-        hasWorldInfoCreate: Boolean(context && typeof context.createWorldInfo === 'function'),
+        hasWorldInfoCreate: Boolean(context && typeof context.saveWorldInfo === 'function'),
+        hasWorldInfoNames: Boolean(context && typeof context.getWorldInfoNames === 'function'),
     };
 }
 
@@ -62,15 +63,40 @@ export async function createWorldInfo({ name, worldInfo }) {
         throw new SettingOrganizerError(ERROR_CODES.INCOMPATIBLE_API, '当前页面未发现 SillyTavern 扩展上下文。');
     }
 
-    if (typeof context.createWorldInfo !== 'function') {
+    if (typeof context.saveWorldInfo !== 'function') {
         throw new SettingOrganizerError(ERROR_CODES.INCOMPATIBLE_API, '当前 SillyTavern 版本未发现已验证的新建世界书接口。');
     }
 
+    const existingNames = getWorldInfoNames();
+    if (existingNames.includes(name)) {
+        throw new SettingOrganizerError(ERROR_CODES.LOREBOOK_CREATE_FAILED, `世界书“${name}”已存在，已停止导入以避免覆盖。`);
+    }
+
     try {
-        return await context.createWorldInfo({ name, worldInfo });
+        await context.saveWorldInfo(name, worldInfo, true);
+
+        if (typeof context.updateWorldInfoList === 'function') {
+            await context.updateWorldInfoList();
+        }
+
+        return {
+            name,
+            entryCount: Object.keys(worldInfo.entries || {}).length,
+        };
     } catch (error) {
         throw new SettingOrganizerError(ERROR_CODES.LOREBOOK_CREATE_FAILED, '创建世界书失败。', {
             cause: error.message,
         });
     }
+}
+
+export function getWorldInfoNames() {
+    const context = getSillyTavernContext();
+
+    if (!context || typeof context.getWorldInfoNames !== 'function') {
+        return [];
+    }
+
+    const names = context.getWorldInfoNames();
+    return Array.isArray(names) ? names : [];
 }

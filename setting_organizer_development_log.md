@@ -187,16 +187,42 @@
   - 真实写入测试必须在 MuMu / SillyTavern 环境中确认接口后进行。
   - 在未确认接口时，UI 只展示失败报告和备份标识，不应宣称已导入成功。
 
+### 运行验证补充
+
+- 用户重启并创建新的 MuMu 模拟器后，重新连接 ADB：`127.0.0.1:7555`，设备别名 `emulator-5558`。
+- MuMu Android 版本为 `12`。
+- 系统浏览器包为 `com.android.chromium`。
+- MuMu 可通过 `http://10.0.2.2:8000/` 访问宿主机 SillyTavern。
+- 克隆官方 SillyTavern 到 `SillyTavern-runtime/`，并将该目录加入 `.gitignore`。
+- SillyTavern 版本为 `1.18.0`，release commit `51ad27f`。
+- 扩展被服务端识别为 `third-party/setting-organizer`。
+- Chrome DevTools Protocol 验证 `#setting-organizer-panel` 存在。
+- 端到端前端验证通过：输入测试文本、点击分析、生成 1 个角色草稿和 1 个世界书草稿，5 个导出按钮和备份按钮存在。
+- 运行时 context 暴露 `chat`、`extensionSettings`、`saveSettingsDebounced`、`generateQuietPrompt`、`saveWorldInfo`、`getWorldInfoNames`。
+- `saveWorldInfo(name, data, true)` 已验证可创建新世界书。
+- 真实世界书导入第二次验证成功，并确认旧世界书名称仍保留。
+
+### 运行验证中出现的问题
+
+- 初次 `npm ci` 长时间无结束，手动停止后发现 `tiktoken` 半安装。
+- 单独安装 `tiktoken` 首次因 `ECONNRESET` 失败。
+- 删除损坏的 `node_modules/tiktoken` 后，使用 `https://registry.npmmirror.com` 成功安装。
+- 首次启动 SillyTavern 时 webpack 报 `@popperjs/core` 内部文件缺失。
+- 删除损坏的 `node_modules/@popperjs/core` 后，使用镜像成功重装。
+- 第一次真实创建世界书成功，但报告 `E011`。
+- 根因：默认世界书名使用 ISO 时间，包含 `:`，SillyTavern 保存后规范化名称，导致新建名称与 adapter 返回名称不一致。
+- 修复：默认世界书名改为移除 `-:.TZ` 的安全时间戳，并在导入报告中区分“创建成功但校验失败”。
+
 ### 当前限制
 
-- 尚未在真实 SillyTavern 页面中完成运行验证。
-- 尚未确认当前 SillyTavern 版本的模型调用、聊天读取、角色创建、世界书创建接口。
+- 已在真实 SillyTavern 页面完成扩展加载、mock 分析、备份和世界书创建验证。
+- 已确认当前 SillyTavern 版本的模型调用候选接口、聊天读取候选接口和世界书创建接口。
+- 尚未确认角色创建接口。
 - `TC-03` 使用 mock 分析结果，不代表最终 AI 输出质量。
 - 当前 schema 文件已建立，但尚未接入完整 JSON Schema 引擎，TC-04 目前使用手写结构校验和规范化规则。
 - 尚未实现导出功能、备份或导入。
 
 ### 下一步建议
 
-- 用户已重启并创建新的 MuMu 模拟器，下一步重新连接 ADB 并搭建/确认 SillyTavern 运行环境。
-- 模拟器内只有系统自带浏览器，必要 APP 或测试依赖可自行安装。
-- 如果要做真机运行验证，需要提供 SillyTavern 安装路径或在模拟器内打开可访问的 SillyTavern 页面。
+- 下一步进入 `TC-12 创建新角色` 前，应先探测 SillyTavern 运行时 context 中的角色创建相关接口。
+- 继续保持写入逻辑集中在 `sillytavernApi.js`，不要把内部 API 调用散落到 UI。

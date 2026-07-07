@@ -40,6 +40,39 @@ Run these checks inside the user's actual SillyTavern instance before implementi
 8. Identify whether there is a supported create-world-info API.
 9. Record the SillyTavern version, branch, and commit if available.
 
+## Runtime Verification Update
+
+Verified on 2026-07-07 with a local official SillyTavern test checkout:
+
+- Test checkout: `SillyTavern-runtime/`
+- SillyTavern version: `1.18.0`, release commit `51ad27f`
+- MuMu Android version: `12`
+- MuMu browser package: `com.android.chromium`
+- MuMu URL for host SillyTavern: `http://10.0.2.2:8000/`
+- Server listed extension: `third-party/setting-organizer`
+- Chrome DevTools Protocol confirmed `#setting-organizer-panel` exists in the real page.
+
+Runtime context findings:
+
+| Capability | Runtime Result | Interface |
+| --- | --- | --- |
+| Extension loading | Verified | third-party manifest and panel DOM |
+| Settings context | Verified candidate | `SillyTavern.getContext().extensionSettings`, `saveSettingsDebounced` |
+| Model call | Verified candidate | `SillyTavern.getContext().generateQuietPrompt` |
+| Current chat read | Verified candidate | `SillyTavern.getContext().chat` |
+| World book names | Verified | `SillyTavern.getContext().getWorldInfoNames()` |
+| World book creation | Verified | `SillyTavern.getContext().saveWorldInfo(name, data, true)` |
+| Character creation | Still unknown | Not yet probed |
+
+Runtime test results:
+
+- Mock analysis generated 1 character draft and 1 world book draft.
+- Backup creation succeeded in the real page.
+- First real world book creation exposed a name-sanitization bug: an ISO timestamp with `:` was normalized by SillyTavern, so verification failed with `E011` after creation.
+- Default world book names now use a filesystem-safe timestamp.
+- Second real world book creation succeeded.
+- Existing world book names remained present after import.
+
 ## Decision
 
-Proceed with local UI, state, validation, mock analysis, prompt, warnings, and JSON export tasks. Block business writes to SillyTavern until runtime API compatibility is confirmed.
+Proceed with world book creation through the centralized `sillytavernApi.js` adapter using `saveWorldInfo`. Continue blocking character creation until a safe runtime API is confirmed.

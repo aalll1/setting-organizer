@@ -48,22 +48,33 @@ assert.ok(report.steps.some((step) => step.id === 'create-backup' && step.status
 assert.ok(report.steps.some((step) => step.id === 'create-worldbook' && step.status === 'failed'));
 assert.ok(report.possibleImpact.length > 0);
 
+const mockContext = {
+    names: ['旧世界书'],
+    getWorldInfoNames() {
+        return this.names;
+    },
+    async saveWorldInfo(name, data) {
+        this.names = [...this.names, name];
+        this.saved = { name, data };
+    },
+    async updateWorldInfoList() {
+        return undefined;
+    },
+};
+
 globalThis.window = {
     localStorage: createMemoryStorage(),
     SillyTavern: {
         getContext() {
-            return {
-                async createWorldInfo(payload) {
-                    return { id: 'world_1', ...payload };
-                },
-            };
+            return mockContext;
         },
     },
 };
 
 const successReport = await importLorebookDraft(result, { name: '测试世界书' });
 assert.equal(successReport.ok, true);
-assert.equal(successReport.created.id, 'world_1');
+assert.equal(successReport.created.name, '测试世界书');
+assert.equal(successReport.created.entryCount, 1);
 assert.ok(successReport.steps.every((step) => step.status === 'completed'));
 
 console.log('importer tests passed');

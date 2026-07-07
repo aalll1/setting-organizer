@@ -1,7 +1,7 @@
 import { ERROR_CODES, SettingOrganizerError } from './errors.js';
 import { toSillyTavernWorldInfo } from '../adapters/lorebookAdapter.js';
 import { createAndSaveBackup } from '../storage/backups.js';
-import { createWorldInfo, getCompatibilitySnapshot } from '../adapters/sillytavernApi.js';
+import { createWorldInfo, getCompatibilitySnapshot, getWorldInfoNames } from '../adapters/sillytavernApi.js';
 
 export async function importLorebookDraft(result, options = {}) {
     const enabledEntries = (result.lorebookEntries || []).filter((entry) => entry.enabled);
@@ -30,17 +30,18 @@ export async function importLorebookDraft(result, options = {}) {
         createStep('verify-legacy-data', '验证旧世界书未变化', 'pending'),
     ];
 
+    let created = null;
+
     try {
         const payload = toSillyTavernWorldInfo({ ...result, lorebookEntries: enabledEntries });
-        const created = await createWorldInfo({
+        created = await createWorldInfo({
             name: options.name || createDefaultWorldbookName(),
             worldInfo: payload,
         });
 
         markStep(steps, 'create-worldbook', 'completed', created);
-        markStep(steps, 'verify-legacy-data', 'completed', {
-            note: 'Runtime verification placeholder. Actual old-data comparison requires confirmed SillyTavern APIs.',
-        });
+        verifyExistingWorldbooksUnchanged(beforeState.worldBooks, created.name);
+        markStep(steps, 'verify-legacy-data', 'completed');
 
         return {
             ok: true,
@@ -49,7 +50,8 @@ export async function importLorebookDraft(result, options = {}) {
             steps,
         };
     } catch (error) {
-        markStep(steps, 'create-worldbook', 'failed', {
+        const failedStepId = created ? 'verify-legacy-data' : 'create-worldbook';
+        markStep(steps, failedStepId, 'failed', {
             errorCode: error.code || ERROR_CODES.LOREBOOK_CREATE_FAILED,
             message: error.message,
         });
@@ -85,9 +87,24 @@ export function getLorebookImportReadiness(result) {
 function createWorldbookSummarySnapshot() {
     return {
         compatibility: getCompatibilitySnapshot(),
-        worldBooks: [],
-        note: 'Worldbook summary snapshot is a placeholder until runtime APIs are confirmed.',
+        worldBooks: getWorldInfoNames(),
     };
+}
+
+function verifyExistingWorldbooksUnchanged(beforeNames, createdName) {
+    const afterNames = getWorldInfoNames();
+    const missingNames = beforeNames.filter((name) => !afterNames.includes(name));
+    const newNames = afterNames.filter((name) => !beforeNames.includes(name));
+    const unexpectedExistingChanges = newNames.filter((name) => name !== createdName);
+
+    if (missingNames.length || unexpectedExistingChanges.length || !afterNames.includes(createdName)) {
+        throw new SettingOrganizerError(ERROR_CODES.LEGACY_DATA_CHANGED, '旧世界书摘要校验失败。', {
+            missingNames,
+            unexpectedExistingChanges,
+            createdName,
+            afterNames,
+        });
+    }
 }
 
 function createStep(id, label, status, details = null) {
@@ -103,7 +120,8 @@ function markStep(steps, id, status, details = null) {
 }
 
 function createDefaultWorldbookName() {
-    return `设定整理器导入 ${new Date().toISOString()}`;
+    const stamp = new Date().toISOString().replace(/[-:.TZ]/g, '');
+    return `设定整理器导入 ${stamp}`;
 }
 
 function readSillyTavernVersion() {

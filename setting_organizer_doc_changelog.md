@@ -517,6 +517,53 @@
 - 使用新的 MuMu 模拟器确认浏览器与 SillyTavern 运行环境。
 - 如果可访问真实 SillyTavern 页面，更新 `API_COMPATIBILITY.md` 的运行时兼容性矩阵。
 
+### 2026-07-07：完成 MuMu / SillyTavern 运行验证并修复世界书导入
+
+变更类型：新增 / 修改 / 验证
+
+涉及文件：
+
+- `setting-organizer/API_COMPATIBILITY.md`
+- `setting-organizer/src/adapters/sillytavernApi.js`
+- `setting-organizer/src/core/importer.js`
+- `setting-organizer/tests/importer.test.mjs`
+- `setting-organizer/tests/cdp-check.mjs`
+- `.gitignore`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 用户要求在 MuMu 模拟器中确认并测试 SillyTavern 环境。
+- 真实运行验证发现世界书导入名称校验问题，需要修复。
+
+主要变化：
+
+- 新增 CDP 检查脚本，用于在 MuMu 浏览器中执行前端验证。
+- `SillyTavern-runtime/` 加入 `.gitignore`。
+- `sillytavernApi.js` 改为使用已验证的 `saveWorldInfo(name, data, true)` 创建世界书。
+- `importer.js` 默认世界书名称改为安全时间戳。
+- 导入流程区分创建失败和旧数据校验失败。
+- 更新 API 兼容性记录为运行时验证结果。
+
+影响范围：
+
+- 测试环境中创建了新的世界书用于验证。
+- 项目源码仍保持 adapter 集中写入，UI 不直接调用 SillyTavern 内部接口。
+- 未实现角色创建。
+
+验证情况：
+
+- MuMu 浏览器成功访问 `http://10.0.2.2:8000/`。
+- SillyTavern 1.18.0 成功启动。
+- 扩展面板在真实页面中加载。
+- mock 分析、备份、世界书导入流程在真实页面中通过。
+- 旧世界书名称在导入后仍保留。
+
+后续建议：
+
+- 进入 `TC-12 创建新角色` 前，先探测 SillyTavern 运行时 context 中的角色创建相关接口。
+
 ## 变更记录模板
 
 ```text
