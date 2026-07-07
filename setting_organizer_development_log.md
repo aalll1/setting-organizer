@@ -67,6 +67,13 @@
   - 新增 `setting-organizer/tests/exporter.test.mjs`。
   - results UI 增加 5 类导出按钮：完整草稿、角色草稿、世界书草稿、SillyTavern 兼容角色、SillyTavern 兼容世界书。
   - 导出格式转换集中在 adapters / exporter，UI 只负责触发下载和显示错误。
+- 完成 `TC-10 备份能力` 的本地记录部分：
+  - 新增 `setting-organizer/src/storage/backups.js`。
+  - 新增 `setting-organizer/src/ui/confirm.js`。
+  - 新增 `setting-organizer/tests/backups.test.mjs`。
+  - 结果页增加“创建备份”按钮。
+  - 备份记录包含 `backupVersion`、`id`、`createdAt`、`operation`、`sillyTavernVersion`、`sourceDraft`、`targetInfo`、`beforeState`、`afterState`。
+  - 当前备份只写入浏览器 localStorage，作为后续导入前的本地恢复依据。
 - 初始化本地 Git 仓库并提交首个开发快照：
   - `7836dc2 chore: initialize setting organizer extension`
 
@@ -116,6 +123,10 @@
   - 角色草稿转 SillyTavern 兼容字段。
   - 世界书草稿转 SillyTavern World Info entries。
   - 内部 warnings 不会进入 SillyTavern 兼容角色顶层。
+- `setting-organizer/tests/backups.test.mjs` 已通过，覆盖：
+  - 备份记录创建。
+  - 备份保存和倒序列表。
+  - 存储失败时返回 `E007`。
 - 当前目录已初始化为 Git 仓库。
 - MuMu 模拟器进程存在，MuMu 自带 ADB 可用。
 - 已连接 MuMu ADB：
@@ -157,6 +168,10 @@
   - SillyTavern 模型调用接口尚未在真实运行环境确认。
   - 当前实现只做集中 adapter 和候选接口探测，不把候选 API 写散到 UI 或业务模块。
   - 后续如实际 API 不同，只需替换 `sillytavernApi.js`，不应改动 parser / validator / results UI。
+- TC-10 范围控制：
+  - 当前只实现备份记录，不实现自动回滚。
+  - 这符合第一版“备份 + 失败状态报告 + 可手动恢复依据”的口径。
+  - 后续导入功能必须先调用备份模块，备份失败应返回 `E007` 并阻止导入。
 
 ### 当前限制
 
@@ -168,6 +183,6 @@
 
 ### 下一步建议
 
-- MVP-A 主链路已覆盖到导出，但真实模型调用仍需目标 SillyTavern 运行环境确认。
-- 下一步可根据实际优先级进入 `TC-10 备份能力`，或先做真实 SillyTavern 页面运行验证。
+- 继续执行 `TC-11 创建新世界书` 前，必须先在真实 SillyTavern 环境确认世界书创建接口。
+- 如果暂时无法确认接口，应先补导入确认 UI 和失败状态报告骨架，不做实际写入。
 - 如果要做真机运行验证，需要提供 SillyTavern 安装路径或在模拟器内打开可访问的 SillyTavern 页面。

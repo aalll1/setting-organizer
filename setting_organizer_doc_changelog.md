@@ -430,6 +430,50 @@
 - 真实模型调用仍需在目标 SillyTavern 环境验证。
 - 下一步可进入 `TC-10 备份能力` 或先做运行环境验证。
 
+### 2026-07-07：完成 TC-10 本地备份能力
+
+变更类型：新增 / 修改
+
+涉及文件：
+
+- `setting-organizer/src/storage/backups.js`
+- `setting-organizer/src/ui/confirm.js`
+- `setting-organizer/tests/backups.test.mjs`
+- `setting-organizer/src/ui/results.js`
+- `setting-organizer/style.css`
+- `setting-organizer/README.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 在任何 SillyTavern 写入能力前，先建立备份记录能力，符合第一版安全策略。
+
+主要变化：
+
+- 新增备份记录创建、保存和读取。
+- 结果页新增“创建备份”按钮和备份状态展示。
+- 备份失败返回 `E007`。
+- 明确当前备份只作为手动恢复依据，不承诺完整自动回滚。
+
+影响范围：
+
+- 只写入浏览器 localStorage 备份记录。
+- 不创建角色。
+- 不创建或修改世界书。
+- 不写入 SillyTavern 数据。
+
+验证情况：
+
+- `node --check` 已覆盖新增备份模块和确认 UI。
+- `node setting-organizer/tests/backups.test.mjs` 已通过。
+- exporter 和 validator 回归测试仍通过。
+
+后续建议：
+
+- `TC-11 创建新世界书` 需要真实 SillyTavern API 验证后才能做实际写入。
+- 在接口未确认前，可先实现导入确认和失败报告骨架，但必须禁用真实写入。
+
 ## 变更记录模板
 
 ```text

@@ -1,6 +1,7 @@
 import { formatKeywordList, parseKeywordList, removeArrayItem, updateArrayItem } from './editor.js';
 import { formatError } from '../core/errors.js';
 import { buildExportJson, EXPORT_TYPES } from '../core/exporter.js';
+import { createDraftBackup, renderBackupStatus } from './confirm.js';
 
 const RESULT_TABS = [
     { id: 'overview', label: '总览' },
@@ -31,12 +32,14 @@ function render(container, state) {
             ${renderActiveTab(state)}
         </div>
         <div class="setting-organizer-export-actions">
+            <button type="button" data-create-backup>创建备份</button>
             <button type="button" data-export="${EXPORT_TYPES.INTERNAL_FULL}">导出完整草稿</button>
             <button type="button" data-export="${EXPORT_TYPES.CHARACTER_DRAFTS}">导出角色草稿</button>
             <button type="button" data-export="${EXPORT_TYPES.LOREBOOK_DRAFTS}">导出世界书草稿</button>
             <button type="button" data-export="${EXPORT_TYPES.SILLYTAVERN_CHARACTERS}">导出 ST 角色</button>
             <button type="button" data-export="${EXPORT_TYPES.SILLYTAVERN_WORLD_INFO}">导出 ST 世界书</button>
         </div>
+        <div class="setting-organizer-backup-status" data-backup-status hidden></div>
         <div class="setting-organizer-export-error" data-export-error hidden></div>
     `;
 
@@ -111,6 +114,18 @@ function bindResults(container, state) {
             }
         });
     });
+
+    const backupButton = container.querySelector('[data-create-backup]');
+    if (backupButton) {
+        backupButton.addEventListener('click', () => {
+            const statusBox = container.querySelector('[data-backup-status]');
+            try {
+                renderBackupStatus(statusBox, createDraftBackup(state.result));
+            } catch (error) {
+                renderBackupStatus(statusBox, error);
+            }
+        });
+    }
 }
 
 function renderActiveTab(state) {
