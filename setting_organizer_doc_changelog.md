@@ -474,6 +474,49 @@
 - `TC-11 创建新世界书` 需要真实 SillyTavern API 验证后才能做实际写入。
 - 在接口未确认前，可先实现导入确认和失败报告骨架，但必须禁用真实写入。
 
+### 2026-07-07：完成 TC-11 安全导入世界书骨架
+
+变更类型：新增 / 修改
+
+涉及文件：
+
+- `setting-organizer/src/core/importer.js`
+- `setting-organizer/tests/importer.test.mjs`
+- `setting-organizer/src/adapters/sillytavernApi.js`
+- `setting-organizer/src/ui/confirm.js`
+- `setting-organizer/src/ui/results.js`
+- `setting-organizer/style.css`
+- `setting-organizer/README.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 在真实写入接口确认前，先建立导入编排、备份前置和失败状态报告，确保后续写入只集中在 adapter 中实现。
+
+主要变化：
+
+- 新增 worldbook 导入编排层。
+- 新增导入预检 UI。
+- adapter 增加世界书创建候选接口。
+- 未确认接口时返回 `E010` 和失败报告。
+- 导入流程失败时展示备份标识、步骤状态和可能影响范围。
+
+影响范围：
+
+- 不直接写入 SillyTavern 数据，除非运行时存在并显式暴露候选 `createWorldInfo` 接口。
+- 写入逻辑仍集中在 `sillytavernApi.js`。
+
+验证情况：
+
+- `node setting-organizer/tests/importer.test.mjs` 已通过。
+- backups 和 exporter 回归测试仍通过。
+
+后续建议：
+
+- 使用新的 MuMu 模拟器确认浏览器与 SillyTavern 运行环境。
+- 如果可访问真实 SillyTavern 页面，更新 `API_COMPATIBILITY.md` 的运行时兼容性矩阵。
+
 ## 变更记录模板
 
 ```text

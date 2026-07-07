@@ -74,6 +74,12 @@
   - 结果页增加“创建备份”按钮。
   - 备份记录包含 `backupVersion`、`id`、`createdAt`、`operation`、`sillyTavernVersion`、`sourceDraft`、`targetInfo`、`beforeState`、`afterState`。
   - 当前备份只写入浏览器 localStorage，作为后续导入前的本地恢复依据。
+- 完成 `TC-11 创建新世界书` 的安全骨架：
+  - 新增 `setting-organizer/src/core/importer.js`。
+  - 新增 `setting-organizer/tests/importer.test.mjs`。
+  - `sillytavernApi.js` 增加 `createWorldInfo()` 和 `hasWorldInfoCreate` 兼容性探测。
+  - 结果页增加“预检导入世界书”按钮。
+  - 当前未确认真实接口时会先创建备份，再返回 `E010` 兼容性错误和失败状态报告，不执行真实写入。
 - 初始化本地 Git 仓库并提交首个开发快照：
   - `7836dc2 chore: initialize setting organizer extension`
 
@@ -127,6 +133,10 @@
   - 备份记录创建。
   - 备份保存和倒序列表。
   - 存储失败时返回 `E007`。
+- `setting-organizer/tests/importer.test.mjs` 已通过，覆盖：
+  - 未发现世界书创建接口时返回失败报告和 `E010`。
+  - 导入前备份步骤完成。
+  - 候选 `createWorldInfo` 接口存在时可走成功路径。
 - 当前目录已初始化为 Git 仓库。
 - MuMu 模拟器进程存在，MuMu 自带 ADB 可用。
 - 已连接 MuMu ADB：
@@ -172,6 +182,10 @@
   - 当前只实现备份记录，不实现自动回滚。
   - 这符合第一版“备份 + 失败状态报告 + 可手动恢复依据”的口径。
   - 后续导入功能必须先调用备份模块，备份失败应返回 `E007` 并阻止导入。
+- TC-11 运行时限制：
+  - 当前 `createWorldInfo()` 只是候选 adapter，不代表目标 SillyTavern 已确认支持。
+  - 真实写入测试必须在 MuMu / SillyTavern 环境中确认接口后进行。
+  - 在未确认接口时，UI 只展示失败报告和备份标识，不应宣称已导入成功。
 
 ### 当前限制
 
@@ -183,6 +197,6 @@
 
 ### 下一步建议
 
-- 继续执行 `TC-11 创建新世界书` 前，必须先在真实 SillyTavern 环境确认世界书创建接口。
-- 如果暂时无法确认接口，应先补导入确认 UI 和失败状态报告骨架，不做实际写入。
+- 用户已重启并创建新的 MuMu 模拟器，下一步重新连接 ADB 并搭建/确认 SillyTavern 运行环境。
+- 模拟器内只有系统自带浏览器，必要 APP 或测试依赖可自行安装。
 - 如果要做真机运行验证，需要提供 SillyTavern 安装路径或在模拟器内打开可访问的 SillyTavern 页面。

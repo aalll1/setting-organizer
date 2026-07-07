@@ -26,6 +26,7 @@ export function getCompatibilitySnapshot() {
         hasGenerate: Boolean(context && typeof context.generate === 'function'),
         hasGenerateQuietPrompt: Boolean(context && typeof context.generateQuietPrompt === 'function'),
         hasExtensionSettings: Boolean(context && context.extensionSettings),
+        hasWorldInfoCreate: Boolean(context && typeof context.createWorldInfo === 'function'),
     };
 }
 
@@ -52,4 +53,24 @@ export async function callCurrentModel(sourceText, options) {
     }
 
     throw new SettingOrganizerError(ERROR_CODES.INCOMPATIBLE_API, '当前 SillyTavern 版本未发现可用的模型调用接口。');
+}
+
+export async function createWorldInfo({ name, worldInfo }) {
+    const context = getSillyTavernContext();
+
+    if (!context) {
+        throw new SettingOrganizerError(ERROR_CODES.INCOMPATIBLE_API, '当前页面未发现 SillyTavern 扩展上下文。');
+    }
+
+    if (typeof context.createWorldInfo !== 'function') {
+        throw new SettingOrganizerError(ERROR_CODES.INCOMPATIBLE_API, '当前 SillyTavern 版本未发现已验证的新建世界书接口。');
+    }
+
+    try {
+        return await context.createWorldInfo({ name, worldInfo });
+    } catch (error) {
+        throw new SettingOrganizerError(ERROR_CODES.LOREBOOK_CREATE_FAILED, '创建世界书失败。', {
+            cause: error.message,
+        });
+    }
 }

@@ -148,19 +148,26 @@
     border-radius: 6px;
 }
 
-.setting-organizer-backup-status {
+.setting-organizer-backup-status,
+.setting-organizer-import-status {
     padding: 10px;
     border: 1px solid var(--SmartThemeBorderColor, #555);
     border-radius: 6px;
     white-space: pre-wrap;
 }
 
-.setting-organizer-backup-status[data-state="success"] {
+.setting-organizer-backup-status[data-state="success"],
+.setting-organizer-import-status[data-state="success"] {
     border-color: #3f8f5f;
 }
 
-.setting-organizer-backup-status[data-state="error"] {
+.setting-organizer-backup-status[data-state="error"],
+.setting-organizer-import-status[data-state="error"] {
     border-color: #b85c5c;
+}
+
+.setting-organizer-import-status[data-state="warning"] {
+    border-color: #b8a15c;
 }
 
 .setting-organizer-summary {
