@@ -49,6 +49,11 @@
 - 架构约束更新：
   - 用户提醒整个开发过程各模块和功能要充分解耦，方便后期更新或修改。
   - 后续继续保持 UI / core / adapters / prompts / storage / schemas 分层，避免跨层直接耦合。
+- 完成 `TC-07 Token 粗估`：
+  - 新增 `setting-organizer/src/core/tokenEstimate.js`。
+  - 新增 `setting-organizer/tests/tokenEstimate.test.mjs`。
+  - analyzer 内部不再自行估算 token，统一调用 `estimateAnalysisTokens()`。
+  - 预算预设和自定义预算解析集中在 tokenEstimate 模块。
 - 初始化本地 Git 仓库并提交首个开发快照：
   - `7836dc2 chore: initialize setting organizer extension`
 
@@ -81,6 +86,12 @@
 - `setting-organizer/tests/sillytavernApi.test.mjs` 已通过，覆盖：
   - 无 SillyTavern 上下文时返回 `E010`。
   - 存在 `generateQuietPrompt` 候选接口时可返回原始模型文本。
+- `setting-organizer/tests/tokenEstimate.test.mjs` 已通过，覆盖：
+  - 中文 token 估算。
+  - 英文字符粗估。
+  - 混合文本粗估。
+  - 分析结果输入 / 输出 / 总量统计。
+  - 轻量、自定义和默认预算解析。
 - 当前目录已初始化为 Git 仓库。
 - MuMu 模拟器进程存在，MuMu 自带 ADB 可用。
 - 已连接 MuMu ADB：
@@ -133,6 +144,6 @@
 
 ### 下一步建议
 
-- 继续执行 `TC-07 Token 粗估`。
-- 继续保持功能解耦：Token 估算放入 `core/tokenEstimate.js`，UI 只消费结果，不直接实现估算规则。
+- 继续执行 `TC-08 基础警告`。
+- 基础警告应放入 `core/warnings.js`，并由结果页消费，不应把规则写进 UI 控件事件里。
 - 如果要做真机运行验证，需要提供 SillyTavern 安装路径或在模拟器内打开可访问的 SillyTavern 页面。

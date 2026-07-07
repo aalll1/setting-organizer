@@ -1,4 +1,5 @@
 import { callCurrentModel } from '../adapters/sillytavernApi.js';
+import { estimateAnalysisTokens } from './tokenEstimate.js';
 import { parseValidateNormalize, validateAndNormalizeAnalysisResult } from './validator.js';
 
 export async function analyzeSettingText(sourceText, options) {
@@ -47,12 +48,10 @@ export async function analyzeSettingText(sourceText, options) {
             },
         ],
         warnings: ['当前为 mock 分析结果，用于验证展示和编辑流程。'],
-        tokenEstimate: {
-            inputTokens: estimateTokens(trimmedText),
-            outputTokens: 0,
-            totalTokens: estimateTokens(trimmedText),
-        },
+        tokenEstimate: {},
     };
+
+    rawResult.tokenEstimate = estimateAnalysisTokens(trimmedText, rawResult);
 
     return validateAndNormalizeAnalysisResult(rawResult);
 }
@@ -70,10 +69,6 @@ function inferLoreTitle(text) {
 function inferKeywords(text) {
     const matches = text.match(/[\u4e00-\u9fa5A-Za-z0-9_]{2,12}/g) || [];
     return [...new Set(matches)].slice(0, 4);
-}
-
-function estimateTokens(text) {
-    return Math.ceil(text.length / 2);
 }
 
 function createId(prefix) {
