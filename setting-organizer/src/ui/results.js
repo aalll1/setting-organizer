@@ -1,7 +1,7 @@
 import { formatKeywordList, parseKeywordList, removeArrayItem, updateArrayItem } from './editor.js';
 import { formatError } from '../core/errors.js';
 import { buildExportJson, EXPORT_TYPES } from '../core/exporter.js';
-import { createDraftBackup, renderBackupStatus, renderImportReadiness, runLorebookImportPreview } from './confirm.js';
+import { createDraftBackup, renderBackupStatus, renderCharacterImportReadiness, renderImportReadiness, runCharacterImportPreview, runLorebookImportPreview } from './confirm.js';
 
 const RESULT_TABS = [
     { id: 'overview', label: '总览' },
@@ -34,6 +34,7 @@ function render(container, state) {
         <div class="setting-organizer-export-actions">
             <button type="button" data-create-backup>创建备份</button>
             <button type="button" data-import-lorebook-preview>预检导入世界书</button>
+            <button type="button" data-import-character-preview>预检导入角色</button>
             <button type="button" data-export="${EXPORT_TYPES.INTERNAL_FULL}">导出完整草稿</button>
             <button type="button" data-export="${EXPORT_TYPES.CHARACTER_DRAFTS}">导出角色草稿</button>
             <button type="button" data-export="${EXPORT_TYPES.LOREBOOK_DRAFTS}">导出世界书草稿</button>
@@ -135,6 +136,15 @@ function bindResults(container, state) {
             const statusBox = container.querySelector('[data-import-status]');
             renderImportReadiness(statusBox, state.result);
             await runLorebookImportPreview(state.result, statusBox);
+        });
+    }
+
+    const characterImportButton = container.querySelector('[data-import-character-preview]');
+    if (characterImportButton) {
+        characterImportButton.addEventListener('click', async () => {
+            const statusBox = container.querySelector('[data-import-status]');
+            renderCharacterImportReadiness(statusBox, state.result);
+            await runCharacterImportPreview(state.result, statusBox);
         });
     }
 }

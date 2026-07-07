@@ -564,6 +564,65 @@
 
 - 进入 `TC-12 创建新角色` 前，先探测 SillyTavern 运行时 context 中的角色创建相关接口。
 
+### 2026-07-07：完成 TC-12 角色创建与运行验证
+
+变更类型：新增 / 修改 / 验证
+
+涉及文件：
+
+- `setting-organizer/src/adapters/characterAdapter.js`
+- `setting-organizer/src/adapters/sillytavernApi.js`
+- `setting-organizer/src/core/importer.js`
+- `setting-organizer/src/ui/confirm.js`
+- `setting-organizer/src/ui/results.js`
+- `setting-organizer/tests/importer.test.mjs`
+- `setting-organizer/tests/sillytavernApi.test.mjs`
+- `setting-organizer/README.md`
+- `setting-organizer/API_COMPATIBILITY.md`
+- `setting_organizer_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 完成 MVP-B 中“创建新角色、不覆盖旧角色”的安全写入闭环。
+- 用户要求开发过程中同步更新文档，并复盘记录关键问题。
+
+主要变化：
+
+- 新增角色导入编排流程。
+- 新增角色创建 FormData adapter。
+- 新增 `/api/characters/create` 封装。
+- 角色导入前自动创建本地备份。
+- 角色导入前刷新并记录已有角色摘要。
+- 角色导入后验证旧角色 avatar 仍保留。
+- 结果页新增“预检导入角色”按钮和角色导入报告。
+
+影响范围：
+
+- 在 SillyTavern 测试环境中创建了两个测试角色。
+- 不覆盖、不删除、不修改已有角色。
+- 角色写入仍集中在 `sillytavernApi.js`，UI 不直接访问内部接口。
+- 暂未实现角色与新建世界书的自动绑定。
+
+验证情况：
+
+- `node --check` 已覆盖角色导入相关模块。
+- `node setting-organizer/tests/sillytavernApi.test.mjs` 已通过。
+- `node setting-organizer/tests/importer.test.mjs` 已通过。
+- 其余 backups、exporter、prompt、tokenEstimate、validator、warnings 测试均通过。
+- MuMu 浏览器真实验证通过：导入前角色数量 2，导入后角色数量 3，旧 avatar 无缺失，报告状态为 success。
+
+开发问题复盘：
+
+- `createCharacterData` 是模板对象，不是创建函数；实际写入需要调用 `/api/characters/create`。
+- `context.characters` 可能在刷新页面后为空；导入前必须先调用 `getCharacters()` 再记录 before 快照。
+
+后续建议：
+
+- 进入 `TC-13 当前聊天读取` 前，应继续保持用户主动触发原则。
+- 若后续实现角色绑定世界书，应把绑定流程作为独立步骤和独立错误状态，不要并入角色创建成功状态。
+
 ## 变更记录模板
 
 ```text

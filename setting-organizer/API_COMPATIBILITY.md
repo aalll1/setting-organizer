@@ -62,7 +62,8 @@ Runtime context findings:
 | Current chat read | Verified candidate | `SillyTavern.getContext().chat` |
 | World book names | Verified | `SillyTavern.getContext().getWorldInfoNames()` |
 | World book creation | Verified | `SillyTavern.getContext().saveWorldInfo(name, data, true)` |
-| Character creation | Still unknown | Not yet probed |
+| Character list refresh | Verified | `SillyTavern.getContext().getCharacters()` and `SillyTavern.getContext().characters` |
+| Character creation | Verified | `fetch('/api/characters/create', { method: 'POST', headers: getRequestHeaders({ omitContentType: true }), body: FormData })` |
 
 Runtime test results:
 
@@ -72,7 +73,11 @@ Runtime test results:
 - Default world book names now use a filesystem-safe timestamp.
 - Second real world book creation succeeded.
 - Existing world book names remained present after import.
+- Runtime probing showed `createCharacterData` is a template object, not a callable creation function.
+- Character creation through `/api/characters/create` succeeded with FormData fields such as `ch_name`, `description`, `personality`, `scenario`, `first_mes`, and `json_data`.
+- Character import now refreshes `getCharacters()` before taking the before snapshot because `context.characters` can be empty until refreshed.
+- Real character import created `TC12Retest20260707143136984.png`; before count was 2, after count was 3, and no previous avatar was missing.
 
 ## Decision
 
-Proceed with world book creation through the centralized `sillytavernApi.js` adapter using `saveWorldInfo`. Continue blocking character creation until a safe runtime API is confirmed.
+Proceed with world book creation through the centralized `sillytavernApi.js` adapter using `saveWorldInfo`. Proceed with character creation through the same adapter using `/api/characters/create`, with pre-write backup and post-write old-avatar verification.

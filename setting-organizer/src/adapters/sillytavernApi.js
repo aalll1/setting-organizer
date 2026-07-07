@@ -28,6 +28,8 @@ export function getCompatibilitySnapshot() {
         hasExtensionSettings: Boolean(context && context.extensionSettings),
         hasWorldInfoCreate: Boolean(context && typeof context.saveWorldInfo === 'function'),
         hasWorldInfoNames: Boolean(context && typeof context.getWorldInfoNames === 'function'),
+        hasCharacterCreate: Boolean(context && typeof context.getRequestHeaders === 'function'),
+        hasCharacters: Boolean(context && Array.isArray(context.characters)),
     };
 }
 
@@ -99,4 +101,76 @@ export function getWorldInfoNames() {
 
     const names = context.getWorldInfoNames();
     return Array.isArray(names) ? names : [];
+}
+
+export async function createCharacter({ fields }) {
+    const context = getSillyTavernContext();
+
+    if (!context) {
+        throw new SettingOrganizerError(ERROR_CODES.INCOMPATIBLE_API, '当前页面未发现 SillyTavern 扩展上下文。');
+    }
+
+    if (typeof context.getRequestHeaders !== 'function') {
+        throw new SettingOrganizerError(ERROR_CODES.INCOMPATIBLE_API, '当前 SillyTavern 版本未发现已验证的新建角色接口。');
+    }
+
+    const formData = new FormData();
+    Object.entries(fields).forEach(([key, value]) => {
+        formData.append(key, value);
+    });
+
+    try {
+        const response = await fetch('/api/characters/create', {
+            method: 'POST',
+            headers: context.getRequestHeaders({ omitContentType: true }),
+            body: formData,
+            cache: 'no-cache',
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const avatar = await response.text();
+
+        if (typeof context.getCharacters === 'function') {
+            await context.getCharacters();
+        }
+
+        return {
+            avatar,
+            name: fields.ch_name,
+        };
+    } catch (error) {
+        throw new SettingOrganizerError(ERROR_CODES.CHARACTER_CREATE_FAILED, '创建角色失败。', {
+            cause: error.message,
+        });
+    }
+}
+
+export function getCharacterSummaries() {
+    const context = getSillyTavernContext();
+
+    if (!context || !Array.isArray(context.characters)) {
+        return [];
+    }
+
+    return context.characters.map((character) => ({
+        name: character.name,
+        avatar: character.avatar,
+    }));
+}
+
+export async function getFreshCharacterSummaries() {
+    const context = getSillyTavernContext();
+
+    if (!context) {
+        return [];
+    }
+
+    if (typeof context.getCharacters === 'function') {
+        await context.getCharacters();
+    }
+
+    return getCharacterSummaries();
 }

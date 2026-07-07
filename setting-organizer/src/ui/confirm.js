@@ -1,5 +1,5 @@
 import { formatError } from '../core/errors.js';
-import { importLorebookDraft, getLorebookImportReadiness } from '../core/importer.js';
+import { getCharacterImportReadiness, importCharacterDraft, importLorebookDraft, getLorebookImportReadiness } from '../core/importer.js';
 import { createAndSaveBackup } from '../storage/backups.js';
 
 export function createDraftBackup(result) {
@@ -52,10 +52,27 @@ export function renderImportReadiness(container, result) {
     ].join('\n');
 }
 
+export function renderCharacterImportReadiness(container, result) {
+    if (!container) {
+        return;
+    }
+
+    const readiness = getCharacterImportReadiness(result);
+    container.hidden = false;
+    container.dataset.state = readiness.hasCharacterCreate ? 'success' : 'warning';
+    container.textContent = [
+        `角色草稿数量：${readiness.characterCount}`,
+        `已验证新建角色接口：${readiness.hasCharacterCreate ? '是' : '否'}`,
+        readiness.hasCharacterCreate
+            ? '可以尝试调用 adapter 创建新角色。'
+            : '当前仅能创建备份和失败状态报告，不会执行真实写入。',
+    ].join('\n');
+}
+
 export async function runLorebookImportPreview(result, statusContainer) {
     try {
         const report = await importLorebookDraft(result);
-        renderImportReport(statusContainer, report);
+        renderImportReport(statusContainer, report, 'worldbook');
     } catch (error) {
         renderImportReport(statusContainer, {
             ok: false,
@@ -64,11 +81,27 @@ export async function runLorebookImportPreview(result, statusContainer) {
             completedSteps: [],
             pendingSteps: [],
             possibleImpact: ['导入流程在创建报告前失败。'],
-        });
+        }, 'worldbook');
     }
 }
 
-export function renderImportReport(container, report) {
+export async function runCharacterImportPreview(result, statusContainer) {
+    try {
+        const report = await importCharacterDraft(result);
+        renderImportReport(statusContainer, report, 'character');
+    } catch (error) {
+        renderImportReport(statusContainer, {
+            ok: false,
+            error,
+            steps: [],
+            completedSteps: [],
+            pendingSteps: [],
+            possibleImpact: ['角色导入流程在创建报告前失败。'],
+        }, 'character');
+    }
+}
+
+export function renderImportReport(container, report, type = 'worldbook') {
     if (!container) {
         return;
     }
@@ -76,8 +109,10 @@ export function renderImportReport(container, report) {
     container.hidden = false;
     container.dataset.state = report.ok ? 'success' : 'error';
 
+    const successLabel = type === 'character' ? '角色导入流程完成。' : '世界书导入流程完成。';
+    const failureLabel = type === 'character' ? '角色导入流程未完成。' : '世界书导入流程未完成。';
     const lines = [
-        report.ok ? '世界书导入流程完成。' : '世界书导入流程未完成。',
+        report.ok ? successLabel : failureLabel,
     ];
 
     if (report.backupId) {

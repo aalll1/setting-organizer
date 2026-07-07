@@ -213,16 +213,48 @@
 - 根因：默认世界书名使用 ISO 时间，包含 `:`，SillyTavern 保存后规范化名称，导致新建名称与 adapter 返回名称不一致。
 - 修复：默认世界书名改为移除 `-:.TZ` 的安全时间戳，并在导入报告中区分“创建成功但校验失败”。
 
+### TC-12 创建新角色
+
+- 完成角色创建安全流程：
+  - `characterAdapter.js` 新增角色草稿到 `/api/characters/create` FormData 字段的转换。
+  - `sillytavernApi.js` 新增角色创建、角色摘要读取和刷新后角色摘要读取。
+  - `importer.js` 新增 `importCharacterDraft()` 和 `getCharacterImportReadiness()`。
+  - `confirm.js` 和 `results.js` 增加“预检导入角色”按钮、角色导入预检和角色导入报告。
+- 写入策略仍保持分层：
+  - UI 只触发导入动作和展示状态。
+  - importer 只编排备份、创建和旧数据校验。
+  - SillyTavern 内部接口只集中在 `sillytavernApi.js`。
+- 新增和更新测试：
+  - `sillytavernApi.test.mjs` 覆盖 `/api/characters/create` 调用、FormData 字段和角色摘要读取。
+  - `importer.test.mjs` 覆盖角色导入成功路径、导入前备份、旧角色保留校验。
+- MuMu / SillyTavern 真实验证：
+  - 通过 CDP 在 MuMu 浏览器中刷新 SillyTavern 页面。
+  - mock 分析生成角色草稿后，执行真实角色导入。
+  - 第一次导入创建 `TC12Test20260707143016577.png`，报告成功。
+  - 复测导入创建 `TC12Retest20260707143136984.png`。
+  - 复测前角色数量为 2，导入后角色数量为 3。
+  - 复测确认旧角色 avatar 没有缺失，导入状态为 success。
+
+### TC-12 开发中出现的问题
+
+- SillyTavern 运行时的 `createCharacterData` 不是创建函数，而是默认角色数据模板对象。
+- 处理方式：阅读 SillyTavern `src/endpoints/characters.js`，确认可用路径为 `/api/characters/create`，并通过 `getRequestHeaders({ omitContentType: true })` 携带请求头。
+- 第一次真实角色导入虽然成功，但 before 快照为空。
+- 根因：`context.characters` 在页面刷新后可能尚未预加载，直接读取无法证明旧角色未变化。
+- 修复：新增 `getFreshCharacterSummaries()`，在导入前先调用 `getCharacters()` 刷新，再记录角色摘要。
+- 复测结果证明 before 快照包含已有角色，导入后旧 avatar 没有丢失。
+- 服务日志中出现过一次 SillyTavern `/api/characters/get` 的内部错误：`avatar_url` 为数字 `0`，导致 `path.join()` 参数类型错误。
+- 定位结果：该错误来自 SillyTavern 读取角色详情端点，不是本扩展调用的 `/api/characters/create`；后续角色创建和旧 avatar 校验复测均成功。
+
 ### 当前限制
 
-- 已在真实 SillyTavern 页面完成扩展加载、mock 分析、备份和世界书创建验证。
-- 已确认当前 SillyTavern 版本的模型调用候选接口、聊天读取候选接口和世界书创建接口。
-- 尚未确认角色创建接口。
+- 已在真实 SillyTavern 页面完成扩展加载、mock 分析、备份、世界书创建和角色创建验证。
+- 已确认当前 SillyTavern 版本的模型调用候选接口、聊天读取候选接口、世界书创建接口和角色创建接口。
 - `TC-03` 使用 mock 分析结果，不代表最终 AI 输出质量。
 - 当前 schema 文件已建立，但尚未接入完整 JSON Schema 引擎，TC-04 目前使用手写结构校验和规范化规则。
-- 尚未实现导出功能、备份或导入。
+- 角色创建暂未实现新建世界书绑定。
 
 ### 下一步建议
 
-- 下一步进入 `TC-12 创建新角色` 前，应先探测 SillyTavern 运行时 context 中的角色创建相关接口。
+- 下一步可进入 `TC-13 当前聊天读取`，但必须保持用户主动触发，不自动读取隐私内容。
 - 继续保持写入逻辑集中在 `sillytavernApi.js`，不要把内部 API 调用散落到 UI。
