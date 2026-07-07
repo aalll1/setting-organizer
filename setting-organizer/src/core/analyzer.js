@@ -1,6 +1,12 @@
-import { validateAndNormalizeAnalysisResult } from './validator.js';
+import { callCurrentModel } from '../adapters/sillytavernApi.js';
+import { parseValidateNormalize, validateAndNormalizeAnalysisResult } from './validator.js';
 
 export async function analyzeSettingText(sourceText, options) {
+    if (options.analysisMode === 'sillytavern') {
+        const rawText = await callCurrentModel(sourceText, options);
+        return parseValidateNormalize(rawText);
+    }
+
     await wait(250);
 
     const trimmedText = sourceText.trim();

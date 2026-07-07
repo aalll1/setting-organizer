@@ -259,6 +259,50 @@
 - 继续执行 `TC-06 SillyTavern 模型调用适配`。
 - 先实现集中 adapter 和失败降级，避免 UI 直接依赖未验证的 SillyTavern 内部对象。
 
+### 2026-07-07：完成 TC-06 模型调用适配封装
+
+变更类型：新增 / 修改
+
+涉及文件：
+
+- `setting-organizer/src/adapters/sillytavernApi.js`
+- `setting-organizer/tests/sillytavernApi.test.mjs`
+- `setting-organizer/src/core/analyzer.js`
+- `setting-organizer/src/storage/settings.js`
+- `setting-organizer/src/ui/panel.js`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 为真实模型调用建立集中 adapter，避免 UI 或核心校验逻辑直接依赖未确认的 SillyTavern 内部对象。
+- 响应用户提醒：后续各模块和功能必须充分解耦，便于更新和替换。
+
+主要变化：
+
+- 新增 SillyTavern API adapter，集中处理上下文探测、兼容性快照和候选模型调用接口。
+- 分析模式增加 `mock` 与 `sillytavern`。
+- 默认保持 `mock`，真实模型调用需用户切换并依赖运行时接口可用。
+- 无上下文或无模型接口时返回 `E010`，模型调用失败返回 `E001`。
+- 新增 adapter 测试。
+
+影响范围：
+
+- UI 只选择分析模式，不直接访问 SillyTavern 内部对象。
+- core analyzer 只编排 mock / adapter / parser 校验流程。
+- 未写入 SillyTavern 角色、世界书或聊天数据。
+
+验证情况：
+
+- `node --check setting-organizer/src/adapters/sillytavernApi.js` 已通过。
+- `node setting-organizer/tests/sillytavernApi.test.mjs` 已通过。
+- prompt 与 validator 测试仍通过。
+
+后续建议：
+
+- 继续执行 `TC-07 Token 粗估`，放入独立 `core/tokenEstimate.js`。
+- 在真实 SillyTavern 环境验证前，不应把更多内部 API 调用散落到其他模块。
+
 ## 变更记录模板
 
 ```text

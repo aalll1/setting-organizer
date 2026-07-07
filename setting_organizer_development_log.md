@@ -39,6 +39,16 @@
   - 新增 `setting-organizer/tests/prompt.test.mjs`。
   - Prompt 版本为 `extract-setting-v0.1.0`。
   - Prompt 明确只输出 JSON、禁止 Markdown 代码块、禁止编造、禁止 AI 执行写入操作。
+- 完成 `TC-06 SillyTavern 模型调用适配` 的第一版安全封装：
+  - 新增 `setting-organizer/src/adapters/sillytavernApi.js`。
+  - 新增 `setting-organizer/tests/sillytavernApi.test.mjs`。
+  - UI 增加分析模式：`mock` 和 `sillytavern`。
+  - 默认仍使用 `mock`，避免未确认环境中误调用 SillyTavern 内部接口。
+  - SillyTavern 调用集中在 adapter，不让 UI 直接访问内部对象。
+  - 找不到扩展上下文或模型接口时返回 `E010`，模型调用异常返回 `E001`。
+- 架构约束更新：
+  - 用户提醒整个开发过程各模块和功能要充分解耦，方便后期更新或修改。
+  - 后续继续保持 UI / core / adapters / prompts / storage / schemas 分层，避免跨层直接耦合。
 - 初始化本地 Git 仓库并提交首个开发快照：
   - `7836dc2 chore: initialize setting organizer extension`
 
@@ -68,6 +78,9 @@
   - 禁止编造。
   - 禁止 AI 执行写入。
   - 包含 characters / lorebookEntries 目标结构。
+- `setting-organizer/tests/sillytavernApi.test.mjs` 已通过，覆盖：
+  - 无 SillyTavern 上下文时返回 `E010`。
+  - 存在 `generateQuietPrompt` 候选接口时可返回原始模型文本。
 - 当前目录已初始化为 Git 仓库。
 - MuMu 模拟器进程存在，MuMu 自带 ADB 可用。
 - 已连接 MuMu ADB：
@@ -105,6 +118,10 @@
   - 初版 normalizer 只把 confidence 截断警告保存在条目内部，没有汇总到顶层 `warnings`。
   - 影响：警告页无法展示部分规范化警告。
   - 修复：角色和世界书条目规范化后，将条目 warnings 同步汇总到顶层 warnings。
+- TC-06 架构风险：
+  - SillyTavern 模型调用接口尚未在真实运行环境确认。
+  - 当前实现只做集中 adapter 和候选接口探测，不把候选 API 写散到 UI 或业务模块。
+  - 后续如实际 API 不同，只需替换 `sillytavernApi.js`，不应改动 parser / validator / results UI。
 
 ### 当前限制
 
@@ -116,6 +133,6 @@
 
 ### 下一步建议
 
-- 继续执行 `TC-06 SillyTavern 模型调用适配`。
-- 由于 `API_COMPATIBILITY.md` 已标记模型调用接口仍需运行时确认，TC-06 应先实现集中 adapter 和降级路径，避免业务代码直接依赖未验证内部对象。
+- 继续执行 `TC-07 Token 粗估`。
+- 继续保持功能解耦：Token 估算放入 `core/tokenEstimate.js`，UI 只消费结果，不直接实现估算规则。
 - 如果要做真机运行验证，需要提供 SillyTavern 安装路径或在模拟器内打开可访问的 SillyTavern 页面。

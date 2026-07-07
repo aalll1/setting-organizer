@@ -7,6 +7,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
         lorebook: true,
     },
     tokenBudgetMode: 'standard',
+    analysisMode: 'mock',
     customBudget: {
         character: 2000,
         lorebookEntry: 350,
@@ -50,6 +51,7 @@ export function normalizeSettings(settings) {
             lorebook: typeof safeTargets.lorebook === 'boolean' ? safeTargets.lorebook : DEFAULT_SETTINGS.targets.lorebook,
         },
         tokenBudgetMode: normalizeBudgetMode(safeSettings.tokenBudgetMode),
+        analysisMode: normalizeAnalysisMode(safeSettings.analysisMode),
         customBudget: {
             character: normalizePositiveInteger(safeCustomBudget.character, DEFAULT_SETTINGS.customBudget.character),
             lorebookEntry: normalizePositiveInteger(safeCustomBudget.lorebookEntry, DEFAULT_SETTINGS.customBudget.lorebookEntry),
@@ -64,6 +66,10 @@ function cloneDefaultSettings() {
 
 function normalizeBudgetMode(value) {
     return ['light', 'standard', 'long', 'custom'].includes(value) ? value : DEFAULT_SETTINGS.tokenBudgetMode;
+}
+
+function normalizeAnalysisMode(value) {
+    return ['mock', 'sillytavern'].includes(value) ? value : DEFAULT_SETTINGS.analysisMode;
 }
 
 function normalizePositiveInteger(value, fallback) {

@@ -9,7 +9,7 @@ const PANEL_ID = 'setting-organizer-panel';
 const STATUS_TEXT = Object.freeze({
     idle: '等待输入。',
     analyzing: '分析中...',
-    success: '占位分析完成。下一阶段将接入模拟分析结果。',
+    success: '分析完成。',
     failed: '分析失败。',
 });
 
@@ -57,6 +57,14 @@ function renderPanel(settings) {
                 <span>世界书</span>
             </label>
         </fieldset>
+
+        <label class="setting-organizer-field">
+            <span>分析模式</span>
+            <select id="setting-organizer-analysis-mode">
+                <option value="mock" ${settings.analysisMode === 'mock' ? 'selected' : ''}>模拟结果</option>
+                <option value="sillytavern" ${settings.analysisMode === 'sillytavern' ? 'selected' : ''}>当前 SillyTavern 模型</option>
+            </select>
+        </label>
 
         <label class="setting-organizer-field">
             <span>Token 预算模式</span>
@@ -110,6 +118,7 @@ function bindPanel(panel, settings) {
     elements.characterTarget.addEventListener('change', persist);
     elements.lorebookTarget.addEventListener('change', persist);
     elements.budgetMode.addEventListener('change', persist);
+    elements.analysisMode.addEventListener('change', persist);
     elements.budgetCharacter.addEventListener('input', persist);
     elements.budgetLorebookEntry.addEventListener('input', persist);
     elements.budgetConstantLore.addEventListener('input', persist);
@@ -143,7 +152,7 @@ function bindPanel(panel, settings) {
             setStatus(elements, 'success', buildPlaceholderResult(currentSettings));
             mountResults(elements.resultsMount, result);
         } catch (error) {
-            console.error('[setting-organizer] mock analysis failed', error);
+            console.error('[setting-organizer] analysis failed', error);
             showError(elements, formatError(error));
             setStatus(elements, 'failed');
         } finally {
@@ -159,6 +168,7 @@ function getElements(panel) {
         characterTarget: panel.querySelector('#setting-organizer-target-character'),
         lorebookTarget: panel.querySelector('#setting-organizer-target-lorebook'),
         budgetMode: panel.querySelector('#setting-organizer-budget-mode'),
+        analysisMode: panel.querySelector('#setting-organizer-analysis-mode'),
         customBudget: panel.querySelector('#setting-organizer-custom-budget'),
         budgetCharacter: panel.querySelector('#setting-organizer-budget-character'),
         budgetLorebookEntry: panel.querySelector('#setting-organizer-budget-lorebook-entry'),
@@ -178,6 +188,7 @@ function readSettingsFromPanel(elements) {
             lorebook: elements.lorebookTarget.checked,
         },
         tokenBudgetMode: elements.budgetMode.value,
+        analysisMode: elements.analysisMode.value,
         customBudget: {
             character: elements.budgetCharacter.value,
             lorebookEntry: elements.budgetLorebookEntry.value,
@@ -211,6 +222,7 @@ function buildPlaceholderResult(settings) {
         STATUS_TEXT.success,
         `输入长度：${settings.sourceText.trim().length} 字符`,
         `整理目标：${targets}`,
+        `分析模式：${settings.analysisMode}`,
         `Token 预算：${settings.tokenBudgetMode}`,
     ].join('\n');
 }
