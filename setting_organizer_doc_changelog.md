@@ -1057,6 +1057,38 @@
 - 确认日志实现位于 `setting-organizer/src/core/logger.js` 和 `setting-organizer/src/ui/diagnostics.js`。
 - 确认文档描述与当前 v0.2.0 实现一致。
 
+### 2026-07-08：优化错误提示可读性
+
+变更类型：修改 / 功能优化 / 测试 / 文档
+
+涉及文件：
+
+- `setting-organizer/src/core/errors.js`
+- `setting-organizer/tests/errors.test.mjs`
+- `setting_organizer_feature_overview.md`
+- `setting_organizer_user_guide.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 用户反馈单独显示错误码不明显，希望页面直接展示实际错误内容。
+
+主要变化：
+
+- 新增 `ERROR_HELP` 错误帮助映射。
+- `formatError()` 改为显示错误标题、说明、建议、错误码和必要技术详情。
+- 保留原有错误码，不破坏日志定位和测试断言。
+
+影响范围：
+
+- 改变 UI 中错误文本展示方式。
+- 不改变错误抛出、错误码、日志记录和 SillyTavern 写入流程。
+
+验证情况：
+
+- 新增错误格式化单元测试。
+
 ## 变更记录模板
 
 ```text
