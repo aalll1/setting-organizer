@@ -801,6 +801,49 @@
 
 - 下一步进入 `TC-15 README 与使用说明`。
 
+### 2026-07-08：完成 TC-15 README 与使用说明
+
+变更类型：修改 / 收尾
+
+涉及文件：
+
+- `setting-organizer/README.md`
+- `setting_organizer_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 按任务卡进入 TC-15，提供安装、使用和限制说明。
+- 原 README 更像功能清单，不足以指导新用户安装和排障。
+
+主要变化：
+
+- 重写 README。
+- 补充安装路径和步骤。
+- 补充基础使用流程。
+- 补充当前聊天读取说明。
+- 补充安全策略。
+- 补充诊断日志说明。
+- 补充错误码表。
+- 补充当前功能清单和已知限制。
+- 补充 Android / MuMu / Termux 注意事项。
+- 补充维护建议。
+- 将 TC-15 状态标记为已完成。
+
+影响范围：
+
+- 只修改文档，不改动扩展运行逻辑。
+- README 明确不承诺尚未实现的高级功能。
+
+验证情况：
+
+- 已检查 README 覆盖任务卡要求：扩展用途、安装方式、基础使用流程、安全策略、已知限制、错误码说明、Android / Termux 注意事项。
+
+后续建议：
+
+- 任务卡 TC-00 到 TC-15 已完成；后续可做完整 MuMu 真实页面回归。
+
 ## 变更记录模板
 
 ```text
