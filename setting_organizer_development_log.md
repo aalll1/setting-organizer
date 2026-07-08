@@ -499,3 +499,16 @@
 - 新增 `ERROR_HELP` 映射，为 `E001` 到 `E013` 提供标题、说明和建议。
 - 更新 `formatError()`，让 UI 默认显示多行可读错误信息。
 - 新增 `errors.test.mjs` 覆盖错误提示格式和错误码帮助映射完整性。
+
+## 2026-07-08 原生安装发布目录准备
+
+- 用户授权使用 GitHub 仓库完成上传发布版。
+- 确认 SillyTavern 原生安装第三方扩展需要 Git 仓库 URL，且仓库根目录应直接包含 `manifest.json`、`index.js`、`style.css` 和 `src/`。
+- 当前本地开发仓库无 remote，本机未安装 `gh` CLI。
+- GitHub App 已确认当前账号为 `aalll1`，可访问仓库中未发现专用 `setting-organizer` 仓库。
+- 为避免污染现有无关仓库，先新增干净发布目录：
+  - `setting-organizer-native-install/`
+- 发布目录内 `manifest.json` 的 `homePage` 暂设为：
+  - `https://github.com/aalll1/setting-organizer`
+- 新增发布记录：
+  - `setting_organizer_native_publish_plan.md`

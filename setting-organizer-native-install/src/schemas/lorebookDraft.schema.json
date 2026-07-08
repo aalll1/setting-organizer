@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Setting Organizer Lorebook Draft",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "title": { "type": "string" },
+    "category": { "type": "string" },
+    "keys": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "secondaryKeys": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "content": { "type": "string" },
+    "constant": { "type": "boolean" },
+    "enabled": { "type": "boolean" },
+    "priority": { "type": "number" },
+    "stability": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}

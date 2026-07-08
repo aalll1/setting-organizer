@@ -1089,6 +1089,39 @@
 
 - 新增错误格式化单元测试。
 
+### 2026-07-08：准备 SillyTavern 原生安装发布目录
+
+变更类型：新增 / 文档 / 发布准备
+
+涉及文件：
+
+- `setting-organizer-native-install/`
+- `setting-organizer-native-install/NATIVE_INSTALL.md`
+- `setting_organizer_native_publish_plan.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 用户询问插件能否通过 SillyTavern 原生扩展安装器安装，并授权使用 GitHub 仓库上传发布版。
+
+主要变化：
+
+- 新增干净发布目录，目录根部直接包含 SillyTavern 扩展所需文件。
+- 新增原生安装说明。
+- 新增发布记录，说明推荐使用专用 GitHub 仓库 `aalll1/setting-organizer`。
+
+影响范围：
+
+- 不修改开发目录中的业务代码。
+- 不上传到现有无关 GitHub 仓库。
+
+验证情况：
+
+- 已确认 GitHub 当前账号为 `aalll1`。
+- 已确认本机未安装 `gh` CLI。
+- 已确认当前可访问仓库列表中没有专用 `setting-organizer` 仓库。
+
 ## 变更记录模板
 
 ```text
