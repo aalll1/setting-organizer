@@ -730,6 +730,219 @@ Schema 异常处理规则：
 
 - 不要承诺尚未实现的功能。
 
+## TC-16 真实聊天范围回归与样例补齐
+
+状态：未开始
+
+阶段：v0.2.0 规划 / 输入来源增强
+
+依赖：TC-13，TC-15
+
+目标：在有真实聊天记录的 SillyTavern 会话中补齐当前聊天读取范围测试，并完善测试样例清单。
+
+计划文件：
+
+- `setting-organizer/tests/chatAdapter.test.mjs`
+- `setting-organizer/test-samples/`
+- `setting_organizer_runtime_test_report_*.md`
+- `setting_organizer_development_log.md`
+
+功能要求：
+
+- 复测最近 20 条、最近 50 条、全部、手动索引。
+- 记录真实聊天为空、短聊天、长聊天三类表现。
+- 补齐 `empty-input.txt`、`simple-character.txt`、`worldbuilding.txt`、`duplicated-lore.txt`、`too-long-input.txt` 等样例。
+- 不自动读取聊天，仍必须由用户主动触发。
+
+验收标准：
+
+- 有真实聊天记录时能读取对应范围并写入输入框。
+- 空聊天仍返回 `E012`。
+- 超长聊天能进入现有 Token 风险提示链路。
+- 测试报告记录 MuMu / 浏览器 / SillyTavern 版本和样例结论。
+
+风险点：
+
+- 聊天内容可能包含隐私信息，报告不得记录完整聊天正文。
+- 手动索引输入错误不能导致面板崩溃。
+- 长聊天不能造成明显前端卡死。
+
+不做事项：
+
+- 不实现自动后台读取聊天。
+- 不上传聊天内容。
+- 不把聊天记录保存为持久项目数据。
+
+## TC-17 角色创建后可选绑定新建世界书
+
+状态：未开始
+
+阶段：v0.2.0 规划 / 轻量联动
+
+依赖：TC-11，TC-12，TC-12A
+
+目标：规划并实现角色创建成功后，用户可显式选择把新建世界书绑定到新建角色的安全流程。
+
+计划文件：
+
+- `setting-organizer/src/core/importer.js`
+- `setting-organizer/src/adapters/sillytavernApi.js`
+- `setting-organizer/src/ui/confirm.js`
+- `setting-organizer/tests/importer.test.mjs`
+- `setting-organizer/API_COMPATIBILITY.md`
+
+功能要求：
+
+- 绑定必须是用户显式选择的可选步骤。
+- 角色创建成功不等于绑定成功。
+- 绑定失败必须显示独立错误状态和诊断日志。
+- 绑定前必须确认目标角色和目标世界书均为本次新建或用户明确选择的对象。
+- 优先复用 SillyTavern 原生角色 / 世界书接口。
+
+验收标准：
+
+- 未选择绑定时，角色和世界书创建流程保持现状。
+- 选择绑定且接口可用时，新角色能关联目标世界书。
+- 绑定失败不会回滚或否定角色创建成功，但必须明确提示“绑定未完成”。
+- 诊断日志能区分 `character-create-completed`、`worldbook-create-completed` 和绑定步骤结果。
+
+风险点：
+
+- SillyTavern 版本间角色绑定接口可能变化。
+- 绑定错误可能误改已有角色。
+- 绑定动作不可与角色创建成功状态混淆。
+
+不做事项：
+
+- 不静默修改已有角色。
+- 不自动绑定任意已有世界书。
+- 不实现完整角色管理器或世界书管理器。
+
+## TC-18 轻量 JSON Schema 校验接入评估与实现计划
+
+状态：未开始
+
+阶段：v0.2.0 规划 / 校验增强
+
+依赖：TC-04
+
+目标：评估并规划轻量 JSON Schema 校验接入，增强模型输出结构验证，同时避免引入过重浏览器依赖。
+
+计划文件：
+
+- `setting-organizer/src/core/validator.js`
+- `setting-organizer/src/schemas/`
+- `setting-organizer/tests/validator.test.mjs`
+- `setting_organizer_development_log.md`
+
+功能要求：
+
+- 先评估候选方案体积、浏览器兼容性和离线可用性。
+- 保留现有 normalizer 作为容错层。
+- Schema 校验失败仍映射到 `E003`。
+- 不允许因为依赖加载失败导致基础 mock / 导出流程不可用。
+
+验收标准：
+
+- 文档记录选择的校验策略和拒绝的候选方案。
+- 单元测试覆盖合法 JSON、字段缺失、字段类型错误、空结果。
+- 浏览器扩展环境加载不出现模块解析错误。
+
+风险点：
+
+- 第三方 validator 可能增加包体积或引入构建要求。
+- 严格 schema 可能拒绝可被 normalizer 修复的模型输出。
+
+不做事项：
+
+- 不引入需要构建步骤才能运行的重依赖。
+- 不移除现有 parser / normalizer。
+- 不让 schema 校验直接写入 SillyTavern。
+
+## TC-19 原生世界书 / 角色管理辅助入口规划
+
+状态：未开始
+
+阶段：v0.2.0 规划 / 原生能力联动
+
+依赖：TC-12，TC-17
+
+目标：规划少量辅助入口，引导用户在创建后使用 SillyTavern 原生界面继续编辑角色或世界书。
+
+计划文件：
+
+- `setting-organizer/src/ui/confirm.js`
+- `setting-organizer/src/adapters/sillytavernApi.js`
+- `setting-organizer/API_COMPATIBILITY.md`
+- `setting-organizer/README.md`
+
+功能要求：
+
+- 创建成功报告中可以提供“打开原生世界书”或“查看原生角色”的辅助入口。
+- 入口必须通过已验证的 SillyTavern 原生 API 或稳定 UI 行为实现。
+- 若目标版本不支持打开入口，应降级为文字提示。
+- 辅助入口不能绕过备份、创建报告和旧数据校验。
+
+验收标准：
+
+- 支持时，入口能打开或定位到对应原生管理界面。
+- 不支持时，用户仍能从报告中看到创建对象名称和手动查找方式。
+- API 兼容性文档记录入口依赖和降级策略。
+
+风险点：
+
+- 原生 UI DOM 或函数名可能随版本变化。
+- 自动跳转可能干扰用户当前操作。
+
+不做事项：
+
+- 不复制世界书编辑器。
+- 不复制角色管理器。
+- 不实现删除、移动、复制、批量管理。
+
+## TC-20 v0.2.0 回归测试、文档收口和版本发布准备
+
+状态：未开始
+
+阶段：v0.2.0 收尾
+
+依赖：TC-16，TC-17，TC-18，TC-19
+
+目标：完成 v0.2.0 范围内的回归测试、文档更新和版本发布准备。
+
+计划文件：
+
+- `setting-organizer/manifest.json`
+- `setting-organizer/README.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+- `setting_organizer_runtime_test_report_*.md`
+
+功能要求：
+
+- 全部 v0.2.0 任务通过本地测试和 MuMu 真实页面 smoke test。
+- README 更新当前功能、限制和维护建议。
+- API 兼容性文档更新新增接口探测结果。
+- 只有代码和测试完成后，才允许把 manifest 版本更新为 `0.2.0`。
+
+验收标准：
+
+- 全部单元测试通过。
+- MuMu + SillyTavern 真实页面通过 smoke test。
+- 开发日志记录完成内容、问题复盘和测试数据。
+- 版本提交完成后才允许创建 `v0.2.0` 或 `v0.2.0-rc*` tag。
+
+风险点：
+
+- 版本号提前更新会误导使用者。
+- 如果新增接口只在单一 SillyTavern 版本验证，README 必须明确兼容范围。
+
+不做事项：
+
+- 不在未完成开发测试前更新 manifest 版本。
+- 不自动推送远程仓库。
+- 不删除用户环境中的测试数据。
+
 ## 任务执行顺序
 
 推荐顺序：
@@ -753,6 +966,11 @@ TC-00
 -> TC-13
 -> TC-14
 -> TC-15
+-> TC-16
+-> TC-17
+-> TC-18
+-> TC-19
+-> TC-20
 ```
 
 最小可用闭环：
@@ -808,6 +1026,18 @@ TC-10
 TC-13
 -> TC-14
 -> TC-15
+```
+
+### v0.2.0：追加功能规划
+
+任务范围：
+
+```text
+TC-16
+-> TC-17
+-> TC-18
+-> TC-19
+-> TC-20
 ```
 
 ## 补充测试样例清单

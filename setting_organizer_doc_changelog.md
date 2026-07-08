@@ -908,6 +908,44 @@
 - 全部本地单元测试通过。
 - 优化后 MuMu smoke test 通过：扩展加载、mock 分析、诊断导出、备份和“创建到酒馆”按钮文案均正常。
 
+### 2026-07-08：v0.2.0 追加功能文档规划
+
+变更类型：新增 / 修改 / 文档规划
+
+涉及文件：
+
+- `setting_organizer_agent_dev_plan.md`
+- `setting_organizer_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+- `setting-organizer/README.md`
+
+变更原因：
+
+- 用户授权将追加功能正式策划进开发文档。
+- 用户选择本阶段只做文档规划，目标版本为 `v0.2.0`，原生边界为适度扩展。
+
+主要变化：
+
+- 在 Agent 开发计划中新增 v0.2.0 追加功能规划。
+- 在任务卡中新增 `TC-16` 到 `TC-20`。
+- README 新增路线图，说明 v0.2.0 纳入项和暂不纳入项。
+- 开发日志记录本次规划决策和后续执行约束。
+
+影响范围：
+
+- 只修改 Markdown 文档。
+- 不修改扩展业务代码。
+- 不运行 MuMu 实测。
+- 不更新 `manifest.json` 版本。
+- 不创建版本 tag。
+
+验证情况：
+
+- 已完成文档级验证：任务卡 `TC-16` 到 `TC-20` 编号连续，状态均为“未开始”。
+- `git diff --name-only` 确认只修改 Markdown 文档。
+- README 已新增 v0.2.0 路线图，并继续声明不复制 SillyTavern 原生角色 / 世界书管理器。
+
 ## 变更记录模板
 
 ```text
