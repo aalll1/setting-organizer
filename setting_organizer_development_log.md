@@ -462,3 +462,18 @@
 - 修复：在 `characterResult` 测试对象中补充已启用世界书条目。
 - 为避免绑定失败与角色创建失败混淆，新增 `E013` 独立错误码。
 - `reloadWorldInfoEditor` 只负责加载原生世界书编辑数据，不复制世界书管理器能力；如果不可用则显示手动查找提示。
+
+## 2026-07-08 代码审查与使用说明文档
+
+- 按用户要求从入口、UI、core、adapter、storage、tests、docs 全链路审查 `setting-organizer` 插件。
+- 新增综合文档：`setting_organizer_code_review_usage_guide.md`。
+- 文档内容包括：
+  - 代码审查结论。
+  - 插件定位和功能清单。
+  - 使用说明。
+  - 架构与数据流。
+  - 错误码、维护流程和排障建议。
+- 验证情况：
+  - 关键模块 `node --check` 通过。
+  - 全部 `.mjs` 测试通过。
+  - `tests/cdp-check.mjs` 是带参数的 CDP 辅助脚本，直接运行只打印用法，不作为完整单元测试断言。
