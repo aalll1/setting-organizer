@@ -4,6 +4,11 @@
 插件版本：`0.2.0`  
 审查范围：`setting-organizer/index.js`、`src/`、`tests/`、`README.md`、`API_COMPATIBILITY.md`
 
+独立文档：
+
+- 插件功能说明：`setting_organizer_feature_overview.md`
+- 使用说明：`setting_organizer_user_guide.md`
+
 ## 审查结论
 
 未发现阻塞级问题。当前代码结构与 v0.2.0 目标一致：插件定位清晰，核心能力集中在“设定整理前置工作台”，没有扩展成完整角色管理器或世界书管理器。

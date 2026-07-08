@@ -477,3 +477,16 @@
   - 关键模块 `node --check` 通过。
   - 全部 `.mjs` 测试通过。
   - `tests/cdp-check.mjs` 是带参数的 CDP 辅助脚本，直接运行只打印用法，不作为完整单元测试断言。
+
+## 2026-07-08 插件功能与使用说明拆分
+
+- 按用户要求将插件功能和使用说明从综合审查文档中独立出来。
+- 新增：
+  - `setting_organizer_feature_overview.md`
+  - `setting_organizer_user_guide.md`
+- 明确插件具备日志功能：
+  - 控制台日志前缀为 `[setting-organizer]`。
+  - localStorage 键名为 `setting-organizer.runtimeLogs.v1`。
+  - 最多保留 200 条日志。
+  - 面板支持导出诊断日志和清空诊断日志。
+  - 日志会脱敏敏感字段，并对长文本只记录摘要。

@@ -1025,6 +1025,38 @@
 - 全部 `.mjs` 测试通过。
 - 确认文档描述与 `manifest.json` 版本 `0.2.0`、README 和 API 兼容文档一致。
 
+### 2026-07-08：拆分插件功能与使用说明
+
+变更类型：新增 / 文档
+
+涉及文件：
+
+- `setting_organizer_feature_overview.md`
+- `setting_organizer_user_guide.md`
+- `setting_organizer_code_review_usage_guide.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 用户要求将插件功能和使用说明独立成单独 Markdown 文档，并确认插件是否具备日志功能。
+
+主要变化：
+
+- 新增独立插件功能说明文档。
+- 新增独立使用说明文档。
+- 在综合审查文档中增加独立文档索引。
+- 记录日志功能：console 输出、localStorage 存储、诊断导出、清空、脱敏和长文本摘要。
+
+影响范围：
+
+- 仅文档变更，不修改业务代码。
+
+验证情况：
+
+- 确认日志实现位于 `setting-organizer/src/core/logger.js` 和 `setting-organizer/src/ui/diagnostics.js`。
+- 确认文档描述与当前 v0.2.0 实现一致。
+
 ## 变更记录模板
 
 ```text
