@@ -3,6 +3,23 @@ import { estimateTextTokens, resolveBudget } from './tokenEstimate.js';
 const SHORT_KEYWORD_LENGTH = 2;
 const LONG_INPUT_TOKENS = 6000;
 const MAX_CONSTANT_ENTRIES = 3;
+const GENERIC_KEYWORDS = new Set([
+    '他',
+    '她',
+    '它',
+    '你',
+    '我',
+    '这里',
+    '那里',
+    '这个',
+    '那个',
+    '世界',
+    '人类',
+    '角色',
+    '设定',
+    '地方',
+    '东西',
+]);
 
 export function applyWarnings(result, sourceText, options = {}) {
     const budget = resolveBudget(options.tokenBudgetMode, options.customBudget);
@@ -15,9 +32,14 @@ export function applyWarnings(result, sourceText, options = {}) {
 
     const characters = (result.characters || []).map((character, index) => {
         const itemWarnings = [...(character.warnings || [])];
+        const duplicateNameIndexes = findDuplicateIndexes(result.characters || [], 'name', character.name);
 
         if (!character.name.trim()) {
             itemWarnings.push(`角色 ${index + 1} 名称为空。`);
+        }
+
+        if (duplicateNameIndexes.length > 1 && character.name.trim()) {
+            itemWarnings.push(`角色名称“${character.name}”重复，涉及第 ${formatIndexes(duplicateNameIndexes)} 个角色。`);
         }
 
         const characterTokens = estimateTextTokens([
@@ -44,9 +66,24 @@ export function applyWarnings(result, sourceText, options = {}) {
     const lorebookEntries = (result.lorebookEntries || []).map((entry, index) => {
         const itemWarnings = [...(entry.warnings || [])];
         const keys = Array.isArray(entry.keys) ? entry.keys : [];
+        const duplicateTitleIndexes = findDuplicateIndexes(result.lorebookEntries || [], 'title', entry.title);
+        const duplicateContentIndexes = findDuplicateContentIndexes(result.lorebookEntries || [], entry.content);
+        const duplicateKeyIndexes = findDuplicateKeySetIndexes(result.lorebookEntries || [], keys);
 
         if (!entry.title.trim()) {
             itemWarnings.push(`世界书 ${index + 1} 标题为空。`);
+        }
+
+        if (duplicateTitleIndexes.length > 1 && entry.title.trim()) {
+            itemWarnings.push(`世界书标题“${entry.title}”重复，涉及第 ${formatIndexes(duplicateTitleIndexes)} 个条目。`);
+        }
+
+        if (duplicateContentIndexes.length > 1 && entry.content.trim()) {
+            itemWarnings.push(`世界书“${entry.title || index + 1}”正文与第 ${formatIndexes(duplicateContentIndexes)} 个条目完全相同。`);
+        }
+
+        if (duplicateKeyIndexes.length > 1 && keys.length) {
+            itemWarnings.push(`世界书“${entry.title || index + 1}”关键词组合与第 ${formatIndexes(duplicateKeyIndexes)} 个条目完全相同。`);
         }
 
         if (!entry.content.trim()) {
@@ -61,6 +98,10 @@ export function applyWarnings(result, sourceText, options = {}) {
         keys.forEach((key) => {
             if (key.length < SHORT_KEYWORD_LENGTH) {
                 itemWarnings.push(`世界书 ${entry.title || index + 1} 关键词“${key}”过短。`);
+            }
+
+            if (GENERIC_KEYWORDS.has(normalizeComparableText(key))) {
+                itemWarnings.push(`世界书 ${entry.title || index + 1} 关键词“${key}”过于泛化。`);
             }
 
             if (seenKeys.has(key)) {
@@ -89,4 +130,56 @@ export function applyWarnings(result, sourceText, options = {}) {
 
 function dedupeWarnings(warnings) {
     return [...new Set(warnings.filter(Boolean))];
+}
+
+function findDuplicateIndexes(items, field, value) {
+    const normalizedValue = normalizeComparableText(value);
+    if (!normalizedValue) {
+        return [];
+    }
+
+    return items
+        .map((item, index) => ({ index, value: normalizeComparableText(item[field]) }))
+        .filter((item) => item.value === normalizedValue)
+        .map((item) => item.index);
+}
+
+function findDuplicateContentIndexes(entries, content) {
+    const normalizedContent = normalizeComparableText(content);
+    if (!normalizedContent) {
+        return [];
+    }
+
+    return entries
+        .map((entry, index) => ({ index, content: normalizeComparableText(entry.content) }))
+        .filter((entry) => entry.content === normalizedContent)
+        .map((entry) => entry.index);
+}
+
+function findDuplicateKeySetIndexes(entries, keys) {
+    const normalizedKeys = normalizeKeySet(keys);
+    if (!normalizedKeys) {
+        return [];
+    }
+
+    return entries
+        .map((entry, index) => ({ index, keys: normalizeKeySet(entry.keys) }))
+        .filter((entry) => entry.keys === normalizedKeys)
+        .map((entry) => entry.index);
+}
+
+function normalizeKeySet(keys) {
+    if (!Array.isArray(keys) || !keys.length) {
+        return '';
+    }
+
+    return [...new Set(keys.map(normalizeComparableText).filter(Boolean))].sort().join('|');
+}
+
+function normalizeComparableText(value) {
+    return String(value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function formatIndexes(indexes) {
+    return indexes.map((index) => index + 1).join('、');
 }

@@ -759,6 +759,48 @@
 - 在 MuMu 真实页面补测不同聊天范围。
 - 下一步可进入 `TC-14 基础重复检测`。
 
+### 2026-07-08：完成 TC-14 基础重复检测
+
+变更类型：新增 / 修改
+
+涉及文件：
+
+- `setting-organizer/src/core/warnings.js`
+- `setting-organizer/tests/warnings.test.mjs`
+- `setting-organizer/README.md`
+- `setting_organizer_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 按任务卡进入 TC-14，实现规则级重复检测。
+
+主要变化：
+
+- 新增同名角色检测。
+- 新增同标题世界书检测。
+- 新增完全相同关键词组合检测。
+- 新增完全相同世界书正文检测。
+- 新增泛化关键词检测。
+- 保持检测结果只作为 warning，不自动删除、不自动合并。
+- 扩展 `warnings.test.mjs` 覆盖新增规则。
+
+影响范围：
+
+- 只影响分析结果中的 warnings。
+- 不改变草稿内容。
+- 不写入 SillyTavern 数据。
+
+验证情况：
+
+- `node --check setting-organizer/src/core/warnings.js` 已通过。
+- `node setting-organizer/tests/warnings.test.mjs` 已通过。
+
+后续建议：
+
+- 下一步进入 `TC-15 README 与使用说明`。
+
 ## 变更记录模板
 
 ```text
