@@ -78,6 +78,9 @@ Runtime test results:
 - Character import now refreshes `getCharacters()` before taking the before snapshot because `context.characters` can be empty until refreshed.
 - Real character import created `TC12Retest20260707143136984.png`; before count was 2, after count was 3, and no previous avatar was missing.
 - Current chat read is implemented through `SillyTavern.getContext().chat`. TC-13 normalizes message objects in `chatAdapter.js` and only reads chat after a user clicks the chat-read button.
+- 2026-07-08 MuMu runtime regression confirmed diagnostics export, local backup, draft export, real world book creation, real character creation, old-data verification, and the empty-chat `E012` path.
+- Current runtime world book verification should call `getWorldInfoNames()` from the context. Do not depend on static `world_names` or `worldInfoNames` fields being present.
+- Native-first boundary: use Setting Organizer for extraction, validation, warnings, backups, diagnostics, and minimal safe creation. Use SillyTavern native UI for full world book editing, character management, linking, moving, copying, and deletion.
 
 ## Decision
 

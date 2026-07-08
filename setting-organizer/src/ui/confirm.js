@@ -53,7 +53,7 @@ export function renderImportReadiness(container, result) {
         `启用世界书条目：${readiness.enabledEntryCount}`,
         `已验证新建世界书接口：${readiness.hasWorldInfoCreate ? '是' : '否'}`,
         readiness.hasWorldInfoCreate
-            ? '可以尝试调用 adapter 创建新世界书。'
+            ? '将通过 SillyTavern 原生世界书接口创建新世界书；后续编辑请使用酒馆原生世界书管理器。'
             : '当前仅能创建备份和失败状态报告，不会执行真实写入。',
     ].join('\n');
 }
@@ -70,7 +70,7 @@ export function renderCharacterImportReadiness(container, result) {
         `角色草稿数量：${readiness.characterCount}`,
         `已验证新建角色接口：${readiness.hasCharacterCreate ? '是' : '否'}`,
         readiness.hasCharacterCreate
-            ? '可以尝试调用 adapter 创建新角色。'
+            ? '将通过 SillyTavern 原生角色创建接口创建新角色；后续管理请使用酒馆原生角色面板。'
             : '当前仅能创建备份和失败状态报告，不会执行真实写入。',
     ].join('\n');
 }
@@ -135,8 +135,8 @@ export function renderImportReport(container, report, type = 'worldbook') {
     container.hidden = false;
     container.dataset.state = report.ok ? 'success' : 'error';
 
-    const successLabel = type === 'character' ? '角色导入流程完成。' : '世界书导入流程完成。';
-    const failureLabel = type === 'character' ? '角色导入流程未完成。' : '世界书导入流程未完成。';
+    const successLabel = type === 'character' ? '角色创建到酒馆流程完成。' : '世界书创建到酒馆流程完成。';
+    const failureLabel = type === 'character' ? '角色创建到酒馆流程未完成。' : '世界书创建到酒馆流程未完成。';
     const lines = [
         report.ok ? successLabel : failureLabel,
     ];

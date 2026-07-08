@@ -872,6 +872,42 @@
 
 - 任务卡中不再存在 `状态：未开始`、`状态：进行中`、`状态：阻塞` 或 `状态：暂缓`。
 
+### 2026-07-08：运行时回归报告与原生优先优化
+
+变更类型：新增 / 修改 / 文档同步 / 小范围优化
+
+涉及文件：
+
+- `setting_organizer_runtime_test_report_20260708.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+- `setting-organizer/README.md`
+- `setting-organizer/API_COMPATIBILITY.md`
+- `setting-organizer/src/ui/results.js`
+- `setting-organizer/src/ui/confirm.js`
+
+变更原因：
+
+- 完成 MuMu + SillyTavern 1.18.0 真实环境回归后，需要沉淀可维护测试记录。
+- 审计发现 SillyTavern 原生已提供完整世界书和角色管理能力，插件应避免重复实现。
+
+主要变化：
+
+- 新增运行时测试报告，记录单元测试、MuMu/CDP、扩展加载、mock 分析、导出、诊断日志、备份、真实世界书/角色创建和 `E012` 空聊天错误路径。
+- 更新 README 和 API 兼容文档，移除已过期的“未在 MuMu 复测诊断导出”描述。
+- 按原生优先原则调整按钮和状态文案：插件负责创建草稿与最小安全创建，后续编辑管理交给 SillyTavern 原生功能。
+
+影响范围：
+
+- 不改变 adapter 写入边界，不新增复杂原生功能复制。
+- UI 文案更准确，导入流程仍沿用原有安全备份和旧数据校验。
+
+验证情况：
+
+- 关键模块语法检查通过。
+- 全部本地单元测试通过。
+- 优化后 MuMu smoke test 通过：扩展加载、mock 分析、诊断导出、备份和“创建到酒馆”按钮文案均正常。
+
 ## 变更记录模板
 
 ```text

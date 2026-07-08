@@ -34,8 +34,8 @@ function render(container, state) {
         </div>
         <div class="setting-organizer-export-actions">
             <button type="button" data-create-backup>创建备份</button>
-            <button type="button" data-import-lorebook-preview>预检导入世界书</button>
-            <button type="button" data-import-character-preview>预检导入角色</button>
+            <button type="button" data-import-lorebook-preview>创建到酒馆世界书</button>
+            <button type="button" data-import-character-preview>创建到酒馆角色</button>
             <button type="button" data-export="${EXPORT_TYPES.INTERNAL_FULL}">导出完整草稿</button>
             <button type="button" data-export="${EXPORT_TYPES.CHARACTER_DRAFTS}">导出角色草稿</button>
             <button type="button" data-export="${EXPORT_TYPES.LOREBOOK_DRAFTS}">导出世界书草稿</button>
