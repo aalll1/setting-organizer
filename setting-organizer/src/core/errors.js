@@ -11,6 +11,7 @@ export const ERROR_CODES = Object.freeze({
     INCOMPATIBLE_API: 'E010',
     LEGACY_DATA_CHANGED: 'E011',
     CHAT_READ_FAILED: 'E012',
+    CHARACTER_WORLD_BIND_FAILED: 'E013',
 });
 
 export class SettingOrganizerError extends Error {

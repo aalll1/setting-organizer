@@ -29,7 +29,9 @@ export function getCompatibilitySnapshot() {
         hasExtensionSettings: Boolean(context && context.extensionSettings),
         hasWorldInfoCreate: Boolean(context && typeof context.saveWorldInfo === 'function'),
         hasWorldInfoNames: Boolean(context && typeof context.getWorldInfoNames === 'function'),
+        hasWorldInfoEditorOpen: Boolean(context && typeof context.reloadWorldInfoEditor === 'function'),
         hasCharacterCreate: Boolean(context && typeof context.getRequestHeaders === 'function'),
+        hasCharacterWorldBind: Boolean(context && typeof context.getRequestHeaders === 'function'),
         hasCharacters: Boolean(context && Array.isArray(context.characters)),
     };
 }
@@ -187,6 +189,79 @@ export async function createCharacter({ fields }) {
             cause: error.message,
         });
     }
+}
+
+export async function bindCharacterWorld({ avatar, worldName }) {
+    const context = getSillyTavernContext();
+
+    if (!context) {
+        throw new SettingOrganizerError(ERROR_CODES.INCOMPATIBLE_API, '当前页面未发现 SillyTavern 扩展上下文。');
+    }
+
+    if (typeof context.getRequestHeaders !== 'function') {
+        throw new SettingOrganizerError(ERROR_CODES.INCOMPATIBLE_API, '当前 SillyTavern 版本未发现已验证的角色世界书绑定接口。');
+    }
+
+    if (!avatar || !worldName) {
+        throw new SettingOrganizerError(ERROR_CODES.CHARACTER_WORLD_BIND_FAILED, '角色或世界书为空，无法绑定。');
+    }
+
+    try {
+        const response = await fetch('/api/characters/merge-attributes', {
+            method: 'POST',
+            headers: context.getRequestHeaders(),
+            body: JSON.stringify({
+                avatar,
+                data: {
+                    extensions: {
+                        world: worldName,
+                    },
+                },
+            }),
+            cache: 'no-cache',
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || `HTTP ${response.status}`);
+        }
+
+        if (typeof context.getOneCharacter === 'function') {
+            await context.getOneCharacter(avatar);
+        } else if (typeof context.getCharacters === 'function') {
+            await context.getCharacters();
+        }
+
+        logInfo('character-world-bind-completed', {
+            avatar,
+            worldName,
+        });
+
+        return {
+            avatar,
+            worldName,
+        };
+    } catch (error) {
+        logError('character-world-bind-failed', error, {
+            avatar,
+            worldName,
+        });
+        throw new SettingOrganizerError(ERROR_CODES.CHARACTER_WORLD_BIND_FAILED, '角色世界书绑定失败。', {
+            cause: error.message,
+        });
+    }
+}
+
+export function openWorldInfoEditor(name) {
+    const context = getSillyTavernContext();
+
+    if (!context || typeof context.reloadWorldInfoEditor !== 'function') {
+        return false;
+    }
+
+    context.reloadWorldInfoEditor(name, true);
+    logInfo('worldbook-native-editor-opened', { name });
+    return true;
 }
 
 export function getCharacterSummaries() {

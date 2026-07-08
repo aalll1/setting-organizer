@@ -946,6 +946,55 @@
 - `git diff --name-only` 确认只修改 Markdown 文档。
 - README 已新增 v0.2.0 路线图，并继续声明不复制 SillyTavern 原生角色 / 世界书管理器。
 
+### 2026-07-08：v0.2.0 开发、测试与运行时实测
+
+变更类型：新增 / 修改 / 功能开发 / 测试
+
+涉及文件：
+
+- `setting-organizer/manifest.json`
+- `setting-organizer/src/adapters/sillytavernApi.js`
+- `setting-organizer/src/core/errors.js`
+- `setting-organizer/src/core/importer.js`
+- `setting-organizer/src/core/validator.js`
+- `setting-organizer/src/ui/confirm.js`
+- `setting-organizer/src/ui/results.js`
+- `setting-organizer/tests/*.mjs`
+- `setting-organizer/test-samples/`
+- `setting-organizer/README.md`
+- `setting-organizer/API_COMPATIBILITY.md`
+- `setting_organizer_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_runtime_test_report_v020_20260708.md`
+
+变更原因：
+
+- 按 v0.2.0 任务卡完成追加功能开发、自动测试和 MuMu/SillyTavern 实测。
+
+主要变化：
+
+- 当前聊天读取测试覆盖最近 20、最近 50、全部和手动索引。
+- 新增角色创建后可选绑定本次新建世界书。
+- 新增 `E013` 角色世界书绑定失败错误码。
+- 新增原生世界书入口按钮和降级提示。
+- 加强轻量 schema 结构校验。
+- manifest 版本更新为 `0.2.0`。
+- `TC-16` 到 `TC-20` 标记为已完成。
+
+影响范围：
+
+- 不复制 SillyTavern 原生角色 / 世界书管理器。
+- 不自动删除测试数据。
+- 不执行远程 push。
+
+验证情况：
+
+- 关键模块语法检查通过。
+- 全部 `.mjs` 单元测试通过。
+- MuMu + SillyTavern 1.18.0 实测通过。
+- 测试角色：`SO_V02_1783521618416`。
+- 测试世界书：`SO_V02_设定整理器绑定 20260708144019894`。
+
 ## 变更记录模板
 
 ```text

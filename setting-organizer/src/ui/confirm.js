@@ -1,6 +1,7 @@
 import { formatError } from '../core/errors.js';
 import { logError, logInfo } from '../core/logger.js';
 import { getCharacterImportReadiness, importCharacterDraft, importLorebookDraft, getLorebookImportReadiness } from '../core/importer.js';
+import { openWorldInfoEditor } from '../adapters/sillytavernApi.js';
 import { createAndSaveBackup } from '../storage/backups.js';
 
 export function createDraftBackup(result) {
@@ -69,6 +70,7 @@ export function renderCharacterImportReadiness(container, result) {
     container.textContent = [
         `角色草稿数量：${readiness.characterCount}`,
         `已验证新建角色接口：${readiness.hasCharacterCreate ? '是' : '否'}`,
+        `已验证角色世界书绑定接口：${readiness.hasCharacterWorldBind ? '是' : '否'}`,
         readiness.hasCharacterCreate
             ? '将通过 SillyTavern 原生角色创建接口创建新角色；后续管理请使用酒馆原生角色面板。'
             : '当前仅能创建备份和失败状态报告，不会执行真实写入。',
@@ -93,9 +95,9 @@ export async function runLorebookImportPreview(result, statusContainer) {
     }
 }
 
-export async function runCharacterImportPreview(result, statusContainer) {
+export async function runCharacterImportPreview(result, statusContainer, options = {}) {
     try {
-        const report = await importCharacterDraft(result);
+        const report = await importCharacterDraft(result, options);
         logImportReport('character', report);
         renderImportReport(statusContainer, report, 'character');
     } catch (error) {
@@ -149,6 +151,14 @@ export function renderImportReport(container, report, type = 'worldbook') {
         lines.push(`错误：${formatError(report.error)}`);
     }
 
+    if (report.createdWorldbook?.name) {
+        lines.push(`新建世界书：${report.createdWorldbook.name}`);
+    }
+
+    if (report.created?.name || report.created?.avatar) {
+        lines.push(`新建角色：${report.created.name || '未命名'}${report.created.avatar ? ` (${report.created.avatar})` : ''}`);
+    }
+
     if (report.steps?.length) {
         lines.push('步骤状态：');
         report.steps.forEach((step) => {
@@ -163,7 +173,58 @@ export function renderImportReport(container, report, type = 'worldbook') {
         });
     }
 
+    lines.push(...buildNativeHandoffLines(report, type));
+
     container.textContent = lines.join('\n');
+
+    const openTargetName = resolveWorldbookOpenTarget(report, type);
+    if (openTargetName) {
+        const openButton = document.createElement('button');
+        openButton.type = 'button';
+        openButton.textContent = '打开酒馆原生世界书';
+        openButton.addEventListener('click', () => {
+            const opened = openWorldInfoEditor(openTargetName);
+            if (!opened) {
+                container.appendChild(document.createTextNode('\n原生世界书入口不可用，请在酒馆世界书管理器中手动查找。'));
+            }
+        });
+        container.appendChild(document.createTextNode('\n'));
+        container.appendChild(openButton);
+    }
+}
+
+function buildNativeHandoffLines(report, type) {
+    if (!report.ok) {
+        return [];
+    }
+
+    if (type === 'worldbook') {
+        return [
+            '后续操作：可在酒馆原生世界书管理器继续编辑、移动或删除该世界书。',
+        ];
+    }
+
+    const lines = [
+        '后续操作：可在酒馆原生角色面板继续编辑、选择或删除该角色。',
+    ];
+
+    if (report.createdWorldbook?.name) {
+        lines.push('绑定说明：角色与本次新建世界书的绑定是独立步骤，请以步骤状态为准。');
+    }
+
+    return lines;
+}
+
+function resolveWorldbookOpenTarget(report, type) {
+    if (!report.ok) {
+        return '';
+    }
+
+    if (type === 'worldbook') {
+        return report.created?.name || '';
+    }
+
+    return report.createdWorldbook?.name || '';
 }
 
 function readSillyTavernVersion() {

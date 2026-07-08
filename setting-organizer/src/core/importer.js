@@ -2,7 +2,7 @@ import { ERROR_CODES, SettingOrganizerError } from './errors.js';
 import { toCharacterCreateFormFields } from '../adapters/characterAdapter.js';
 import { toSillyTavernWorldInfo } from '../adapters/lorebookAdapter.js';
 import { createAndSaveBackup } from '../storage/backups.js';
-import { createCharacter, createWorldInfo, getCharacterSummaries, getCompatibilitySnapshot, getFreshCharacterSummaries, getWorldInfoNames } from '../adapters/sillytavernApi.js';
+import { bindCharacterWorld, createCharacter, createWorldInfo, getCharacterSummaries, getCompatibilitySnapshot, getFreshCharacterSummaries, getWorldInfoNames } from '../adapters/sillytavernApi.js';
 
 export async function importLorebookDraft(result, options = {}) {
     const enabledEntries = (result.lorebookEntries || []).filter((entry) => entry.enabled);
@@ -88,6 +88,7 @@ export function getLorebookImportReadiness(result) {
 
 export async function importCharacterDraft(result, options = {}) {
     const character = (result.characters || [])[0];
+    const shouldBindCreatedWorldbook = Boolean(options.bindCreatedWorldbook);
 
     if (!character) {
         throw new SettingOrganizerError(ERROR_CODES.CHARACTER_CREATE_FAILED, '没有可导入的角色草稿。');
@@ -104,6 +105,7 @@ export async function importCharacterDraft(result, options = {}) {
         targetInfo: {
             mode: 'create-new-character',
             name: options.name || character.name,
+            bindCreatedWorldbook: shouldBindCreatedWorldbook,
         },
         beforeState,
         sillyTavernVersion: readSillyTavernVersion(),
@@ -112,17 +114,34 @@ export async function importCharacterDraft(result, options = {}) {
     const steps = [
         createStep('validate-draft', '校验角色草稿', 'completed'),
         createStep('create-backup', '创建导入前备份', 'completed', { backupId: backup.id }),
+        ...(shouldBindCreatedWorldbook ? [createStep('create-worldbook-for-binding', '创建待绑定世界书', 'pending')] : []),
         createStep('create-character', '创建新角色', 'pending'),
+        ...(shouldBindCreatedWorldbook ? [createStep('bind-character-worldbook', '绑定角色到新世界书', 'pending')] : []),
         createStep('verify-legacy-data', '验证旧角色未变化', 'pending'),
     ];
 
     let created = null;
+    let createdWorldbook = null;
 
     try {
+        if (shouldBindCreatedWorldbook) {
+            createdWorldbook = await createWorldbookForBinding(result, options);
+            markStep(steps, 'create-worldbook-for-binding', 'completed', createdWorldbook);
+        }
+
         created = await createCharacter({
             fields: toCharacterCreateFormFields({ ...character, name: options.name || character.name }),
         });
         markStep(steps, 'create-character', 'completed', created);
+
+        if (shouldBindCreatedWorldbook) {
+            const bindResult = await bindCharacterWorld({
+                avatar: created.avatar,
+                worldName: createdWorldbook.name,
+            });
+            markStep(steps, 'bind-character-worldbook', 'completed', bindResult);
+        }
+
         verifyExistingCharactersUnchanged(beforeState.characters, created.avatar);
         markStep(steps, 'verify-legacy-data', 'completed');
 
@@ -130,10 +149,11 @@ export async function importCharacterDraft(result, options = {}) {
             ok: true,
             backupId: backup.id,
             created,
+            createdWorldbook,
             steps,
         };
     } catch (error) {
-        const failedStepId = created ? 'verify-legacy-data' : 'create-character';
+        const failedStepId = resolveCharacterImportFailedStep(steps, created, createdWorldbook, shouldBindCreatedWorldbook);
         markStep(steps, failedStepId, 'failed', {
             errorCode: error.code || ERROR_CODES.CHARACTER_CREATE_FAILED,
             message: error.message,
@@ -148,7 +168,9 @@ export async function importCharacterDraft(result, options = {}) {
             pendingSteps: steps.filter((step) => step.status === 'pending').map((step) => step.label),
             possibleImpact: [
                 '角色创建接口调用集中在 adapter 中。',
-                '如果角色创建步骤失败，SillyTavern 角色数据不应发生变化。',
+                shouldBindCreatedWorldbook
+                    ? '绑定步骤失败不代表角色或世界书创建一定失败，请根据步骤状态检查。'
+                    : '如果角色创建步骤失败，SillyTavern 角色数据不应发生变化。',
                 '备份记录可作为后续手动恢复依据。',
             ],
         };
@@ -163,8 +185,40 @@ export function getCharacterImportReadiness(result) {
         canAttempt: characterCount > 0,
         characterCount,
         hasCharacterCreate: snapshot.hasCharacterCreate,
+        hasCharacterWorldBind: snapshot.hasCharacterWorldBind,
         compatibility: snapshot,
     };
+}
+
+async function createWorldbookForBinding(result, options = {}) {
+    const enabledEntries = (result.lorebookEntries || []).filter((entry) => entry.enabled);
+    if (!enabledEntries.length) {
+        throw new SettingOrganizerError(ERROR_CODES.LOREBOOK_CREATE_FAILED, '没有可绑定的已启用世界书条目。');
+    }
+
+    const targetName = options.worldbookName || createDefaultWorldbookName('SO_V02_设定整理器绑定');
+    const payload = toSillyTavernWorldInfo({ ...result, lorebookEntries: enabledEntries });
+    return createWorldInfo({
+        name: targetName,
+        worldInfo: payload,
+    });
+}
+
+function resolveCharacterImportFailedStep(steps, created, createdWorldbook, shouldBindCreatedWorldbook) {
+    if (shouldBindCreatedWorldbook && !createdWorldbook) {
+        return 'create-worldbook-for-binding';
+    }
+
+    if (!created) {
+        return 'create-character';
+    }
+
+    const bindStep = steps.find((step) => step.id === 'bind-character-worldbook');
+    if (bindStep && bindStep.status !== 'completed') {
+        return 'bind-character-worldbook';
+    }
+
+    return 'verify-legacy-data';
 }
 
 function createWorldbookSummarySnapshot() {
@@ -224,9 +278,9 @@ function markStep(steps, id, status, details = null) {
     }
 }
 
-function createDefaultWorldbookName() {
+function createDefaultWorldbookName(prefix = '设定整理器导入') {
     const stamp = new Date().toISOString().replace(/[-:.TZ]/g, '');
-    return `设定整理器导入 ${stamp}`;
+    return `${prefix} ${stamp}`;
 }
 
 function readSillyTavernVersion() {

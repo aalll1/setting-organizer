@@ -82,6 +82,29 @@ Runtime test results:
 - Current runtime world book verification should call `getWorldInfoNames()` from the context. Do not depend on static `world_names` or `worldInfoNames` fields being present.
 - Native-first boundary: use Setting Organizer for extraction, validation, warnings, backups, diagnostics, and minimal safe creation. Use SillyTavern native UI for full world book editing, character management, linking, moving, copying, and deletion.
 
+## 2026-07-08 v0.2.0 Runtime Regression
+
+Verified in SillyTavern 1.18.0 + MuMu Android 12:
+
+| Capability | Status | Interface / Behavior |
+| --- | --- | --- |
+| Extension manifest | Verified | `manifest.json` version `0.2.0` loaded from third-party extension path |
+| Current chat range read | Verified | `getContext().chat`, tested recent 20, recent 50, all, and manual indexes |
+| Character-world binding | Verified | `fetch('/api/characters/merge-attributes', { method: 'POST', headers: getRequestHeaders(), body: JSON.stringify({ avatar, data: { extensions: { world } } }) })` |
+| Native worldbook handoff | Verified | `getContext().reloadWorldInfoEditor(name, true)` available as `reloadWorldInfoEditor` |
+| Diagnostics export | Verified | Manual export created diagnostics JSON download |
+
+Runtime test data retained:
+
+- Character: `SO_V02_1783521618416` / `SO_V02_1783521618416.png`
+- Bound worldbook: `SO_V02_设定整理器绑定 20260708144019894`
+
+Compatibility notes:
+
+- Binding must remain an explicit optional step and must not be treated as part of character creation success.
+- If `/api/characters/merge-attributes` fails, report `E013` and keep the role/worldbook creation result visible.
+- If `reloadWorldInfoEditor` is unavailable, show a manual handoff message instead of blocking import.
+
 ## Decision
 
 Proceed with world book creation through the centralized `sillytavernApi.js` adapter using `saveWorldInfo`. Proceed with character creation through the same adapter using `/api/characters/create`, with pre-write backup and post-write old-avatar verification.

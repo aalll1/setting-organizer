@@ -23,6 +23,16 @@ assert.throws(
 );
 
 assert.throws(
+    () => validateAndNormalizeAnalysisResult({ characters: {}, lorebookEntries: [] }),
+    (error) => error instanceof SettingOrganizerError && error.code === ERROR_CODES.SCHEMA_VALIDATION_FAILED,
+);
+
+assert.throws(
+    () => validateAndNormalizeAnalysisResult({ characters: [], lorebookEntries: {} }),
+    (error) => error instanceof SettingOrganizerError && error.code === ERROR_CODES.SCHEMA_VALIDATION_FAILED,
+);
+
+assert.throws(
     () => validateAndNormalizeAnalysisResult({ characters: [], lorebookEntries: [] }),
     (error) => error instanceof SettingOrganizerError && error.code === ERROR_CODES.EMPTY_RESULT,
 );

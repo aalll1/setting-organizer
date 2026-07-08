@@ -14,6 +14,7 @@ const RESULT_TABS = [
 export function mountResults(container, result) {
     const state = {
         activeTab: 'overview',
+        bindCreatedWorldbook: false,
         result: cloneResult(result),
     };
 
@@ -35,6 +36,10 @@ function render(container, state) {
         <div class="setting-organizer-export-actions">
             <button type="button" data-create-backup>创建备份</button>
             <button type="button" data-import-lorebook-preview>创建到酒馆世界书</button>
+            <label class="setting-organizer-inline-toggle">
+                <input type="checkbox" data-bind-created-worldbook ${state.bindCreatedWorldbook ? 'checked' : ''}>
+                <span>创建角色后绑定本次新建世界书</span>
+            </label>
             <button type="button" data-import-character-preview>创建到酒馆角色</button>
             <button type="button" data-export="${EXPORT_TYPES.INTERNAL_FULL}">导出完整草稿</button>
             <button type="button" data-export="${EXPORT_TYPES.CHARACTER_DRAFTS}">导出角色草稿</button>
@@ -152,13 +157,23 @@ function bindResults(container, state) {
     }
 
     const characterImportButton = container.querySelector('[data-import-character-preview]');
+    const bindCreatedWorldbookToggle = container.querySelector('[data-bind-created-worldbook]');
+    if (bindCreatedWorldbookToggle) {
+        bindCreatedWorldbookToggle.addEventListener('change', () => {
+            state.bindCreatedWorldbook = bindCreatedWorldbookToggle.checked;
+        });
+    }
+
     if (characterImportButton) {
         characterImportButton.addEventListener('click', async () => {
             const statusBox = container.querySelector('[data-import-status]');
             renderCharacterImportReadiness(statusBox, state.result);
-            await runCharacterImportPreview(state.result, statusBox);
+            await runCharacterImportPreview(state.result, statusBox, {
+                bindCreatedWorldbook: state.bindCreatedWorldbook,
+            });
         });
     }
+
 }
 
 function renderActiveTab(state) {

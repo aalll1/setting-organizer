@@ -92,6 +92,19 @@ const characterResult = {
             confidence: 0.8,
         },
     ],
+    lorebookEntries: [
+        {
+            id: 'l2',
+            title: '绑定世界书',
+            keys: ['绑定世界书'],
+            secondaryKeys: [],
+            content: '用于验证角色绑定世界书。',
+            enabled: true,
+            constant: false,
+            priority: 100,
+            confidence: 0.8,
+        },
+    ],
 };
 
 const characterReadinessWithoutContext = getCharacterImportReadiness(characterResult);
@@ -100,12 +113,28 @@ assert.equal(characterReadinessWithoutContext.hasCharacterCreate, false);
 
 const characterContext = {
     characters: [{ name: '旧角色', avatar: 'old.png' }],
+    names: ['旧世界书'],
+    getWorldInfoNames() {
+        return this.names;
+    },
+    async saveWorldInfo(name, data) {
+        this.names = [...this.names, name];
+        this.savedWorldInfo = { name, data };
+    },
+    async updateWorldInfoList() {
+        return undefined;
+    },
     getRequestHeaders(options) {
-        assert.equal(options.omitContentType, true);
+        if (options) {
+            assert.equal(options.omitContentType, true);
+        }
         return { 'x-csrf-token': 'test' };
     },
     async getCharacters() {
         return this.characters;
+    },
+    async getOneCharacter(avatar) {
+        this.loadedAvatar = avatar;
     },
 };
 
@@ -117,19 +146,41 @@ globalThis.window = {
         },
     },
     fetch: async (url, options) => {
-        assert.equal(url, '/api/characters/create');
-        assert.equal(options.method, 'POST');
-        assert.equal(options.body.get('ch_name'), '林月');
-        characterContext.characters = [
-            ...characterContext.characters,
-            { name: '林月', avatar: 'lin_yue.png' },
-        ];
-        return {
-            ok: true,
-            async text() {
-                return 'lin_yue.png';
-            },
-        };
+        if (url === '/api/characters/create') {
+            assert.equal(options.method, 'POST');
+            assert.equal(options.body.get('ch_name'), '林月');
+            characterContext.characters = [
+                ...characterContext.characters,
+                { name: '林月', avatar: 'lin_yue.png' },
+            ];
+            return {
+                ok: true,
+                async text() {
+                    return 'lin_yue.png';
+                },
+            };
+        }
+
+        if (url === '/api/characters/merge-attributes') {
+            assert.equal(options.method, 'POST');
+            const payload = JSON.parse(options.body);
+            assert.equal(payload.avatar, 'lin_yue.png');
+            assert.equal(payload.data.extensions.world, '绑定世界书');
+            characterContext.boundWorld = payload.data.extensions.world;
+            characterContext.characters = characterContext.characters.map((character) => (
+                character.avatar === payload.avatar
+                    ? { ...character, data: { extensions: { world: payload.data.extensions.world } } }
+                    : character
+            ));
+            return {
+                ok: true,
+                async json() {
+                    return {};
+                },
+            };
+        }
+
+        throw new Error(`unexpected fetch: ${url}`);
     },
 };
 globalThis.fetch = globalThis.window.fetch;
@@ -143,5 +194,50 @@ const characterReport = await importCharacterDraft(characterResult);
 assert.equal(characterReport.ok, true);
 assert.equal(characterReport.created.avatar, 'lin_yue.png');
 assert.ok(characterReport.steps.every((step) => step.status === 'completed'));
+
+const boundCharacterReport = await importCharacterDraft(characterResult, {
+    bindCreatedWorldbook: true,
+    worldbookName: '绑定世界书',
+});
+assert.equal(boundCharacterReport.ok, true);
+assert.equal(boundCharacterReport.createdWorldbook.name, '绑定世界书');
+assert.equal(characterContext.boundWorld, '绑定世界书');
+assert.ok(boundCharacterReport.steps.some((step) => step.id === 'bind-character-worldbook' && step.status === 'completed'));
+
+globalThis.window.fetch = async (url, options) => {
+    if (url === '/api/characters/create') {
+        characterContext.characters = [
+            ...characterContext.characters,
+            { name: '林月', avatar: 'lin_yue_bind_fail.png' },
+        ];
+        return {
+            ok: true,
+            async text() {
+                return 'lin_yue_bind_fail.png';
+            },
+        };
+    }
+
+    if (url === '/api/characters/merge-attributes') {
+        return {
+            ok: false,
+            async json() {
+                return { message: 'bind failed' };
+            },
+        };
+    }
+
+    throw new Error(`unexpected fetch: ${url}`);
+};
+globalThis.fetch = globalThis.window.fetch;
+
+const bindFailedReport = await importCharacterDraft(characterResult, {
+    bindCreatedWorldbook: true,
+    worldbookName: '绑定失败世界书',
+});
+assert.equal(bindFailedReport.ok, false);
+assert.ok(bindFailedReport.steps.some((step) => step.id === 'create-character' && step.status === 'completed'));
+assert.ok(bindFailedReport.steps.some((step) => step.id === 'bind-character-worldbook' && step.status === 'failed'));
+assert.equal(bindFailedReport.error.code, ERROR_CODES.CHARACTER_WORLD_BIND_FAILED);
 
 console.log('importer tests passed');
