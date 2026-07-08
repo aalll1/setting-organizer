@@ -2,7 +2,7 @@
 
 SillyTavern 设定整理器扩展。
 
-当前已完成到 `TC-12` 创建新角色。扩展提供基础面板、文本输入、整理目标选择、Token 预算模式、本地设置保存、分析状态、mock 角色草稿、mock 世界书草稿、基础编辑、JSON 解析、字段规范化、错误码、版本化整理 prompt、独立 token 粗估模块、基础警告规则、JSON 导出、本地备份记录、世界书导入报告和角色导入报告。世界书创建已在 SillyTavern 1.18.0 测试环境中通过 `saveWorldInfo(name, data, true)` 验证；角色创建已通过 `/api/characters/create` 验证。
+当前已完成到 `TC-12A` 运行日志与诊断导出。扩展提供基础面板、文本输入、整理目标选择、Token 预算模式、本地设置保存、分析状态、mock 角色草稿、mock 世界书草稿、基础编辑、JSON 解析、字段规范化、错误码、版本化整理 prompt、独立 token 粗估模块、基础警告规则、JSON 导出、本地备份记录、世界书导入报告、角色导入报告和诊断日志导出。世界书创建已在 SillyTavern 1.18.0 测试环境中通过 `saveWorldInfo(name, data, true)` 验证；角色创建已通过 `/api/characters/create` 验证。
 
 ## 安装
 
@@ -33,6 +33,10 @@ SillyTavern 设定整理器扩展。
 - 创建新世界书后验证旧世界书名称仍保留。
 - 创建新角色前自动刷新并记录已有角色摘要。
 - 创建新角色后验证旧角色 avatar 仍保留。
+- 记录结构化运行日志到 localStorage 和浏览器 console。
+- 导出诊断日志 JSON。
+- 清空本地诊断日志。
+- 对日志中的认证、Cookie、token、API Key 和长正文做脱敏或摘要。
 
 ## 已知限制
 

@@ -1,4 +1,5 @@
 import { formatError } from '../core/errors.js';
+import { logError, logInfo } from '../core/logger.js';
 import { getCharacterImportReadiness, importCharacterDraft, importLorebookDraft, getLorebookImportReadiness } from '../core/importer.js';
 import { createAndSaveBackup } from '../storage/backups.js';
 
@@ -24,6 +25,7 @@ export function renderBackupStatus(container, backupOrError) {
     }
 
     if (backupOrError instanceof Error) {
+        logError('backup-rendered-error', backupOrError);
         container.dataset.state = 'error';
         container.textContent = formatError(backupOrError);
         container.hidden = false;
@@ -32,6 +34,10 @@ export function renderBackupStatus(container, backupOrError) {
 
     container.dataset.state = 'success';
     container.textContent = `备份已创建：${backupOrError.id}\n创建时间：${backupOrError.createdAt}`;
+    logInfo('backup-created', {
+        backupId: backupOrError.id,
+        operation: backupOrError.operation,
+    });
     container.hidden = false;
 }
 
@@ -72,8 +78,10 @@ export function renderCharacterImportReadiness(container, result) {
 export async function runLorebookImportPreview(result, statusContainer) {
     try {
         const report = await importLorebookDraft(result);
+        logImportReport('worldbook', report);
         renderImportReport(statusContainer, report, 'worldbook');
     } catch (error) {
+        logError('worldbook-import-unhandled-failed', error);
         renderImportReport(statusContainer, {
             ok: false,
             error,
@@ -88,8 +96,10 @@ export async function runLorebookImportPreview(result, statusContainer) {
 export async function runCharacterImportPreview(result, statusContainer) {
     try {
         const report = await importCharacterDraft(result);
+        logImportReport('character', report);
         renderImportReport(statusContainer, report, 'character');
     } catch (error) {
+        logError('character-import-unhandled-failed', error);
         renderImportReport(statusContainer, {
             ok: false,
             error,
@@ -99,6 +109,22 @@ export async function runCharacterImportPreview(result, statusContainer) {
             possibleImpact: ['角色导入流程在创建报告前失败。'],
         }, 'character');
     }
+}
+
+function logImportReport(type, report) {
+    const event = report.ok ? `${type}-import-completed` : `${type}-import-failed`;
+    const details = {
+        backupId: report.backupId,
+        created: report.created,
+        steps: report.steps,
+    };
+
+    if (report.ok) {
+        logInfo(event, details);
+        return;
+    }
+
+    logError(event, report.error || new Error('import failed'), details);
 }
 
 export function renderImportReport(container, report, type = 'worldbook') {

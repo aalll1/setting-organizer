@@ -83,6 +83,18 @@
     justify-content: flex-end;
 }
 
+.setting-organizer-diagnostics {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.setting-organizer-diagnostics span {
+    opacity: 0.78;
+}
+
 .setting-organizer-actions button:disabled {
     cursor: wait;
     opacity: 0.65;
@@ -240,8 +252,13 @@
         justify-content: stretch;
     }
 
-    .setting-organizer-actions button {
+    .setting-organizer-actions button,
+    .setting-organizer-diagnostics button {
         width: 100%;
+    }
+
+    .setting-organizer-diagnostics {
+        justify-content: stretch;
     }
 
     .setting-organizer-budget-grid {

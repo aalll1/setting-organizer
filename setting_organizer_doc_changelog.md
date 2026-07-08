@@ -623,6 +623,94 @@
 - 进入 `TC-13 当前聊天读取` 前，应继续保持用户主动触发原则。
 - 若后续实现角色绑定世界书，应把绑定流程作为独立步骤和独立错误状态，不要并入角色创建成功状态。
 
+### 2026-07-08：新增 TC-12A 运行日志与诊断导出计划
+
+变更类型：范围调整 / 修改
+
+涉及文件：
+
+- `setting_organizer_agent_dev_plan.md`
+- `setting_organizer_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 用户提出需要详细日志功能，方便运行报错时维护。
+- 当前实现只有少量 console 输出、导入报告和备份记录，不足以支持稳定排障。
+
+主要变化：
+
+- 在 Agent 开发计划中新增 `阶段 10A：运行日志与诊断导出`。
+- 将运行日志与诊断导出纳入 MVP-B 必须完成项、完成条件和 P1 优先级。
+- 在任务卡中新增 `TC-12A 运行日志与诊断导出`。
+- 将 TC-12A 放在 TC-12 之后、TC-13 之前。
+- 明确日志必须支持 localStorage 记录、console 输出、诊断 JSON 导出、清空日志和单元测试。
+- 明确日志隐私约束：不得记录 API Key、Cookie、认证 header、完整 prompt、完整聊天正文、完整角色正文或完整世界书正文。
+
+影响范围：
+
+- 本次主要更新开发计划和任务拆分。
+- 后续实现会新增独立日志模块和诊断 UI，保持与业务模块解耦。
+
+验证情况：
+
+- 已确认任务卡中包含 TC-12A。
+- 已确认推荐执行顺序和 MVP-B 范围包含 TC-12A。
+
+后续建议：
+
+- 先完成 TC-12A，再进入 TC-13 当前聊天读取。
+
+### 2026-07-08：完成 TC-12A 运行日志与诊断导出
+
+变更类型：新增 / 修改
+
+涉及文件：
+
+- `setting-organizer/src/core/logger.js`
+- `setting-organizer/src/ui/diagnostics.js`
+- `setting-organizer/index.js`
+- `setting-organizer/src/storage/settings.js`
+- `setting-organizer/src/ui/panel.js`
+- `setting-organizer/src/ui/results.js`
+- `setting-organizer/src/ui/confirm.js`
+- `setting-organizer/src/adapters/sillytavernApi.js`
+- `setting-organizer/style.css`
+- `setting-organizer/tests/logger.test.mjs`
+- `setting-organizer/README.md`
+- `setting_organizer_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 用户要求加入详细日志功能，方便运行报错时维护。
+
+主要变化：
+
+- 新增集中日志模块，提供 `logInfo()`、`logWarn()`、`logError()`、`listLogs()`、`clearLogs()` 和 `buildDiagnosticSnapshot()`。
+- 运行日志写入 localStorage，并限制最多 200 条。
+- 主面板新增“导出诊断日志”和“清空诊断日志”按钮。
+- 关键流程接入日志：扩展加载、设置读取 / 保存、分析、模型调用、导出、备份、世界书创建、角色创建、导入报告。
+- 日志对认证、Cookie、token、API Key、headers 做脱敏，对 prompt、聊天、正文等长文本做摘要。
+- 新增 logger 单元测试。
+
+影响范围：
+
+- 新增本地诊断能力，不自动上传日志。
+- 不改变角色或世界书写入策略。
+- 不改变现有备份和导入流程的业务结果。
+
+验证情况：
+
+- `node --check` 已覆盖新增 logger、diagnostics 和被修改模块。
+- `node setting-organizer/tests/logger.test.mjs` 已通过。
+
+后续建议：
+
+- 下一步进入 TC-13 前，可在 MuMu 真实页面补一次诊断日志导出手测。
+
 ## 变更记录模板
 
 ```text

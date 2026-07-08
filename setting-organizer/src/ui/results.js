@@ -1,6 +1,7 @@
 import { formatKeywordList, parseKeywordList, removeArrayItem, updateArrayItem } from './editor.js';
 import { formatError } from '../core/errors.js';
 import { buildExportJson, EXPORT_TYPES } from '../core/exporter.js';
+import { logError, logInfo } from '../core/logger.js';
 import { createDraftBackup, renderBackupStatus, renderCharacterImportReadiness, renderImportReadiness, runCharacterImportPreview, runLorebookImportPreview } from './confirm.js';
 
 const RESULT_TABS = [
@@ -111,7 +112,15 @@ function bindResults(container, state) {
                 errorBox.hidden = true;
                 errorBox.textContent = '';
                 downloadJson(buildExportJson(state.result, button.dataset.export), `${button.dataset.export}.json`);
+                logInfo('export-completed', {
+                    type: button.dataset.export,
+                    characterCount: state.result.characters.length,
+                    lorebookEntryCount: state.result.lorebookEntries.length,
+                });
             } catch (error) {
+                logError('export-failed', error, {
+                    type: button.dataset.export,
+                });
                 errorBox.hidden = false;
                 errorBox.textContent = formatError(error);
             }
@@ -125,6 +134,9 @@ function bindResults(container, state) {
             try {
                 renderBackupStatus(statusBox, createDraftBackup(state.result));
             } catch (error) {
+                logError('backup-create-failed', error, {
+                    operation: 'draft-export-preparation',
+                });
                 renderBackupStatus(statusBox, error);
             }
         });

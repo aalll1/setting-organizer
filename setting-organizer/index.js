@@ -1,11 +1,12 @@
 import { createPanel } from './src/ui/panel.js';
+import { logError, logInfo } from './src/core/logger.js';
 
 function initExtension() {
     try {
         createPanel();
-        console.info('[setting-organizer] loaded');
+        logInfo('extension-loaded');
     } catch (error) {
-        console.error('[setting-organizer] failed to load', error);
+        logError('extension-load-failed', error);
     }
 }
 

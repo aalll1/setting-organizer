@@ -246,6 +246,45 @@
 - 服务日志中出现过一次 SillyTavern `/api/characters/get` 的内部错误：`avatar_url` 为数字 `0`，导致 `path.join()` 参数类型错误。
 - 定位结果：该错误来自 SillyTavern 读取角色详情端点，不是本扩展调用的 `/api/characters/create`；后续角色创建和旧 avatar 校验复测均成功。
 
+### TC-12A 运行日志与诊断导出
+
+- 用户提出需要详细日志功能，方便运行报错时维护。
+- 完成运行日志基础能力：
+  - 新增 `setting-organizer/src/core/logger.js`。
+  - 新增 `setting-organizer/src/ui/diagnostics.js`。
+  - 主面板新增“导出诊断日志”和“清空诊断日志”按钮。
+  - 日志记录到浏览器 localStorage，并同步输出到 console。
+  - 日志条数限制为 200 条，避免无限增长。
+- 日志接入范围：
+  - 扩展加载成功 / 失败。
+  - 设置读取 / 保存失败。
+  - 分析开始 / 成功 / 失败。
+  - 模型调用成功 / 失败。
+  - 导出成功 / 失败。
+  - 备份创建成功 / 失败。
+  - 世界书创建成功 / 失败。
+  - 角色创建成功 / 失败。
+  - 世界书导入和角色导入结果报告。
+- 隐私与安全处理：
+  - `apiKey`、`authorization`、`cookie`、`csrf`、`token`、`headers` 等字段写入日志时脱敏为 `<redacted>`。
+  - `prompt`、`sourceText`、`chat`、`content`、`description` 等长文本字段只保留长度和短预览。
+  - 日志导出只能由用户主动点击，不自动上传。
+- 新增 `setting-organizer/tests/logger.test.mjs`，覆盖：
+  - 日志写入和读取。
+  - 错误序列化。
+  - 敏感字段脱敏。
+  - 长文本摘要。
+  - 200 条上限裁剪。
+  - 诊断快照可 JSON 序列化。
+  - 清空日志。
+
+### TC-12A 开发中出现的问题
+
+- Node 24 中 `globalThis.navigator` 是只读 getter，测试中直接赋值会报错。
+- 修复：测试里使用 `Object.defineProperty()` 注入可控 `navigator.userAgent`。
+- 初版脱敏规则把错误对象的 `message` 字段也摘要成对象，不利于排查。
+- 修复：长文本摘要规则不再匹配普通 `message` 字段，错误消息保持字符串。
+
 ### 当前限制
 
 - 已在真实 SillyTavern 页面完成扩展加载、mock 分析、备份、世界书创建和角色创建验证。
@@ -253,6 +292,7 @@
 - `TC-03` 使用 mock 分析结果，不代表最终 AI 输出质量。
 - 当前 schema 文件已建立，但尚未接入完整 JSON Schema 引擎，TC-04 目前使用手写结构校验和规范化规则。
 - 角色创建暂未实现新建世界书绑定。
+- 诊断日志已完成本地记录与导出，但尚未在 MuMu 真实页面复测导出文件下载。
 
 ### 下一步建议
 

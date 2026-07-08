@@ -1,4 +1,5 @@
 import { ERROR_CODES, SettingOrganizerError } from '../core/errors.js';
+import { logError, logInfo } from '../core/logger.js';
 import { buildExtractSettingPrompt } from '../prompts/extractSetting.js';
 
 export function getSillyTavernContext() {
@@ -43,13 +44,22 @@ export async function callCurrentModel(sourceText, options) {
 
     try {
         if (typeof context.generateQuietPrompt === 'function') {
-            return await context.generateQuietPrompt(prompt);
+            const result = await context.generateQuietPrompt(prompt);
+            logInfo('model-call-completed', { interface: 'generateQuietPrompt' });
+            return result;
         }
 
         if (typeof context.generate === 'function') {
-            return await context.generate(prompt);
+            const result = await context.generate(prompt);
+            logInfo('model-call-completed', { interface: 'generate' });
+            return result;
         }
     } catch (error) {
+        logError('model-call-failed', error, {
+            hasGenerate: typeof context.generate === 'function',
+            hasGenerateQuietPrompt: typeof context.generateQuietPrompt === 'function',
+            sourceLength: sourceText.length,
+        });
         throw new SettingOrganizerError(ERROR_CODES.MODEL_CALL_FAILED, '模型调用失败。', {
             cause: error.message,
         });
@@ -81,11 +91,20 @@ export async function createWorldInfo({ name, worldInfo }) {
             await context.updateWorldInfoList();
         }
 
+        logInfo('worldbook-create-completed', {
+            name,
+            entryCount: Object.keys(worldInfo.entries || {}).length,
+        });
+
         return {
             name,
             entryCount: Object.keys(worldInfo.entries || {}).length,
         };
     } catch (error) {
+        logError('worldbook-create-failed', error, {
+            name,
+            entryCount: Object.keys(worldInfo.entries || {}).length,
+        });
         throw new SettingOrganizerError(ERROR_CODES.LOREBOOK_CREATE_FAILED, '创建世界书失败。', {
             cause: error.message,
         });
@@ -137,11 +156,19 @@ export async function createCharacter({ fields }) {
             await context.getCharacters();
         }
 
+        logInfo('character-create-completed', {
+            name: fields.ch_name,
+            avatar,
+        });
+
         return {
             avatar,
             name: fields.ch_name,
         };
     } catch (error) {
+        logError('character-create-failed', error, {
+            name: fields.ch_name,
+        });
         throw new SettingOrganizerError(ERROR_CODES.CHARACTER_CREATE_FAILED, '创建角色失败。', {
             cause: error.message,
         });

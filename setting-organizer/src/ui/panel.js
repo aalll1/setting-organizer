@@ -1,6 +1,8 @@
 import { analyzeSettingText } from '../core/analyzer.js';
 import { formatError } from '../core/errors.js';
+import { logError, logInfo } from '../core/logger.js';
 import { loadSettings, saveSettings } from '../storage/settings.js';
+import { bindDiagnosticsControls, renderDiagnosticsControls } from './diagnostics.js';
 import { mountResults } from './results.js';
 
 const EXTENSION_DISPLAY_NAME = '设定整理器';
@@ -94,6 +96,7 @@ function renderPanel(settings) {
         <div class="setting-organizer-actions">
             <button id="setting-organizer-analyze" type="button">开始分析</button>
         </div>
+        ${renderDiagnosticsControls()}
 
         <div id="setting-organizer-error" class="setting-organizer-error" hidden></div>
         <div id="setting-organizer-result" class="setting-organizer-result" data-state="idle" aria-live="polite">
@@ -122,6 +125,7 @@ function bindPanel(panel, settings) {
     elements.budgetCharacter.addEventListener('input', persist);
     elements.budgetLorebookEntry.addEventListener('input', persist);
     elements.budgetConstantLore.addEventListener('input', persist);
+    bindDiagnosticsControls(panel);
 
     elements.analyzeButton.addEventListener('click', async () => {
         if (isAnalyzing) {
@@ -146,13 +150,26 @@ function bindPanel(panel, settings) {
         isAnalyzing = true;
         elements.analyzeButton.disabled = true;
         setStatus(elements, 'analyzing');
+        logInfo('analysis-started', {
+            mode: currentSettings.analysisMode,
+            targets: currentSettings.targets,
+            sourceLength: currentSettings.sourceText.trim().length,
+        });
 
         try {
             const result = await analyzeSettingText(currentSettings.sourceText, currentSettings);
             setStatus(elements, 'success', buildPlaceholderResult(currentSettings));
             mountResults(elements.resultsMount, result);
+            logInfo('analysis-completed', {
+                characterCount: result.characters.length,
+                lorebookEntryCount: result.lorebookEntries.length,
+                warningCount: result.warnings.length,
+            });
         } catch (error) {
-            console.error('[setting-organizer] analysis failed', error);
+            logError('analysis-failed', error, {
+                mode: currentSettings.analysisMode,
+                sourceLength: currentSettings.sourceText.trim().length,
+            });
             showError(elements, formatError(error));
             setStatus(elements, 'failed');
         } finally {

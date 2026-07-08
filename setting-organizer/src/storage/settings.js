@@ -1,3 +1,5 @@
+import { logError } from '../core/logger.js';
+
 const STORAGE_KEY = 'setting-organizer.settings.v1';
 
 export const DEFAULT_SETTINGS = Object.freeze({
@@ -24,7 +26,7 @@ export function loadSettings() {
 
         return normalizeSettings(JSON.parse(raw));
     } catch (error) {
-        console.warn('[setting-organizer] failed to load settings, using defaults', error);
+        logError('settings-load-failed', error);
         return cloneDefaultSettings();
     }
 }
@@ -33,7 +35,7 @@ export function saveSettings(settings) {
     try {
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizeSettings(settings)));
     } catch (error) {
-        console.warn('[setting-organizer] failed to save settings', error);
+        logError('settings-save-failed', error);
     }
 }
 
