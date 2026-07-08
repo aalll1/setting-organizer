@@ -77,6 +77,7 @@ Runtime test results:
 - Character creation through `/api/characters/create` succeeded with FormData fields such as `ch_name`, `description`, `personality`, `scenario`, `first_mes`, and `json_data`.
 - Character import now refreshes `getCharacters()` before taking the before snapshot because `context.characters` can be empty until refreshed.
 - Real character import created `TC12Retest20260707143136984.png`; before count was 2, after count was 3, and no previous avatar was missing.
+- Current chat read is implemented through `SillyTavern.getContext().chat`. TC-13 normalizes message objects in `chatAdapter.js` and only reads chat after a user clicks the chat-read button.
 
 ## Decision
 

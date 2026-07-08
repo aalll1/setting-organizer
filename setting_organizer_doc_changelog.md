@@ -711,6 +711,54 @@
 
 - 下一步进入 TC-13 前，可在 MuMu 真实页面补一次诊断日志导出手测。
 
+### 2026-07-08：完成 TC-13 当前聊天读取
+
+变更类型：新增 / 修改
+
+涉及文件：
+
+- `setting-organizer/src/adapters/chatAdapter.js`
+- `setting-organizer/src/adapters/sillytavernApi.js`
+- `setting-organizer/src/storage/settings.js`
+- `setting-organizer/src/ui/panel.js`
+- `setting-organizer/style.css`
+- `setting-organizer/tests/chatAdapter.test.mjs`
+- `setting-organizer/README.md`
+- `setting_organizer_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 按任务卡进入 TC-13，支持从当前聊天读取内容作为输入来源。
+- 必须保持用户主动触发，避免自动读取隐私内容。
+
+主要变化：
+
+- 新增聊天读取 adapter，负责聊天消息归一化、范围选择和文本构造。
+- `sillytavernApi.js` 新增 `getCurrentChatMessages()`。
+- 主面板新增“当前聊天读取”区域。
+- 支持最近 20 条、最近 50 条、全部和手动索引。
+- 读取成功后写入输入框，并显示读取条数和 token 粗估。
+- 读取失败显示 `E012`，不影响粘贴文本模式。
+- 新增聊天读取单元测试。
+
+影响范围：
+
+- 只读取当前页面内的 SillyTavern chat context，不写入角色、世界书或聊天数据。
+- 不自动触发读取，必须用户点击按钮。
+- 日志只记录范围、条数和长度摘要，不记录完整聊天正文。
+
+验证情况：
+
+- `node --check` 已覆盖聊天读取相关模块。
+- `node setting-organizer/tests/chatAdapter.test.mjs` 已通过。
+
+后续建议：
+
+- 在 MuMu 真实页面补测不同聊天范围。
+- 下一步可进入 `TC-14 基础重复检测`。
+
 ## 变更记录模板
 
 ```text

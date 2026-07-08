@@ -10,6 +10,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
     },
     tokenBudgetMode: 'standard',
     analysisMode: 'mock',
+    chatRange: 'recent20',
     customBudget: {
         character: 2000,
         lorebookEntry: 350,
@@ -54,6 +55,7 @@ export function normalizeSettings(settings) {
         },
         tokenBudgetMode: normalizeBudgetMode(safeSettings.tokenBudgetMode),
         analysisMode: normalizeAnalysisMode(safeSettings.analysisMode),
+        chatRange: normalizeChatRange(safeSettings.chatRange),
         customBudget: {
             character: normalizePositiveInteger(safeCustomBudget.character, DEFAULT_SETTINGS.customBudget.character),
             lorebookEntry: normalizePositiveInteger(safeCustomBudget.lorebookEntry, DEFAULT_SETTINGS.customBudget.lorebookEntry),
@@ -72,6 +74,10 @@ function normalizeBudgetMode(value) {
 
 function normalizeAnalysisMode(value) {
     return ['mock', 'sillytavern'].includes(value) ? value : DEFAULT_SETTINGS.analysisMode;
+}
+
+function normalizeChatRange(value) {
+    return ['recent20', 'recent50', 'all', 'manual'].includes(value) ? value : DEFAULT_SETTINGS.chatRange;
 }
 
 function normalizePositiveInteger(value, fallback) {

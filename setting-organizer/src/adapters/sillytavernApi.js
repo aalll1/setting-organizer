@@ -122,6 +122,20 @@ export function getWorldInfoNames() {
     return Array.isArray(names) ? names : [];
 }
 
+export function getCurrentChatMessages() {
+    const context = getSillyTavernContext();
+
+    if (!context) {
+        throw new SettingOrganizerError(ERROR_CODES.CHAT_READ_FAILED, '当前页面未发现 SillyTavern 扩展上下文。');
+    }
+
+    if (!Array.isArray(context.chat)) {
+        throw new SettingOrganizerError(ERROR_CODES.CHAT_READ_FAILED, '当前 SillyTavern 版本未发现可读取的当前聊天。');
+    }
+
+    return context.chat;
+}
+
 export async function createCharacter({ fields }) {
     const context = getSillyTavernContext();
 

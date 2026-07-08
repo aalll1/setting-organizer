@@ -1,4 +1,5 @@
 import { analyzeSettingText } from '../core/analyzer.js';
+import { CHAT_RANGES, readCurrentChatSource } from '../adapters/chatAdapter.js';
 import { formatError } from '../core/errors.js';
 import { logError, logInfo } from '../core/logger.js';
 import { loadSettings, saveSettings } from '../storage/settings.js';
@@ -47,6 +48,25 @@ function renderPanel(settings) {
             <span>粘贴设定文本</span>
             <textarea id="setting-organizer-input" rows="8" placeholder="在这里粘贴角色设定、世界观或剧情记录">${escapeHtml(settings.sourceText)}</textarea>
         </label>
+
+        <fieldset class="setting-organizer-fieldset setting-organizer-chat-source">
+            <legend>当前聊天读取</legend>
+            <label>
+                <span>读取范围</span>
+                <select id="setting-organizer-chat-range">
+                    <option value="${CHAT_RANGES.RECENT_20}" ${settings.chatRange === CHAT_RANGES.RECENT_20 ? 'selected' : ''}>最近 20 条</option>
+                    <option value="${CHAT_RANGES.RECENT_50}" ${settings.chatRange === CHAT_RANGES.RECENT_50 ? 'selected' : ''}>最近 50 条</option>
+                    <option value="${CHAT_RANGES.ALL}" ${settings.chatRange === CHAT_RANGES.ALL ? 'selected' : ''}>全部</option>
+                    <option value="${CHAT_RANGES.MANUAL}" ${settings.chatRange === CHAT_RANGES.MANUAL ? 'selected' : ''}>手动索引</option>
+                </select>
+            </label>
+            <label id="setting-organizer-chat-manual-wrap" ${settings.chatRange === CHAT_RANGES.MANUAL ? '' : 'hidden'}>
+                <span>消息索引</span>
+                <input id="setting-organizer-chat-manual-indexes" placeholder="例如：0, 2, 5-8">
+            </label>
+            <button id="setting-organizer-load-chat" type="button">读取当前聊天</button>
+            <span id="setting-organizer-chat-status" aria-live="polite"></span>
+        </fieldset>
 
         <fieldset class="setting-organizer-fieldset">
             <legend>整理目标</legend>
@@ -122,10 +142,32 @@ function bindPanel(panel, settings) {
     elements.lorebookTarget.addEventListener('change', persist);
     elements.budgetMode.addEventListener('change', persist);
     elements.analysisMode.addEventListener('change', persist);
+    elements.chatRange.addEventListener('change', () => {
+        persist();
+        elements.chatManualWrap.hidden = elements.chatRange.value !== CHAT_RANGES.MANUAL;
+    });
     elements.budgetCharacter.addEventListener('input', persist);
     elements.budgetLorebookEntry.addEventListener('input', persist);
     elements.budgetConstantLore.addEventListener('input', persist);
     bindDiagnosticsControls(panel);
+
+    elements.loadChatButton.addEventListener('click', () => {
+        try {
+            const chatSource = readCurrentChatSource({
+                range: elements.chatRange.value,
+                selectedIndexes: parseManualIndexes(elements.chatManualIndexes.value),
+            });
+            elements.input.value = chatSource.sourceText;
+            persist();
+            clearError(elements);
+            elements.chatStatus.dataset.state = 'success';
+            elements.chatStatus.textContent = `已读取 ${chatSource.selectedMessages}/${chatSource.totalMessages} 条，约 ${chatSource.tokenEstimate} tokens。`;
+        } catch (error) {
+            elements.chatStatus.dataset.state = 'error';
+            elements.chatStatus.textContent = formatError(error);
+            showError(elements, formatError(error));
+        }
+    });
 
     elements.analyzeButton.addEventListener('click', async () => {
         if (isAnalyzing) {
@@ -186,6 +228,11 @@ function getElements(panel) {
         lorebookTarget: panel.querySelector('#setting-organizer-target-lorebook'),
         budgetMode: panel.querySelector('#setting-organizer-budget-mode'),
         analysisMode: panel.querySelector('#setting-organizer-analysis-mode'),
+        chatRange: panel.querySelector('#setting-organizer-chat-range'),
+        chatManualWrap: panel.querySelector('#setting-organizer-chat-manual-wrap'),
+        chatManualIndexes: panel.querySelector('#setting-organizer-chat-manual-indexes'),
+        loadChatButton: panel.querySelector('#setting-organizer-load-chat'),
+        chatStatus: panel.querySelector('#setting-organizer-chat-status'),
         customBudget: panel.querySelector('#setting-organizer-custom-budget'),
         budgetCharacter: panel.querySelector('#setting-organizer-budget-character'),
         budgetLorebookEntry: panel.querySelector('#setting-organizer-budget-lorebook-entry'),
@@ -206,6 +253,7 @@ function readSettingsFromPanel(elements) {
         },
         tokenBudgetMode: elements.budgetMode.value,
         analysisMode: elements.analysisMode.value,
+        chatRange: elements.chatRange.value,
         customBudget: {
             character: elements.budgetCharacter.value,
             lorebookEntry: elements.budgetLorebookEntry.value,
@@ -227,6 +275,30 @@ function showError(elements, message) {
 function clearError(elements) {
     elements.error.hidden = true;
     elements.error.textContent = '';
+}
+
+function parseManualIndexes(value) {
+    return String(value || '').split(',')
+        .flatMap((part) => {
+            const trimmed = part.trim();
+            if (!trimmed) {
+                return [];
+            }
+
+            const rangeMatch = trimmed.match(/^(\d+)\s*-\s*(\d+)$/);
+            if (!rangeMatch) {
+                return [Number(trimmed)];
+            }
+
+            const start = Number(rangeMatch[1]);
+            const end = Number(rangeMatch[2]);
+            if (!Number.isInteger(start) || !Number.isInteger(end) || end < start) {
+                return [];
+            }
+
+            return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+        })
+        .filter((index) => Number.isInteger(index) && index >= 0);
 }
 
 function buildPlaceholderResult(settings) {
