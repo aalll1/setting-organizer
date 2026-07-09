@@ -12,6 +12,9 @@ export const ERROR_CODES = Object.freeze({
     LEGACY_DATA_CHANGED: 'E011',
     CHAT_READ_FAILED: 'E012',
     CHARACTER_WORLD_BIND_FAILED: 'E013',
+    INVALID_INPUT: 'E014',
+    EMPTY_INPUT: 'E015',
+    INPUT_CONFIRMATION_CANCELLED: 'E016',
 });
 
 export const ERROR_HELP = Object.freeze({
@@ -130,6 +133,33 @@ export const ERROR_HELP = Object.freeze({
             '查看创建报告中的步骤状态。',
             '在 SillyTavern 原生角色面板手动绑定世界书。',
             '导出诊断日志后查看 character-world-bind-failed 事件。',
+        ],
+    },
+    [ERROR_CODES.INVALID_INPUT]: {
+        title: '输入内容无效',
+        message: '当前输入不是插件可分析的文本。',
+        suggestions: [
+            '确认输入框内容是普通文本。',
+            '如果从外部复制内容，请先粘贴为纯文本后重试。',
+            '仍然失败时导出诊断日志并记录触发步骤。',
+        ],
+    },
+    [ERROR_CODES.EMPTY_INPUT]: {
+        title: '输入内容为空',
+        message: '没有可整理的设定文本或聊天内容。',
+        suggestions: [
+            '在输入框粘贴设定文本。',
+            '或点击“读取当前聊天”后再开始分析。',
+            '确认读取范围不是空结果。',
+        ],
+    },
+    [ERROR_CODES.INPUT_CONFIRMATION_CANCELLED]: {
+        title: '已取消超长输入分析',
+        message: '本次真实模型分析已取消，避免长输入导致模型输出截断。',
+        suggestions: [
+            '缩短输入内容。',
+            '改用最近 20 条聊天或手动索引分批整理。',
+            '如只想测试界面流程，可以切换到“模拟结果”。',
         ],
     },
 });
