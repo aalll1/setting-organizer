@@ -1244,6 +1244,39 @@
 
 - 新增测试覆盖普通 JSON、Markdown JSON、自然语言 + JSON、嵌入式 fenced JSON、非 JSON 和半截 JSON。
 
+### 2026-07-09：完成 TC-22 Prompt 压缩与输出约束优化
+
+变更类型：修改 / 测试 / 文档
+
+涉及文件：
+
+- `setting-organizer/src/prompts/extractSetting.js`
+- `setting-organizer/tests/prompt.test.mjs`
+- `setting-organizer/README.md`
+- `setting_organizer_long_term_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 按长期任务卡推进 `TC-22`，缩短设定提取 prompt，降低模型输出长 JSON 时被截断的概率。
+
+主要变化：
+
+- prompt 模板从格式化 JSON 改为压缩 JSON。
+- 输出规则明确为只输出一个压缩 JSON 对象。
+- 明确禁止 JSON 前后说明。
+- prompt 版本更新为 `extract-setting-v0.2.1`。
+
+影响范围：
+
+- 仅影响 prompt 构建和对应测试。
+- 不改变内部草稿 schema、parser、UI、adapter 或写入流程。
+
+验证情况：
+
+- `prompt.test.mjs` 增加压缩模板和长度下降断言。
+
 ## 变更记录模板
 
 ```text

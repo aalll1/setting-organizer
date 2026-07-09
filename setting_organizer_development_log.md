@@ -562,3 +562,20 @@
 - 不做事项：
   - 未引入 JSON repair 依赖。
   - 未做 LLM 二次修复重试。
+
+## 2026-07-09 TC-22 Prompt 压缩与输出约束优化
+
+- 完成 `TC-22`。
+- 代码变更：
+  - `EXTRACT_SETTING_PROMPT_VERSION` 更新为 `extract-setting-v0.2.1`。
+  - 输出规则改为“只输出一个压缩 JSON 对象”。
+  - 禁止 JSON 前后添加说明、标题、列表或换行解释。
+  - 明确顶层必须包含 `characters` 和 `lorebookEntries`。
+  - JSON 模板由格式化输出改为压缩输出。
+- 测试变更：
+  - `prompt.test.mjs` 增加压缩模板断言。
+  - `prompt.test.mjs` 增加模板长度低于旧格式化模板的断言。
+- 文档变更：
+  - README 增加 v0.2.1 规划中条目。
+- 解耦说明：
+  - 本任务只调整 prompts 层和对应测试，不触碰 parser、UI、adapter 或 SillyTavern 写入流程。

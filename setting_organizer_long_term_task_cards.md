@@ -80,7 +80,7 @@
 
 ### TC-22 Prompt 压缩与输出约束优化
 
-状态：未开始
+状态：已完成
 
 阶段：v0.2.1
 
@@ -107,6 +107,15 @@
 - prompt 测试通过。
 - prompt 长度比当前版本下降。
 - mock 流程和当前模型流程仍使用同一内部草稿结构。
+
+完成记录：
+
+- `EXTRACT_SETTING_PROMPT_VERSION` 更新为 `extract-setting-v0.2.1`。
+- 输出规则改为“只输出一个压缩 JSON 对象”。
+- 明确禁止 JSON 前后说明、标题、列表或换行解释。
+- 明确顶层必须包含 `characters` 和 `lorebookEntries`，缺失字段由 normalizer 补全。
+- 模板序列化从格式化 JSON 改为压缩 JSON。
+- `prompt.test.mjs` 增加压缩模板断言和长度下降断言。
 
 风险点：
 

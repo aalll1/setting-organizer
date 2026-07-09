@@ -1,4 +1,4 @@
-export const EXTRACT_SETTING_PROMPT_VERSION = 'extract-setting-v0.1.0';
+export const EXTRACT_SETTING_PROMPT_VERSION = 'extract-setting-v0.2.1';
 
 export function buildExtractSettingPrompt(sourceText, options = {}) {
     const targets = describeTargets(options.targets);
@@ -9,10 +9,12 @@ export function buildExtractSettingPrompt(sourceText, options = {}) {
         '任务：把用户提供的设定文本整理为严格 JSON，供程序校验和人工编辑。',
         '',
         '硬性输出规则：',
-        '- 只输出 JSON 对象。',
+        '- 只输出一个压缩 JSON 对象。',
         '- 不要输出 Markdown 代码块。',
         '- 不要输出自然语言解释。',
+        '- 不要在 JSON 前后添加说明、标题、列表或换行解释。',
         '- 不要编造原文没有出现的信息；无法判断时留空字符串或写入 warnings。',
+        '- 字段缺失允许由程序补全，但顶层必须包含 characters 和 lorebookEntries。',
         '- 区分永久设定和动态剧情状态；第一版只输出角色草稿和世界书草稿。',
         '- AI 不能执行写入、导入、覆盖或删除操作。',
         '',
@@ -22,7 +24,7 @@ export function buildExtractSettingPrompt(sourceText, options = {}) {
         `Token预算模式: ${budgetMode}`,
         '',
         '必须返回以下 JSON 结构：',
-        JSON.stringify(createOutputShape(), null, 2),
+        JSON.stringify(createOutputShape()),
         '',
         '字段要求：',
         '- characters[].name：角色名，无法确认则为空字符串。',
