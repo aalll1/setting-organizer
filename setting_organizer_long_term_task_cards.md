@@ -279,7 +279,7 @@
 
 ### TC-26 v0.2.1 回归测试与发布准备
 
-状态：未开始
+状态：已完成
 
 阶段：v0.2.1 收尾
 
@@ -307,8 +307,21 @@
 验收标准：
 
 - manifest 版本仅在测试通过后更新到 `0.2.1`。
+- 发布目录已同步到 `setting-organizer-native-install/`。
+- 本地语法检查、单元测试和 SillyTavern 1.18.0 浏览器 smoke test 已记录。
 - 创建本地 tag 和 GitHub 发布 tag。
 - 安装 URL 仍可用。
+
+完成记录：
+
+- `setting-organizer/manifest.json` 更新到 `0.2.1`，homePage 指向 `https://github.com/aalll1/setting-organizer`。
+- `setting-organizer-native-install/` 已同步 v0.2.1 文件。
+- 新增 `setting_organizer_runtime_test_report_v021_20260709.md`。
+- 运行 24 个关键 JS 文件 `node --check`。
+- 运行 14 个无参数单元测试；`cdp-check.mjs` 记录为需要 CDP websocket 参数的辅助脚本。
+- 在本地 SillyTavern 1.18.0 中验证扩展加载、mock 分析、结果页、备份、诊断导出和真实模型错误路径。
+- 当前环境未发现 `adb`，MuMu/Android CDP 未执行；本轮实测采用宿主机浏览器页面。
+- 本地提交、tag 和 GitHub 发布同步需在最终发布命令完成后确认。
 
 风险点：
 

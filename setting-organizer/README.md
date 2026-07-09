@@ -2,7 +2,7 @@
 
 SillyTavern 设定整理器扩展，用于把粘贴文本或当前聊天整理成可编辑的角色草稿和世界书草稿，再由用户确认后导出或安全新建到 SillyTavern。
 
-当前完成到 `TC-20 v0.2.0 回归测试、文档收口和版本发布准备`。世界书创建已在 SillyTavern 1.18.0 测试环境中通过 `saveWorldInfo(name, data, true)` 验证；角色创建已通过 `/api/characters/create` 验证；角色绑定世界书已通过 `/api/characters/merge-attributes` 验证。其他 SillyTavern 版本请先查看 `API_COMPATIBILITY.md`。
+当前完成到 `TC-26 v0.2.1 回归测试与发布准备`。世界书创建已在 SillyTavern 1.18.0 测试环境中通过 `saveWorldInfo(name, data, true)` 验证；角色创建已通过 `/api/characters/create` 验证；角色绑定世界书已通过 `/api/characters/merge-attributes` 验证。v0.2.1 本地回归覆盖 JSON 提取、截断识别、原始模型输出诊断、长输入提示和输入类错误码；其他 SillyTavern 版本请先查看 `API_COMPATIBILITY.md`。
 
 ## 安装
 
@@ -145,13 +145,14 @@ src/
 
 ## 路线图
 
-### v0.2.1 规划中
+### v0.2.1 已完成
 
 - 增强模型 JSON 输出解析稳定性。
 - 压缩设定提取 prompt，降低长 JSON 输出被截断的概率。
 - 增加模型原始输出调试能力。
 - 增加长输入和大量聊天读取的规模提示。
 - 补齐输入类错误码和错误帮助文档。
+- 完成 v0.2.1 本地语法检查、单元测试和 SillyTavern 1.18.0 浏览器 smoke test。
 
 ### v0.2.0 已完成
 

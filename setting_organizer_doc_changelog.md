@@ -1387,6 +1387,43 @@
 - 新增 analyzer 输入校验测试。
 - 扩展 errors 错误帮助映射测试。
 
+### 2026-07-09：完成 TC-26 v0.2.1 回归测试与发布准备
+
+变更类型：版本 / 测试 / 文档 / 发布准备
+
+涉及文件：
+
+- `setting-organizer/manifest.json`
+- `setting-organizer-native-install/manifest.json`
+- `setting-organizer-native-install/`
+- `setting-organizer/README.md`
+- `setting_organizer_long_term_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+- `setting_organizer_runtime_test_report_v021_20260709.md`
+
+变更原因：
+
+- 按长期任务卡推进 `TC-26`，为 v0.2.1 稳定性修复版完成回归测试和发布准备。
+
+主要变化：
+
+- manifest 版本更新到 `0.2.1`。
+- 发布目录同步当前开发版。
+- 新增 v0.2.1 运行时测试报告。
+- README 路线图从“v0.2.1 规划中”更新为“v0.2.1 已完成”。
+
+影响范围：
+
+- 影响安装元信息、发布副本和维护文档。
+- 不改变 core、UI、adapter 的业务逻辑。
+
+验证情况：
+
+- 24 个关键 JS 文件语法检查通过。
+- 14 个无参数单元测试通过。
+- SillyTavern 1.18.0 本地浏览器 smoke test 覆盖扩展加载、mock 分析、结果页、备份、诊断导出和真实模式错误路径。
+
 ## 变更记录模板
 
 ```text

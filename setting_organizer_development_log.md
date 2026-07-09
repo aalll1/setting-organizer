@@ -627,3 +627,26 @@
   - README、功能说明、使用说明同步更新错误码表。
 - 解耦说明：
   - 输入校验在 core/analyzer，UI 只负责展示统一错误文本。
+
+## 2026-07-09 TC-26 v0.2.1 回归测试与发布准备
+
+- 完成 `TC-26` 的本地发布准备。
+- 版本变更：
+  - `setting-organizer/manifest.json` 更新为 `0.2.1`。
+  - `setting-organizer-native-install/manifest.json` 更新为 `0.2.1`。
+  - `homePage` 统一指向 `https://github.com/aalll1/setting-organizer`。
+- 发布目录：
+  - 已把当前开发版同步到 `setting-organizer-native-install/`。
+  - 已把当前开发版同步到 `SillyTavern-runtime/public/scripts/extensions/third-party/setting-organizer/` 用于本地 smoke test。
+- 测试记录：
+  - 24 个关键 JS 文件 `node --check` 通过。
+  - 14 个无参数 `.mjs` 单元测试通过。
+  - `cdp-check.mjs` 需要 websocket 和表达式参数，作为运行时辅助脚本单独记录。
+  - SillyTavern 1.18.0 本地页面返回 HTTP 200。
+  - 扩展面板加载、mock 分析、结果页签、备份、诊断日志导出通过。
+  - 真实模型短文本路径在当前未配置模型环境下返回 `E002` 错误帮助，UI 未崩溃。
+- 环境限制：
+  - 当前 PATH 未发现 `adb`，本轮没有完成 MuMu/Android CDP 实测。
+  - 点击复制原始模型输出触发隐私确认弹窗后，Codex in-app Browser 控制 API 被确认弹窗阻塞；已在测试报告中记录。
+- 解耦说明：
+  - TC-26 只做版本、发布目录、文档和测试收口，不新增业务逻辑。

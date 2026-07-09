@@ -117,6 +117,20 @@
     opacity: 0.78;
 }
 
+.setting-organizer-diagnostics pre {
+    box-sizing: border-box;
+    flex-basis: 100%;
+    max-height: 240px;
+    overflow: auto;
+    width: 100%;
+    margin: 0;
+    padding: 8px;
+    border: 1px solid var(--SmartThemeBorderColor, #555);
+    border-radius: 6px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
 .setting-organizer-actions button:disabled {
     cursor: wait;
     opacity: 0.65;

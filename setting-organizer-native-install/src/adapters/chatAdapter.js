@@ -1,6 +1,6 @@
 import { ERROR_CODES, SettingOrganizerError } from '../core/errors.js';
 import { logError, logInfo } from '../core/logger.js';
-import { estimateTextTokens } from '../core/tokenEstimate.js';
+import { assessInputScale, estimateTextTokens } from '../core/tokenEstimate.js';
 import { getCurrentChatMessages } from './sillytavernApi.js';
 
 export const CHAT_RANGES = Object.freeze({
@@ -24,15 +24,21 @@ export function readCurrentChatSource(options = {}) {
             range: options.range || CHAT_RANGES.RECENT_20,
             totalMessages: messages.length,
             selectedMessages: selected.length,
+            userMessages: countMessagesByRole(selected, 'user'),
+            characterMessages: countMessagesByRole(selected, 'character'),
             sourceLength: sourceText.length,
             tokenEstimate: estimateTextTokens(sourceText),
+            inputScale: assessInputScale(sourceText),
         });
 
         return {
             sourceText,
             totalMessages: messages.length,
             selectedMessages: selected.length,
+            userMessages: countMessagesByRole(selected, 'user'),
+            characterMessages: countMessagesByRole(selected, 'character'),
             tokenEstimate: estimateTextTokens(sourceText),
+            inputScale: assessInputScale(sourceText),
         };
     } catch (error) {
         logError('chat-read-failed', error, {
@@ -131,4 +137,8 @@ function stripHtml(value) {
         .replace(/&lt;/g, '<')
         .replace(/&gt;/g, '>')
         .replace(/&amp;/g, '&');
+}
+
+function countMessagesByRole(messages, role) {
+    return messages.filter((message) => message.role === role).length;
 }

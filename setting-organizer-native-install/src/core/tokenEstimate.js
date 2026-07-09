@@ -22,6 +22,12 @@ export const TOKEN_BUDGETS = Object.freeze({
     },
 });
 
+export const TEXT_LENGTH_THRESHOLDS = Object.freeze({
+    SUGGEST_SPLIT: 3000,
+    WARN_TRUNCATION_RISK: 8000,
+    REQUIRE_CONFIRMATION: 15000,
+});
+
 export function estimateTextTokens(text) {
     const value = String(text || '');
     if (!value) {
@@ -32,6 +38,34 @@ export function estimateTextTokens(text) {
     const nonChineseChars = value.length - chineseChars;
 
     return Math.ceil(chineseChars + nonChineseChars / 4);
+}
+
+export function assessInputScale(text) {
+    const value = String(text || '');
+    const characterCount = value.length;
+    const tokenEstimate = estimateTextTokens(value);
+    const warnings = [];
+
+    if (characterCount > TEXT_LENGTH_THRESHOLDS.SUGGEST_SPLIT) {
+        warnings.push(`输入超过 ${TEXT_LENGTH_THRESHOLDS.SUGGEST_SPLIT} 字符，建议使用最近 20 条或分批整理。`);
+    }
+
+    if (characterCount > TEXT_LENGTH_THRESHOLDS.WARN_TRUNCATION_RISK) {
+        warnings.push(`输入超过 ${TEXT_LENGTH_THRESHOLDS.WARN_TRUNCATION_RISK} 字符，真实模型输出可能被截断。`);
+    }
+
+    if (characterCount > TEXT_LENGTH_THRESHOLDS.REQUIRE_CONFIRMATION) {
+        warnings.push(`输入超过 ${TEXT_LENGTH_THRESHOLDS.REQUIRE_CONFIRMATION} 字符，建议先分批处理或使用模拟结果验证流程。`);
+    }
+
+    return {
+        characterCount,
+        tokenEstimate,
+        warnings,
+        shouldSuggestSplit: characterCount > TEXT_LENGTH_THRESHOLDS.SUGGEST_SPLIT,
+        hasTruncationRisk: characterCount > TEXT_LENGTH_THRESHOLDS.WARN_TRUNCATION_RISK,
+        requiresConfirmation: characterCount > TEXT_LENGTH_THRESHOLDS.REQUIRE_CONFIRMATION,
+    };
 }
 
 export function estimateAnalysisTokens(sourceText, result) {
