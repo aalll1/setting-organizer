@@ -1182,6 +1182,36 @@
 
 - GitHub connector 已读取 `https://github.com/aalll1/setting-organizer/blob/v0.2.0/manifest.json`。
 
+### 2026-07-09：新增长期规划任务卡
+
+变更类型：新增 / 文档 / 规划
+
+涉及文件：
+
+- `setting_organizer_long_term_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 用户要求根据长期开发规划文档，将尚未实现部分整理为任务卡，并以 Markdown 文档保存到项目目录。
+
+主要变化：
+
+- 新增 `TC-21` 到 `TC-42` 长期任务卡。
+- 将 `v0.2.1` 稳定性修复设为近期最小可执行闭环。
+- 将剧情状态、状态合并、冲突检测、世界书同步、模板系统拆成后续阶段。
+- 增加工厂化任务：正式 docs 目录拆分、常量命名整理、质量脚本入口。
+
+影响范围：
+
+- 仅文档变更，不修改插件运行代码。
+
+验证情况：
+
+- 已检查任务卡编号接续 `TC-20`。
+- 已将长期愿景和近期可执行任务分离。
+
 ## 变更记录模板
 
 ```text

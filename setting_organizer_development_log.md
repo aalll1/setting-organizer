@@ -530,3 +530,20 @@
   - 已验证 `v0.2.0` tag 下的 `manifest.json` 可读取，版本为 `0.2.0`。
 - SillyTavern 原生安装 URL：
   - `https://github.com/aalll1/setting-organizer`
+
+## 2026-07-09 长期规划任务卡整理
+
+- 用户要求根据 `setting-organizer-long-term-dev-reference.md`，将尚未实现的部分整理成任务卡并保存为 Markdown。
+- 新增任务卡文档：
+  - `setting_organizer_long_term_task_cards.md`
+- 任务卡编号从 `TC-21` 开始，接续已完成的 `TC-00` 到 `TC-20`。
+- 任务范围覆盖：
+  - `v0.2.1` 稳定性修复。
+  - `v0.3.x` 剧情状态整理 MVP。
+  - `v0.4.x` 状态更新与归档。
+  - `v0.5.x` 冲突检测。
+  - `v0.6.x` 世界书同步增强。
+  - `v0.7.x` 模板系统。
+  - 工程化与正式 docs 目录拆分。
+- 明确短期优先级：先解决真实模型输出不稳定、E002 排障、原始输出调试和输入规模提示。
+- 明确长期边界：不复制 SillyTavern 原生角色 / 世界书管理器，不默认覆盖或删除用户数据。
