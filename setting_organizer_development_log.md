@@ -525,6 +525,8 @@
   - `manifest.json` 可读取。
   - 版本为 `0.2.0`。
   - `homePage` 指向发布仓库。
-- `v0.2.0` tag 推送尝试因当前环境额度限制被拦截，未继续绕路重试。
+- 2026-07-09 继续收口：
+  - 已推送远程 tag：`v0.2.0`。
+  - 已验证 `v0.2.0` tag 下的 `manifest.json` 可读取，版本为 `0.2.0`。
 - SillyTavern 原生安装 URL：
   - `https://github.com/aalll1/setting-organizer`

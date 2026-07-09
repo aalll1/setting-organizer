@@ -1152,7 +1152,35 @@
 - GitHub connector 已读取远程 `manifest.json`。
 - 远程 `manifest.json` 版本为 `0.2.0`。
 - 远程 `manifest.json` 的 `homePage` 指向发布仓库。
-- `v0.2.0` tag 推送被当前环境额度限制拦截，未继续绕路重试。
+
+### 2026-07-09：补推 GitHub 发布 tag
+
+变更类型：发布 / 文档
+
+涉及文件：
+
+- `setting_organizer_native_publish_plan.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 继续完成前一轮因环境额度限制未完成的 `v0.2.0` tag 推送。
+
+主要变化：
+
+- 已向 `aalll1/setting-organizer` 推送远程 tag：`v0.2.0`。
+- 已验证 `v0.2.0` tag 下的 `manifest.json` 可读取。
+- tag 下 `manifest.json` 版本为 `0.2.0`。
+
+影响范围：
+
+- 远程 GitHub 仓库新增 `v0.2.0` tag。
+- 本地开发仓库更新发布记录文档。
+
+验证情况：
+
+- GitHub connector 已读取 `https://github.com/aalll1/setting-organizer/blob/v0.2.0/manifest.json`。
 
 ## 变更记录模板
 

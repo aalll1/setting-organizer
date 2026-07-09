@@ -60,9 +60,11 @@ https://github.com/aalll1/setting-organizer
 - `manifest.json` 版本为 `0.2.0`。
 - `homePage` 指向 `https://github.com/aalll1/setting-organizer`。
 
-未完成项：
+版本标记：
 
-- `v0.2.0` tag 推送被当前环境额度限制拦截，未继续绕路重试。
+- 已推送远程 tag：`v0.2.0`
+- 已验证 `v0.2.0` tag 下的 `manifest.json` 可读取。
+- tag 下 `manifest.json` 版本为 `0.2.0`。
 
 ## 上传方案
 
