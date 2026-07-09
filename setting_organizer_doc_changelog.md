@@ -1277,6 +1277,42 @@
 
 - `prompt.test.mjs` 增加压缩模板和长度下降断言。
 
+### 2026-07-09：完成 TC-23 原始模型输出调试面板
+
+变更类型：新增 / 测试 / 文档
+
+涉及文件：
+
+- `setting-organizer/src/core/modelOutputDebug.js`
+- `setting-organizer/src/core/analyzer.js`
+- `setting-organizer/src/core/parser.js`
+- `setting-organizer/src/ui/diagnostics.js`
+- `setting-organizer/style.css`
+- `setting-organizer/tests/modelOutputDebug.test.mjs`
+- `setting_organizer_long_term_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 按长期任务卡推进 `TC-23`，提供显式触发的模型原始输出调试能力，解决 `E002` 排查困难。
+
+主要变化：
+
+- 新增最近一次模型输出调试摘要。
+- 诊断面板显示 source、prompt、raw output 长度和截断识别信息。
+- 用户可显式复制或下载完整原始输出。
+- 默认日志不保存完整原始输出。
+
+影响范围：
+
+- 影响真实模型分析后的诊断面板展示。
+- 不改变 mock 分析、导入写入、SillyTavern adapter 和草稿 schema。
+
+验证情况：
+
+- 新增测试验证日志只记录摘要，不记录完整 raw output。
+
 ## 变更记录模板
 
 ```text

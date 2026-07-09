@@ -1,11 +1,13 @@
 import { callCurrentModel } from '../adapters/sillytavernApi.js';
 import { estimateAnalysisTokens } from './tokenEstimate.js';
+import { captureModelOutputDebug } from './modelOutputDebug.js';
 import { parseValidateNormalize, validateAndNormalizeAnalysisResult } from './validator.js';
 import { applyWarnings } from './warnings.js';
 
 export async function analyzeSettingText(sourceText, options) {
     if (options.analysisMode === 'sillytavern') {
         const rawText = await callCurrentModel(sourceText, options);
+        captureModelOutputDebug({ sourceText, options, rawOutput: rawText });
         return applyWarnings(parseValidateNormalize(rawText), sourceText, options);
     }
 

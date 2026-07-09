@@ -41,6 +41,23 @@ export function extractLikelyJson(rawText) {
     return text;
 }
 
+export function inspectModelOutput(rawText) {
+    const sourceText = String(rawText || '').trim();
+    const jsonText = extractLikelyJson(sourceText);
+    const startIndex = findLikelyJsonStart(sourceText);
+
+    return {
+        rawOutputLength: sourceText.length,
+        extractedJsonLength: jsonText.length,
+        rawOutputPreviewStart: sourceText.slice(0, RAW_OUTPUT_PREVIEW_LENGTH),
+        rawOutputPreviewEnd: sourceText.slice(-RAW_OUTPUT_PREVIEW_LENGTH),
+        hasFencedJson: /```(?:json)?/i.test(sourceText),
+        hasLikelyJsonStart: startIndex >= 0,
+        hasLikelyJsonEnd: findLikelyJsonEnd(sourceText, startIndex) > startIndex,
+        isLikelyTruncated: isLikelyTruncatedText(jsonText),
+    };
+}
+
 function extractFencedJson(text) {
     const fullFence = text.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
     if (fullFence) {
@@ -134,17 +151,12 @@ function findBalancedJsonEnd(text, startIndex) {
 }
 
 function createParseDiagnostics(sourceText, jsonText, error) {
-    const truncated = isLikelyTruncatedJson(jsonText, error);
+    const inspectedOutput = inspectModelOutput(sourceText);
+    const truncated = inspectedOutput.isLikelyTruncated || isLikelyTruncatedJson(jsonText, error);
     return {
         message: truncated ? '模型输出疑似被截断，无法解析为完整 JSON。' : '模型输出不是合法 JSON。',
         details: {
-            rawOutputLength: sourceText.length,
-            extractedJsonLength: jsonText.length,
-            rawOutputPreviewStart: sourceText.slice(0, RAW_OUTPUT_PREVIEW_LENGTH),
-            rawOutputPreviewEnd: sourceText.slice(-RAW_OUTPUT_PREVIEW_LENGTH),
-            hasFencedJson: /```(?:json)?/i.test(sourceText),
-            hasLikelyJsonStart: findLikelyJsonStart(sourceText) >= 0,
-            hasLikelyJsonEnd: findLikelyJsonEnd(sourceText, findLikelyJsonStart(sourceText)) > findLikelyJsonStart(sourceText),
+            ...inspectedOutput,
             isLikelyTruncated: truncated,
         },
     };
@@ -155,6 +167,10 @@ function isLikelyTruncatedJson(jsonText, error) {
         return true;
     }
 
+    return isLikelyTruncatedText(jsonText);
+}
+
+function isLikelyTruncatedText(jsonText) {
     const trimmed = jsonText.trim();
     if (!trimmed) {
         return false;

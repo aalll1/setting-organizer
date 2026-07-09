@@ -128,7 +128,7 @@
 
 ### TC-23 原始模型输出调试面板
 
-状态：未开始
+状态：已完成
 
 阶段：v0.2.1
 
@@ -159,6 +159,14 @@
 - 预览长度可控，长文本会截断。
 - 用户可复制或下载完整原始输出。
 - 清空诊断日志不影响当前页面已经显示的错误报告。
+
+完成记录：
+
+- 新增 `modelOutputDebug.js`，用 module-scoped 状态保存最近一次原始模型输出，默认不写入 localStorage。
+- `analyzer.js` 在真实 SillyTavern 模型模式下捕获 source 长度、prompt 长度、raw output 长度和输出检查结果。
+- `diagnostics.js` 显示本次模型输出调试摘要，并提供复制 / 下载原始输出按钮。
+- 复制或下载完整原始输出前弹出隐私确认。
+- 新增 `modelOutputDebug.test.mjs`，验证默认日志只保存摘要、不保存完整 raw output。
 
 风险点：
 

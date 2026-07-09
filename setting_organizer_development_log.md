@@ -579,3 +579,20 @@
   - README 增加 v0.2.1 规划中条目。
 - 解耦说明：
   - 本任务只调整 prompts 层和对应测试，不触碰 parser、UI、adapter 或 SillyTavern 写入流程。
+
+## 2026-07-09 TC-23 原始模型输出调试面板
+
+- 完成 `TC-23`。
+- 代码变更：
+  - 新增 `modelOutputDebug.js`，用 core 层模块保存最近一次 raw model output 和摘要。
+  - `analyzer.js` 在真实模型模式下捕获模型输出调试摘要。
+  - `diagnostics.js` 增加模型输出调试摘要展示，以及复制 / 下载原始模型输出按钮。
+  - `parser.js` 导出 `inspectModelOutput()`，复用 JSON 起止、fenced JSON 和截断识别逻辑。
+- 隐私边界：
+  - 默认诊断日志不保存完整 raw output。
+  - 完整 raw output 只保存在当前页面内存状态中。
+  - 用户点击复制或下载前会看到隐私确认。
+- 测试变更：
+  - 新增 `modelOutputDebug.test.mjs`。
+- 解耦说明：
+  - analyzer 负责捕获，core debug 模块负责状态，diagnostics 负责展示和显式导出，logger 只记录摘要。
