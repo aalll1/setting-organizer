@@ -1313,6 +1313,42 @@
 
 - 新增测试验证日志只记录摘要，不记录完整 raw output。
 
+### 2026-07-09：完成 TC-24 输入规模提示与分析前确认
+
+变更类型：新增 / 测试 / 文档
+
+涉及文件：
+
+- `setting-organizer/src/core/tokenEstimate.js`
+- `setting-organizer/src/core/warnings.js`
+- `setting-organizer/src/adapters/chatAdapter.js`
+- `setting-organizer/src/ui/panel.js`
+- `setting-organizer/tests/tokenEstimate.test.mjs`
+- `setting-organizer/tests/chatAdapter.test.mjs`
+- `setting_organizer_long_term_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 按长期任务卡推进 `TC-24`，在长输入或大量聊天读取时提前提示截断风险，减少真实模型输出失败。
+
+主要变化：
+
+- 新增输入规模评估函数和字符阈值。
+- 聊天读取后显示消息统计、字符数、token 估算和风险提示。
+- 真实模型模式下超长输入需要用户确认。
+- mock 模式不被超长确认阻塞。
+
+影响范围：
+
+- 影响聊天读取状态提示、草稿 warnings 和真实模型分析前确认。
+- 不改变 parser、prompt、adapter 写入或导入流程。
+
+验证情况：
+
+- 新增 token 阈值测试和聊天统计测试。
+
 ## 变更记录模板
 
 ```text

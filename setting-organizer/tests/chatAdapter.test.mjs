@@ -78,8 +78,11 @@ const readResult = readCurrentChatSource({
 });
 assert.equal(readResult.selectedMessages, 2);
 assert.equal(readResult.totalMessages, 4);
+assert.equal(readResult.userMessages, 2);
+assert.equal(readResult.characterMessages, 0);
 assert.ok(readResult.sourceText.includes('灰雾边境'));
 assert.ok(readResult.tokenEstimate > 0);
+assert.equal(readResult.inputScale.requiresConfirmation, false);
 
 globalThis.window = {
     localStorage: createMemoryStorage(),
@@ -97,6 +100,8 @@ const longReadResult = readCurrentChatSource({
 });
 assert.equal(longReadResult.selectedMessages, 50);
 assert.equal(longReadResult.totalMessages, 60);
+assert.equal(longReadResult.userMessages, 25);
+assert.equal(longReadResult.characterMessages, 25);
 assert.ok(longReadResult.sourceText.includes('SO_V02_Chat 测试消息 59'));
 
 globalThis.window = {

@@ -1,4 +1,4 @@
-import { estimateTextTokens, resolveBudget } from './tokenEstimate.js';
+import { assessInputScale, estimateTextTokens, resolveBudget } from './tokenEstimate.js';
 
 const SHORT_KEYWORD_LENGTH = 2;
 const LONG_INPUT_TOKENS = 6000;
@@ -25,6 +25,9 @@ export function applyWarnings(result, sourceText, options = {}) {
     const budget = resolveBudget(options.tokenBudgetMode, options.customBudget);
     const warnings = [...(result.warnings || [])];
     const inputTokens = estimateTextTokens(sourceText);
+    const inputScale = assessInputScale(sourceText);
+
+    warnings.push(...inputScale.warnings);
 
     if (inputTokens > LONG_INPUT_TOKENS) {
         warnings.push(`输入内容较长，粗估 ${inputTokens} tokens，可能超过模型上下文或预算。`);

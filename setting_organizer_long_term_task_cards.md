@@ -180,7 +180,7 @@
 
 ### TC-24 输入规模提示与分析前确认
 
-状态：未开始
+状态：已完成
 
 阶段：v0.2.1
 
@@ -211,6 +211,15 @@
 - 长文本显示明确风险提示。
 - 超长输入不会直接静默进入真实模型分析。
 - mock 模式不被不必要阻塞。
+
+完成记录：
+
+- `tokenEstimate.js` 新增 `TEXT_LENGTH_THRESHOLDS` 和 `assessInputScale(text)`。
+- `warnings.js` 复用输入规模评估，将长输入风险写入草稿 warnings。
+- `chatAdapter.js` 返回用户消息数、AI/角色消息数、字符数、token 估算和输入规模评估。
+- `panel.js` 在聊天读取后显示消息条数、用户/AI 数、字符数、token 和规模警告。
+- `panel.js` 在真实模型模式且输入超过 15000 字符时要求用户确认；mock 模式不阻塞。
+- `tokenEstimate.test.mjs` 和 `chatAdapter.test.mjs` 增加覆盖。
 
 风险点：
 

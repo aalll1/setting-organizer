@@ -596,3 +596,18 @@
   - 新增 `modelOutputDebug.test.mjs`。
 - 解耦说明：
   - analyzer 负责捕获，core debug 模块负责状态，diagnostics 负责展示和显式导出，logger 只记录摘要。
+
+## 2026-07-09 TC-24 输入规模提示与分析前确认
+
+- 完成 `TC-24`。
+- 代码变更：
+  - `tokenEstimate.js` 新增 `TEXT_LENGTH_THRESHOLDS` 和 `assessInputScale(text)`。
+  - `warnings.js` 复用输入规模评估，将长输入风险写入草稿 warnings。
+  - `chatAdapter.js` 返回用户消息数、AI/角色消息数、字符数、token 估算和输入规模评估。
+  - `panel.js` 在聊天读取后显示消息条数、用户/AI 数、字符数、token 和规模警告。
+  - `panel.js` 在真实模型模式且输入超过 15000 字符时要求用户确认。
+- 测试变更：
+  - `tokenEstimate.test.mjs` 覆盖 3000、8000、15000 字符阈值。
+  - `chatAdapter.test.mjs` 覆盖消息角色统计和 inputScale 返回值。
+- 解耦说明：
+  - 阈值和判断逻辑集中在 core/tokenEstimate，UI 只展示结果和执行用户确认。

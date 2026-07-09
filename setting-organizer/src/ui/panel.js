@@ -2,6 +2,7 @@ import { analyzeSettingText } from '../core/analyzer.js';
 import { CHAT_RANGES, readCurrentChatSource } from '../adapters/chatAdapter.js';
 import { formatError } from '../core/errors.js';
 import { logError, logInfo } from '../core/logger.js';
+import { assessInputScale } from '../core/tokenEstimate.js';
 import { loadSettings, saveSettings } from '../storage/settings.js';
 import { bindDiagnosticsControls, renderDiagnosticsControls } from './diagnostics.js';
 import { mountResults } from './results.js';
@@ -161,7 +162,7 @@ function bindPanel(panel, settings) {
             persist();
             clearError(elements);
             elements.chatStatus.dataset.state = 'success';
-            elements.chatStatus.textContent = `已读取 ${chatSource.selectedMessages}/${chatSource.totalMessages} 条，约 ${chatSource.tokenEstimate} tokens。`;
+            elements.chatStatus.textContent = formatChatReadStatus(chatSource);
         } catch (error) {
             elements.chatStatus.dataset.state = 'error';
             elements.chatStatus.textContent = formatError(error);
@@ -189,6 +190,13 @@ function bindPanel(panel, settings) {
             return;
         }
 
+        const inputScale = assessInputScale(currentSettings.sourceText);
+        if (currentSettings.analysisMode === 'sillytavern' && inputScale.requiresConfirmation && !confirmLongInput(inputScale)) {
+            showError(elements, '已取消真实模型分析。建议缩短输入、改用最近 20 条聊天或分批整理。');
+            setStatus(elements, 'failed');
+            return;
+        }
+
         isAnalyzing = true;
         elements.analyzeButton.disabled = true;
         setStatus(elements, 'analyzing');
@@ -196,6 +204,7 @@ function bindPanel(panel, settings) {
             mode: currentSettings.analysisMode,
             targets: currentSettings.targets,
             sourceLength: currentSettings.sourceText.trim().length,
+            inputScale,
         });
 
         try {
@@ -299,6 +308,31 @@ function parseManualIndexes(value) {
             return Array.from({ length: end - start + 1 }, (_, index) => start + index);
         })
         .filter((index) => Number.isInteger(index) && index >= 0);
+}
+
+function formatChatReadStatus(chatSource) {
+    const lines = [
+        `已读取 ${chatSource.selectedMessages}/${chatSource.totalMessages} 条，用户 ${chatSource.userMessages} 条，AI/角色 ${chatSource.characterMessages} 条。`,
+        `总字符数 ${chatSource.inputScale.characterCount}，约 ${chatSource.tokenEstimate} tokens。`,
+    ];
+
+    if (chatSource.inputScale.warnings.length) {
+        lines.push(...chatSource.inputScale.warnings);
+    }
+
+    return lines.join('\n');
+}
+
+function confirmLongInput(inputScale) {
+    if (typeof window === 'undefined' || typeof window.confirm !== 'function') {
+        return true;
+    }
+
+    return window.confirm([
+        `当前输入 ${inputScale.characterCount} 字符，约 ${inputScale.tokenEstimate} tokens。`,
+        '真实模型输出可能被截断。',
+        '仍要继续分析吗？',
+    ].join('\n'));
 }
 
 function buildPlaceholderResult(settings) {
