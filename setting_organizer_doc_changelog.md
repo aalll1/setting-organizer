@@ -1122,6 +1122,38 @@
 - 已确认本机未安装 `gh` CLI。
 - 已确认当前可访问仓库列表中没有专用 `setting-organizer` 仓库。
 
+### 2026-07-08：发布到 GitHub 原生安装仓库
+
+变更类型：发布 / 文档
+
+涉及文件：
+
+- `setting_organizer_native_publish_plan.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 用户已创建发布仓库 `aalll1/setting-organizer`，要求使用 GitHub connector 自行发布。
+
+主要变化：
+
+- 已将 `setting-organizer-native-install/` 作为仓库根目录发布到 GitHub。
+- 远程提交：`768f669 release: publish setting organizer 0.2.0`。
+- 安装 URL：`https://github.com/aalll1/setting-organizer`。
+
+影响范围：
+
+- 远程 GitHub 仓库 `aalll1/setting-organizer` 的 `main` 分支已更新。
+- 本地开发仓库仅更新发布记录文档。
+
+验证情况：
+
+- GitHub connector 已读取远程 `manifest.json`。
+- 远程 `manifest.json` 版本为 `0.2.0`。
+- 远程 `manifest.json` 的 `homePage` 指向发布仓库。
+- `v0.2.0` tag 推送被当前环境额度限制拦截，未继续绕路重试。
+
 ## 变更记录模板
 
 ```text

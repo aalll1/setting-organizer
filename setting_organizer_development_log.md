@@ -512,3 +512,19 @@
   - `https://github.com/aalll1/setting-organizer`
 - 新增发布记录：
   - `setting_organizer_native_publish_plan.md`
+
+## 2026-07-08 GitHub 发布完成
+
+- 用户创建发布仓库：`aalll1/setting-organizer`。
+- 已将 `setting-organizer-native-install/` 作为仓库根目录推送到：
+  - `https://github.com/aalll1/setting-organizer`
+- 远程分支：`main`。
+- 远程提交：
+  - `768f669 release: publish setting organizer 0.2.0`
+- 远程验证：
+  - `manifest.json` 可读取。
+  - 版本为 `0.2.0`。
+  - `homePage` 指向发布仓库。
+- `v0.2.0` tag 推送尝试因当前环境额度限制被拦截，未继续绕路重试。
+- SillyTavern 原生安装 URL：
+  - `https://github.com/aalll1/setting-organizer`

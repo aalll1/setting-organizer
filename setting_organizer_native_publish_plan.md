@@ -40,16 +40,35 @@ https://github.com/aalll1/setting-organizer
 
 ## 当前阻塞点
 
-- 当前本地开发仓库没有 GitHub remote。
-- 本机未安装 `gh` CLI。
-- GitHub App 当前可访问的仓库列表中没有发现专门的 `setting-organizer` 仓库。
-- 为避免污染现有无关仓库，未将发布目录上传到 `earth`、`tvbox`、`kk-excel-script`、`ocsjs`、`legado` 或 `VideoTogether`。
+已解除。用户已创建 GitHub 仓库：
+
+```text
+https://github.com/aalll1/setting-organizer
+```
+
+已将 `setting-organizer-native-install/` 作为仓库根目录发布到 `main` 分支。
+
+远程提交：
+
+```text
+768f669 release: publish setting organizer 0.2.0
+```
+
+远程验证：
+
+- `manifest.json` 可从 GitHub `main` 分支读取。
+- `manifest.json` 版本为 `0.2.0`。
+- `homePage` 指向 `https://github.com/aalll1/setting-organizer`。
+
+未完成项：
+
+- `v0.2.0` tag 推送被当前环境额度限制拦截，未继续绕路重试。
 
 ## 上传方案
 
-### 推荐方案：新建专用仓库
+### 已采用方案：新建专用仓库
 
-1. 在 GitHub 创建空仓库：`aalll1/setting-organizer`。
+1. GitHub 仓库：`aalll1/setting-organizer`。
 2. 将 `setting-organizer-native-install/` 目录作为仓库根目录推送。
 3. 用户在 SillyTavern 中通过 `Extensions => Install Extension` 粘贴仓库 URL 安装。
 
