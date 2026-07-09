@@ -547,3 +547,18 @@
   - 工程化与正式 docs 目录拆分。
 - 明确短期优先级：先解决真实模型输出不稳定、E002 排障、原始输出调试和输入规模提示。
 - 明确长期边界：不复制 SillyTavern 原生角色 / 世界书管理器，不默认覆盖或删除用户数据。
+
+## 2026-07-09 TC-21 JSON 提取与截断识别
+
+- 完成 `TC-21`。
+- 代码变更：
+  - `parser.js` 新增 `extractLikelyJson(rawText)`。
+  - 支持普通 JSON、Markdown fenced JSON、自然语言 + JSON、嵌入式 fenced JSON 和前后空白。
+  - JSON 解析失败时增加诊断 details：raw output 长度、提取 JSON 长度、首尾预览、fenced JSON 标记、起止大括号标记和疑似截断标记。
+  - 半截 JSON 仍映射到 `E002`，但错误提示明确为“模型输出疑似被截断”。
+- 测试变更：
+  - 新增 `setting-organizer/tests/parser.test.mjs`。
+  - 覆盖 7 种模型输出形态。
+- 不做事项：
+  - 未引入 JSON repair 依赖。
+  - 未做 LLM 二次修复重试。

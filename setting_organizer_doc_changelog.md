@@ -1212,6 +1212,38 @@
 - 已检查任务卡编号接续 `TC-20`。
 - 已将长期愿景和近期可执行任务分离。
 
+### 2026-07-09：完成 TC-21 JSON 提取与截断识别
+
+变更类型：修改 / 测试 / 文档
+
+涉及文件：
+
+- `setting-organizer/src/core/parser.js`
+- `setting-organizer/tests/parser.test.mjs`
+- `setting_organizer_long_term_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 按长期任务卡推进 `TC-21`，降低真实模型输出因 Markdown 包裹、自然语言前后缀或半截 JSON 导致的 `E002` 排查难度。
+
+主要变化：
+
+- 新增确定性 JSON 提取逻辑。
+- 解析失败时记录 raw output 长度和首尾预览等诊断字段。
+- 半截 JSON 显示疑似截断提示。
+- 新增 parser 单元测试。
+
+影响范围：
+
+- 仅影响模型输出解析和错误 details。
+- 不改变草稿 schema、导入写入流程或 SillyTavern adapter。
+
+验证情况：
+
+- 新增测试覆盖普通 JSON、Markdown JSON、自然语言 + JSON、嵌入式 fenced JSON、非 JSON 和半截 JSON。
+
 ## 变更记录模板
 
 ```text
