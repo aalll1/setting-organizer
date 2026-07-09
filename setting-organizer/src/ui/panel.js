@@ -1,6 +1,6 @@
 import { analyzeSettingText } from '../core/analyzer.js';
 import { CHAT_RANGES, readCurrentChatSource } from '../adapters/chatAdapter.js';
-import { formatError } from '../core/errors.js';
+import { ERROR_CODES, SettingOrganizerError, formatError } from '../core/errors.js';
 import { logError, logInfo } from '../core/logger.js';
 import { assessInputScale } from '../core/tokenEstimate.js';
 import { loadSettings, saveSettings } from '../storage/settings.js';
@@ -179,7 +179,7 @@ function bindPanel(panel, settings) {
         clearError(elements);
 
         if (!currentSettings.sourceText.trim()) {
-            showError(elements, '请输入需要整理的设定文本。');
+            showError(elements, formatError(new SettingOrganizerError(ERROR_CODES.EMPTY_INPUT, '输入内容为空。')));
             setStatus(elements, 'failed');
             return;
         }
@@ -192,7 +192,10 @@ function bindPanel(panel, settings) {
 
         const inputScale = assessInputScale(currentSettings.sourceText);
         if (currentSettings.analysisMode === 'sillytavern' && inputScale.requiresConfirmation && !confirmLongInput(inputScale)) {
-            showError(elements, '已取消真实模型分析。建议缩短输入、改用最近 20 条聊天或分批整理。');
+            showError(elements, formatError(new SettingOrganizerError(
+                ERROR_CODES.INPUT_CONFIRMATION_CANCELLED,
+                '用户取消了超长输入分析。',
+            )));
             setStatus(elements, 'failed');
             return;
         }

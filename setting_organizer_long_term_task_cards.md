@@ -232,7 +232,7 @@
 
 ### TC-25 错误码扩展与错误帮助文档同步
 
-状态：未开始
+状态：已完成
 
 阶段：v0.2.1
 
@@ -259,6 +259,15 @@
 
 - `errors.test.mjs` 覆盖所有错误码帮助映射。
 - 空输入、非文本输入、超长确认取消等路径有明确错误提示。
+
+完成记录：
+
+- 新增 `E014 INVALID_INPUT`、`E015 EMPTY_INPUT`、`E016 INPUT_CONFIRMATION_CANCELLED`。
+- `ERROR_HELP` 覆盖新增错误码。
+- `analyzer.js` 在入口校验非文本输入和空输入。
+- `panel.js` 的空输入和超长取消路径改为统一 `formatError()` 展示。
+- README、功能说明和使用说明同步更新错误码表。
+- 新增 `analyzer.test.mjs`，扩展 `errors.test.mjs`。
 
 风险点：
 

@@ -1349,6 +1349,44 @@
 
 - 新增 token 阈值测试和聊天统计测试。
 
+### 2026-07-09：完成 TC-25 错误码扩展与错误帮助文档同步
+
+变更类型：新增 / 测试 / 文档
+
+涉及文件：
+
+- `setting-organizer/src/core/errors.js`
+- `setting-organizer/src/core/analyzer.js`
+- `setting-organizer/src/ui/panel.js`
+- `setting-organizer/tests/errors.test.mjs`
+- `setting-organizer/tests/analyzer.test.mjs`
+- `setting-organizer/README.md`
+- `setting_organizer_feature_overview.md`
+- `setting_organizer_user_guide.md`
+- `setting_organizer_long_term_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 按长期任务卡推进 `TC-25`，补齐输入类错误码，并同步 UI、测试和文档。
+
+主要变化：
+
+- 新增 `E014`、`E015`、`E016`。
+- 空输入、非文本输入、超长确认取消进入统一错误格式。
+- 错误码文档同步更新。
+
+影响范围：
+
+- 影响输入校验和错误展示。
+- 不改变模型调用、parser、导入写入或 SillyTavern adapter。
+
+验证情况：
+
+- 新增 analyzer 输入校验测试。
+- 扩展 errors 错误帮助映射测试。
+
 ## 变更记录模板
 
 ```text

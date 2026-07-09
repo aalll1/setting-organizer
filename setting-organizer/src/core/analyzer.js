@@ -1,10 +1,13 @@
 import { callCurrentModel } from '../adapters/sillytavernApi.js';
+import { ERROR_CODES, SettingOrganizerError } from './errors.js';
 import { estimateAnalysisTokens } from './tokenEstimate.js';
 import { captureModelOutputDebug } from './modelOutputDebug.js';
 import { parseValidateNormalize, validateAndNormalizeAnalysisResult } from './validator.js';
 import { applyWarnings } from './warnings.js';
 
 export async function analyzeSettingText(sourceText, options) {
+    validateSourceText(sourceText);
+
     if (options.analysisMode === 'sillytavern') {
         const rawText = await callCurrentModel(sourceText, options);
         captureModelOutputDebug({ sourceText, options, rawOutput: rawText });
@@ -57,6 +60,16 @@ export async function analyzeSettingText(sourceText, options) {
     rawResult.tokenEstimate = estimateAnalysisTokens(trimmedText, rawResult);
 
     return applyWarnings(validateAndNormalizeAnalysisResult(rawResult), trimmedText, options);
+}
+
+function validateSourceText(sourceText) {
+    if (typeof sourceText !== 'string') {
+        throw new SettingOrganizerError(ERROR_CODES.INVALID_INPUT, '输入内容必须是文本。');
+    }
+
+    if (!sourceText.trim()) {
+        throw new SettingOrganizerError(ERROR_CODES.EMPTY_INPUT, '输入内容为空。');
+    }
 }
 
 function inferCharacterName(text) {

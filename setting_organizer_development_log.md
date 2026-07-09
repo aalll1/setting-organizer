@@ -611,3 +611,19 @@
   - `chatAdapter.test.mjs` 覆盖消息角色统计和 inputScale 返回值。
 - 解耦说明：
   - 阈值和判断逻辑集中在 core/tokenEstimate，UI 只展示结果和执行用户确认。
+
+## 2026-07-09 TC-25 错误码扩展与错误帮助文档同步
+
+- 完成 `TC-25`。
+- 代码变更：
+  - 新增 `E014 INVALID_INPUT`、`E015 EMPTY_INPUT`、`E016 INPUT_CONFIRMATION_CANCELLED`。
+  - `ERROR_HELP` 补齐新增错误码的标题、说明和建议。
+  - `analyzer.js` 入口增加非文本输入和空输入校验。
+  - `panel.js` 的空输入和超长输入取消路径改为统一错误格式。
+- 测试变更：
+  - 新增 `analyzer.test.mjs`。
+  - 扩展 `errors.test.mjs`。
+- 文档变更：
+  - README、功能说明、使用说明同步更新错误码表。
+- 解耦说明：
+  - 输入校验在 core/analyzer，UI 只负责展示统一错误文本。

@@ -13,6 +13,14 @@ assert.ok(formatted.includes('建议：'));
 assert.ok(formatted.includes('错误码：E008'));
 assert.ok(formatted.includes('原因：HTTP 500'));
 
+const emptyInput = formatError(new SettingOrganizerError(ERROR_CODES.EMPTY_INPUT, '输入内容为空。'));
+assert.ok(emptyInput.includes('输入内容为空'));
+assert.ok(emptyInput.includes('错误码：E015'));
+
+const cancelled = formatError(new SettingOrganizerError(ERROR_CODES.INPUT_CONFIRMATION_CANCELLED, '用户取消了超长输入分析。'));
+assert.ok(cancelled.includes('已取消超长输入分析'));
+assert.ok(cancelled.includes('错误码：E016'));
+
 const fallback = formatError(new Error('boom'));
 assert.ok(fallback.includes('未知错误'));
 assert.ok(fallback.includes('导出诊断日志'));
