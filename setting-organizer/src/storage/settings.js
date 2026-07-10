@@ -4,6 +4,7 @@ const STORAGE_KEY = 'setting-organizer.settings.v1';
 
 export const DEFAULT_SETTINGS = Object.freeze({
     sourceText: '',
+    organizeMode: 'setting',
     targets: {
         character: true,
         lorebook: true,
@@ -49,6 +50,7 @@ export function normalizeSettings(settings) {
 
     return {
         sourceText: typeof safeSettings.sourceText === 'string' ? safeSettings.sourceText : DEFAULT_SETTINGS.sourceText,
+        organizeMode: normalizeOrganizeMode(safeSettings.organizeMode),
         targets: {
             character: typeof safeTargets.character === 'boolean' ? safeTargets.character : DEFAULT_SETTINGS.targets.character,
             lorebook: typeof safeTargets.lorebook === 'boolean' ? safeTargets.lorebook : DEFAULT_SETTINGS.targets.lorebook,
@@ -70,6 +72,10 @@ function cloneDefaultSettings() {
 
 function normalizeBudgetMode(value) {
     return ['light', 'standard', 'long', 'custom'].includes(value) ? value : DEFAULT_SETTINGS.tokenBudgetMode;
+}
+
+function normalizeOrganizeMode(value) {
+    return ['setting', 'state'].includes(value) ? value : DEFAULT_SETTINGS.organizeMode;
 }
 
 function normalizeAnalysisMode(value) {

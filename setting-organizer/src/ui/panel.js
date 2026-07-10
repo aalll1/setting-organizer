@@ -1,4 +1,5 @@
 import { analyzeSettingText } from '../core/analyzer.js';
+import { analyzeCampaignStateText } from '../core/stateAnalyzer.js';
 import { CHAT_RANGES, readCurrentChatSource } from '../adapters/chatAdapter.js';
 import { ERROR_CODES, SettingOrganizerError, formatError } from '../core/errors.js';
 import { logError, logInfo } from '../core/logger.js';
@@ -6,6 +7,7 @@ import { assessInputScale } from '../core/tokenEstimate.js';
 import { loadSettings, saveSettings } from '../storage/settings.js';
 import { bindDiagnosticsControls, renderDiagnosticsControls } from './diagnostics.js';
 import { mountResults } from './results.js';
+import { mountStatePanel } from './statePanel.js';
 
 const EXTENSION_DISPLAY_NAME = '设定整理器';
 const PANEL_ID = 'setting-organizer-panel';
@@ -15,6 +17,11 @@ const STATUS_TEXT = Object.freeze({
     analyzing: '分析中...',
     success: '分析完成。',
     failed: '分析失败。',
+});
+
+const ORGANIZE_MODES = Object.freeze({
+    SETTING: 'setting',
+    STATE: 'state',
 });
 
 export function createPanel() {
@@ -50,6 +57,14 @@ function renderPanel(settings) {
             <textarea id="setting-organizer-input" rows="8" placeholder="在这里粘贴角色设定、世界观或剧情记录">${escapeHtml(settings.sourceText)}</textarea>
         </label>
 
+        <label class="setting-organizer-field">
+            <span>整理模式</span>
+            <select id="setting-organizer-mode">
+                <option value="${ORGANIZE_MODES.SETTING}" ${settings.organizeMode === ORGANIZE_MODES.SETTING ? 'selected' : ''}>设定整理</option>
+                <option value="${ORGANIZE_MODES.STATE}" ${settings.organizeMode === ORGANIZE_MODES.STATE ? 'selected' : ''}>剧情状态整理</option>
+            </select>
+        </label>
+
         <fieldset class="setting-organizer-fieldset setting-organizer-chat-source">
             <legend>当前聊天读取</legend>
             <label>
@@ -69,7 +84,7 @@ function renderPanel(settings) {
             <span id="setting-organizer-chat-status" aria-live="polite"></span>
         </fieldset>
 
-        <fieldset class="setting-organizer-fieldset">
+        <fieldset id="setting-organizer-target-fieldset" class="setting-organizer-fieldset">
             <legend>整理目标</legend>
             <label>
                 <input id="setting-organizer-target-character" type="checkbox" ${settings.targets.character ? 'checked' : ''}>
@@ -135,10 +150,13 @@ function bindPanel(panel, settings) {
     const persist = () => {
         currentSettings = readSettingsFromPanel(elements);
         saveSettings(currentSettings);
-        elements.customBudget.hidden = currentSettings.tokenBudgetMode !== 'custom';
+        updateModeVisibility(elements, currentSettings);
     };
 
     elements.input.addEventListener('input', persist);
+    elements.organizeMode.addEventListener('change', () => {
+        persist();
+    });
     elements.characterTarget.addEventListener('change', persist);
     elements.lorebookTarget.addEventListener('change', persist);
     elements.budgetMode.addEventListener('change', persist);
@@ -151,6 +169,7 @@ function bindPanel(panel, settings) {
     elements.budgetLorebookEntry.addEventListener('input', persist);
     elements.budgetConstantLore.addEventListener('input', persist);
     bindDiagnosticsControls(panel);
+    updateModeVisibility(elements, currentSettings);
 
     elements.loadChatButton.addEventListener('click', () => {
         try {
@@ -184,7 +203,7 @@ function bindPanel(panel, settings) {
             return;
         }
 
-        if (!currentSettings.targets.character && !currentSettings.targets.lorebook) {
+        if (currentSettings.organizeMode === ORGANIZE_MODES.SETTING && !currentSettings.targets.character && !currentSettings.targets.lorebook) {
             showError(elements, '请至少选择一个整理目标。');
             setStatus(elements, 'failed');
             return;
@@ -205,23 +224,38 @@ function bindPanel(panel, settings) {
         setStatus(elements, 'analyzing');
         logInfo('analysis-started', {
             mode: currentSettings.analysisMode,
+            organizeMode: currentSettings.organizeMode,
             targets: currentSettings.targets,
             sourceLength: currentSettings.sourceText.trim().length,
             inputScale,
         });
 
         try {
-            const result = await analyzeSettingText(currentSettings.sourceText, currentSettings);
-            setStatus(elements, 'success', buildPlaceholderResult(currentSettings));
-            mountResults(elements.resultsMount, result);
-            logInfo('analysis-completed', {
-                characterCount: result.characters.length,
-                lorebookEntryCount: result.lorebookEntries.length,
-                warningCount: result.warnings.length,
-            });
+            if (currentSettings.organizeMode === ORGANIZE_MODES.STATE) {
+                const stateResult = await analyzeCampaignStateText(currentSettings.sourceText, currentSettings);
+                setStatus(elements, 'success', buildStatePlaceholderResult(currentSettings, stateResult));
+                mountStatePanel(elements.resultsMount, stateResult);
+                logInfo('state-analysis-completed', {
+                    characterStateCount: stateResult.characters.length,
+                    factionStateCount: stateResult.factions.length,
+                    missionStateCount: stateResult.missions.length,
+                    itemStateCount: stateResult.items.length,
+                    warningCount: stateResult.warnings.length,
+                });
+            } else {
+                const result = await analyzeSettingText(currentSettings.sourceText, currentSettings);
+                setStatus(elements, 'success', buildPlaceholderResult(currentSettings));
+                mountResults(elements.resultsMount, result);
+                logInfo('analysis-completed', {
+                    characterCount: result.characters.length,
+                    lorebookEntryCount: result.lorebookEntries.length,
+                    warningCount: result.warnings.length,
+                });
+            }
         } catch (error) {
             logError('analysis-failed', error, {
                 mode: currentSettings.analysisMode,
+                organizeMode: currentSettings.organizeMode,
                 sourceLength: currentSettings.sourceText.trim().length,
             });
             showError(elements, formatError(error));
@@ -236,6 +270,8 @@ function bindPanel(panel, settings) {
 function getElements(panel) {
     return {
         input: panel.querySelector('#setting-organizer-input'),
+        organizeMode: panel.querySelector('#setting-organizer-mode'),
+        targetFieldset: panel.querySelector('#setting-organizer-target-fieldset'),
         characterTarget: panel.querySelector('#setting-organizer-target-character'),
         lorebookTarget: panel.querySelector('#setting-organizer-target-lorebook'),
         budgetMode: panel.querySelector('#setting-organizer-budget-mode'),
@@ -259,6 +295,7 @@ function getElements(panel) {
 function readSettingsFromPanel(elements) {
     return {
         sourceText: elements.input.value,
+        organizeMode: elements.organizeMode.value,
         targets: {
             character: elements.characterTarget.checked,
             lorebook: elements.lorebookTarget.checked,
@@ -272,6 +309,13 @@ function readSettingsFromPanel(elements) {
             constantLore: elements.budgetConstantLore.value,
         },
     };
+}
+
+function updateModeVisibility(elements, settings) {
+    const isStateMode = settings.organizeMode === ORGANIZE_MODES.STATE;
+    elements.targetFieldset.hidden = isStateMode;
+    elements.budgetMode.closest('.setting-organizer-field').hidden = isStateMode;
+    elements.customBudget.hidden = isStateMode || settings.tokenBudgetMode !== 'custom';
 }
 
 function setStatus(elements, state, text = STATUS_TEXT[state]) {
@@ -350,6 +394,17 @@ function buildPlaceholderResult(settings) {
         `整理目标：${targets}`,
         `分析模式：${settings.analysisMode}`,
         `Token 预算：${settings.tokenBudgetMode}`,
+    ].join('\n');
+}
+
+function buildStatePlaceholderResult(settings, stateResult) {
+    return [
+        STATUS_TEXT.success,
+        `输入长度：${settings.sourceText.trim().length} 字符`,
+        '整理模式：剧情状态整理',
+        `分析模式：${settings.analysisMode}`,
+        `人物 ${stateResult.characters.length}，势力 ${stateResult.factions.length}，任务 ${stateResult.missions.length}，道具 ${stateResult.items.length}`,
+        '状态草稿未写入、未保存、未同步世界书。',
     ].join('\n');
 }
 

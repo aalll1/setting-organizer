@@ -435,7 +435,7 @@
 
 ### TC-29 剧情状态草稿 UI
 
-状态：未开始
+状态：已完成
 
 阶段：v0.3.0
 
@@ -463,6 +463,17 @@
 - 状态草稿展示不影响角色/世界书草稿展示。
 - 移动端可用。
 - UI 文案明确“草稿，未写入”。
+
+完成记录：
+
+- 新增 `setting-organizer/src/ui/statePanel.js`，独立渲染剧情状态草稿。
+- 新增 `setting-organizer/src/core/stateAnalyzer.js`，提供 mock 状态分析和真实模型状态解析入口。
+- `panel.js` 增加“整理模式：设定整理 / 剧情状态整理”。
+- `settings.js` 增加 `organizeMode`，默认仍为 `setting`，旧设定整理流程保持默认。
+- `sillytavernApi.js` 增加 `callCurrentStateModel()`，状态模式使用 `extractState` prompt。
+- 状态草稿 UI 支持剧情摘要、人物、势力、任务、关键道具展示，支持字段编辑、删除条目、confidence 和 warnings 展示。
+- 新增 `stateAnalyzer.test.mjs`、`statePanel.test.mjs`、`settings.test.mjs`，扩展 `sillytavernApi.test.mjs`。
+- 未实现持久化、导出导入、状态合并、世界书同步或 SillyTavern 写入。
 
 风险点：
 

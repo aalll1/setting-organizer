@@ -1,5 +1,6 @@
 import { ERROR_CODES, SettingOrganizerError } from '../core/errors.js';
 import { logError, logInfo } from '../core/logger.js';
+import { buildExtractStatePrompt } from '../prompts/extractState.js';
 import { buildExtractSettingPrompt } from '../prompts/extractSetting.js';
 
 export function getSillyTavernContext() {
@@ -37,9 +38,17 @@ export function getCompatibilitySnapshot() {
 }
 
 export async function callCurrentModel(sourceText, options) {
-    const context = getSillyTavernContext();
     const prompt = buildExtractSettingPrompt(sourceText, options);
+    return callPrompt(prompt, sourceText);
+}
 
+export async function callCurrentStateModel(sourceText, options) {
+    const prompt = buildExtractStatePrompt(sourceText, options);
+    return callPrompt(prompt, sourceText);
+}
+
+async function callPrompt(prompt, sourceText) {
+    const context = getSillyTavernContext();
     if (!context) {
         throw new SettingOrganizerError(ERROR_CODES.INCOMPATIBLE_API, '当前页面未发现 SillyTavern 扩展上下文。');
     }

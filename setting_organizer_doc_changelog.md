@@ -1494,6 +1494,48 @@
 - 新增 `stateParser.test.mjs`。
 - 覆盖普通 JSON、Markdown JSON、自然语言包裹 JSON、半截 JSON、缺失字段补全、无效任务状态修正和现有设定整理模式回归。
 
+### 2026-07-10：完成 TC-29 剧情状态草稿 UI
+
+变更类型：新增 / UI / 测试 / 文档
+
+涉及文件：
+
+- `setting-organizer/src/core/stateAnalyzer.js`
+- `setting-organizer/src/adapters/sillytavernApi.js`
+- `setting-organizer/src/storage/settings.js`
+- `setting-organizer/src/ui/panel.js`
+- `setting-organizer/src/ui/statePanel.js`
+- `setting-organizer/style.css`
+- `setting-organizer/tests/stateAnalyzer.test.mjs`
+- `setting-organizer/tests/statePanel.test.mjs`
+- `setting-organizer/tests/settings.test.mjs`
+- `setting-organizer/tests/sillytavernApi.test.mjs`
+- `setting_organizer_long_term_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 按长期任务卡推进 `TC-29`，在不写入、不持久化的前提下，让剧情状态草稿可被用户查看、编辑和删除。
+
+主要变化：
+
+- 主面板新增整理模式选择。
+- 状态模式挂载独立 `statePanel`，显示剧情摘要、人物、势力、任务、关键道具、confidence 和 warnings。
+- 状态模式使用独立 `stateAnalyzer` 和 `extractState` prompt。
+- 设置新增 `organizeMode`，默认仍为旧的设定整理模式。
+
+影响范围：
+
+- 影响主面板 UI 和设置保存。
+- 不改变角色 / 世界书导入导出按钮逻辑。
+- 不新增 SillyTavern 写入能力。
+
+验证情况：
+
+- 新增状态分析、状态面板、设置归一化测试。
+- 扩展 SillyTavern API 测试，确认状态 prompt 独立调用。
+
 ## 变更记录模板
 
 ```text

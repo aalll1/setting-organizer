@@ -687,3 +687,26 @@
   - 状态解析链路独立于现有设定整理 validator / normalizer。
   - 共用层只限通用 JSON 提取与截断识别，不共享角色 / 世界书草稿结构。
   - 未接入 UI、storage、worldbook sync 或 SillyTavern adapter。
+
+## 2026-07-10 TC-29 剧情状态草稿 UI
+
+- 完成 `TC-29`。
+- 代码变更：
+  - 新增 `statePanel.js`，独立展示剧情状态草稿，不复用角色 / 世界书结果页。
+  - 新增 `stateAnalyzer.js`，提供状态模式 mock 分析和真实模型状态解析入口。
+  - `panel.js` 增加整理模式选择：设定整理 / 剧情状态整理。
+  - `settings.js` 增加 `organizeMode`，默认值为 `setting`。
+  - `sillytavernApi.js` 增加 `callCurrentStateModel()`，状态模式使用 `extractState` prompt。
+  - `style.css` 增加状态草稿提示、confidence、来源范围和移动端布局样式。
+- 功能边界：
+  - 状态草稿可展示和编辑剧情摘要、人物、势力、任务、关键道具。
+  - 状态条目支持删除。
+  - UI 明确显示“剧情状态草稿，未写入、未保存、未同步世界书”。
+- 测试变更：
+  - 新增 `stateAnalyzer.test.mjs`。
+  - 新增 `statePanel.test.mjs`。
+  - 新增 `settings.test.mjs`。
+  - 扩展 `sillytavernApi.test.mjs`，覆盖状态 prompt 调用。
+- 解耦说明：
+  - 状态草稿 UI 独立于 `results.js` 的角色 / 世界书导入导出按钮。
+  - TC-29 不实现持久化、导出导入、状态合并、世界书同步或 SillyTavern 写入。

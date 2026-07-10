@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { ERROR_CODES, SettingOrganizerError } from '../src/core/errors.js';
-import { bindCharacterWorld, callCurrentModel, createCharacter, getCharacterSummaries, getCompatibilitySnapshot, openWorldInfoEditor } from '../src/adapters/sillytavernApi.js';
+import { bindCharacterWorld, callCurrentModel, callCurrentStateModel, createCharacter, getCharacterSummaries, getCompatibilitySnapshot, openWorldInfoEditor } from '../src/adapters/sillytavernApi.js';
 
 globalThis.window = {};
 
@@ -27,6 +27,23 @@ globalThis.window = {
 
 const rawText = await callCurrentModel('测试文本', { targets: { character: true } });
 assert.ok(rawText.includes('林月'));
+
+globalThis.window = {
+    SillyTavern: {
+        getContext() {
+            return {
+                async generateQuietPrompt(prompt) {
+                    assert.ok(prompt.includes('剧情状态整理模块'));
+                    assert.ok(prompt.includes('campaign-state-v0.1'));
+                    return '{"schemaVersion":"campaign-state-v0.1","campaign":{},"characters":[],"factions":[],"missions":[],"items":[],"warnings":[]}';
+                },
+            };
+        },
+    },
+};
+
+const rawStateText = await callCurrentStateModel('剧情测试文本', { sourceMessageRange: '0-1' });
+assert.ok(rawStateText.includes('campaign-state-v0.1'));
 
 const characterContext = {
     characters: [{ name: '旧角色', avatar: 'old.png' }],
