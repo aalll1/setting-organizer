@@ -1685,6 +1685,42 @@
 - `stateDiffPanel.test.mjs` 和 `statePanel.test.mjs` 通过。
 - 全量回归通过：36 个 JavaScript 文件语法检查，22 个无参数 `.mjs` 测试。
 
+### 2026-07-10：完成 TC-34 规则级状态冲突检测
+
+变更类型：功能 / 测试 / 文档
+
+涉及文件：
+
+- `setting-organizer/src/core/conflictDetector.js`
+- `setting-organizer/tests/conflictDetector.test.mjs`
+- `setting-organizer/README.md`
+- `docs/DATA_MODEL.md`
+- `docs/TESTING.md`
+- `setting_organizer_long_term_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 按长期任务卡推进 `TC-34`，为后续冲突检测 UI 提供只读规则检测能力。
+
+主要变化：
+
+- 新增规则级冲突检测器。
+- 覆盖人物地点、人物状态、任务状态、道具持有人、势力态度和 active archive 边界。
+- 冲突检测只提示，不修改状态。
+
+影响范围：
+
+- 影响剧情状态 core 层。
+- 不影响 UI、角色 / 世界书创建或 SillyTavern 写入流程。
+
+验证情况：
+
+- 新增模块语法检查通过。
+- `conflictDetector.test.mjs` 通过。
+- 全量回归通过：37 个 JavaScript 文件语法检查，23 个无参数 `.mjs` 测试。
+
 ## 变更记录模板
 
 ```text

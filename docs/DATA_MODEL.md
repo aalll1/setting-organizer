@@ -105,10 +105,11 @@ Implemented:
 - `TC-29`: state draft UI for viewing, editing, and deleting draft items.
 - `TC-30`: state JSON export/import and recent draft localStorage.
 - `TC-32`: deterministic state merge and archive core logic.
+- `TC-34`: deterministic conflict detection core logic.
 
 Still not implemented:
 
-- Conflict detection.
+- Conflict UI and resolution suggestions.
 - Worldbook sync.
 - SillyTavern writes.
 
@@ -158,6 +159,25 @@ TC-32 merge behavior:
 - Each merge returns an `operationId`, merged state, diff entries, and a summary count.
 
 TC-32 does not perform semantic entity disambiguation. Similar names are treated as different entities unless their deterministic identity key matches.
+
+## Conflict Detection
+
+Rule-level conflict detection uses:
+
+```text
+setting-organizer/src/core/conflictDetector.js
+```
+
+TC-34 checks:
+
+- same character with multiple current locations
+- same character with multiple current statuses
+- same mission with multiple statuses
+- same item with multiple holders
+- same faction with multiple attitudes to player
+- an item marked as both active current state and archived history
+
+Conflict detection is read-only. It returns warning records with `ruleId`, `entityType`, `identity`, `field`, `values`, `itemIds`, `message`, and `suggestion`; it does not edit state, archive entries, call models, or write to storage.
 
 ## Maintenance Notes
 

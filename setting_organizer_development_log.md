@@ -780,3 +780,18 @@
   - `node --check` 覆盖 `stateDiffPanel.js` 和 `statePanel.js`，通过。
   - `stateDiffPanel.test.mjs` 和 `statePanel.test.mjs` 通过。
   - 全量回归：36 个 JavaScript 文件语法检查通过，22 个无参数 `.mjs` 测试通过。
+
+## 2026-07-10 TC-34 规则级状态冲突检测
+
+- 完成 `TC-34` core 层实现。
+- 代码变更：
+  - 新增 `conflictDetector.js`，提供 `detectCampaignStateConflicts()`。
+  - 新增 `conflictDetector.test.mjs`，覆盖任务卡要求的所有冲突类型。
+- 行为边界：
+  - 冲突检测只返回 warning 记录，不修改状态。
+  - 不调用模型，不做高级语义判断。
+  - 不写 localStorage，不写 SillyTavern。
+- 验证记录：
+  - `node --check setting-organizer\src\core\conflictDetector.js` 通过。
+  - `node setting-organizer\tests\conflictDetector.test.mjs` 通过。
+  - 全量回归：37 个 JavaScript 文件语法检查通过，23 个无参数 `.mjs` 测试通过。
