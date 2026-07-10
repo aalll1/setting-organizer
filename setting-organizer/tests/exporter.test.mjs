@@ -30,6 +30,9 @@ const result = {
             stability: 'permanent',
             confidence: 0.9,
             warnings: [],
+            sourceStateId: 'c1',
+            sourceBoundary: 'character_state',
+            sourceMessageRange: '2-4',
         },
     ],
 };
@@ -43,6 +46,9 @@ const worldInfo = buildExportPayload(result, EXPORT_TYPES.SILLYTAVERN_WORLD_INFO
 assert.deepEqual(worldInfo.entries[0].key, ['银月教会']);
 assert.equal(worldInfo.entries[0].comment, '银月教会');
 assert.equal(worldInfo.entries[0].disable, false);
+assert.equal(worldInfo.entries[0].extensions.settingOrganizer.sourceStateId, 'c1');
+assert.equal(worldInfo.entries[0].extensions.settingOrganizer.sourceBoundary, 'character_state');
+assert.equal(worldInfo.entries[0].extensions.settingOrganizer.sourceMessageRange, '2-4');
 
 assert.doesNotThrow(() => JSON.parse(buildExportJson(result, EXPORT_TYPES.INTERNAL_FULL)));
 

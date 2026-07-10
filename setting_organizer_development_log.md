@@ -815,3 +815,19 @@
   - SillyTavern 1.18.0 本地页面 smoke 通过：状态模式、mock 状态草稿、冲突检测空结果和不修改草稿提示均已验证。
   - 正向冲突详情展示由 `conflictPanel.test.mjs` 与 `conflictDetector.test.mjs` 验证。
   - 本任务未调用真实模型，也未创建角色、世界书或执行导入。
+
+## 2026-07-10 TC-36 状态到世界书草稿转换
+
+- 完成 `TC-36`。
+- 代码变更：
+  - 新增 `worldbookSyncBuilder.js`，将验证后的剧情状态转换为 `LorebookDraft` 兼容条目，并生成草稿 diff 预览。
+  - `lorebookAdapter.js` 传递 `sourceStateId`、`sourceBoundary` 和 `sourceMessageRange` 到 World Info extensions。
+- 行为边界：
+  - 仅构建草稿和预览，不读取、创建、覆盖或禁用 SillyTavern 世界书。
+  - 归档状态形成默认禁用的历史草稿；用户确认创建将在 TC-37 实现。
+- 测试变更：
+  - 新增 `worldbookSyncBuilder.test.mjs`，覆盖分类、归档、预览与无副作用行为。
+  - 扩展 `exporter.test.mjs`，覆盖状态来源元数据适配。
+- 验证记录：
+  - `node --check` 全量覆盖 39 个 JavaScript 文件，通过。
+  - 25 个无参数 `.mjs` 测试通过。

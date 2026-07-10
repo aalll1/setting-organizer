@@ -19,6 +19,9 @@ export function toSillyTavernWorldInfo(result) {
                     category: entry.category,
                     stability: entry.stability,
                     confidence: entry.confidence,
+                    sourceStateId: entry.sourceStateId || '',
+                    sourceBoundary: entry.sourceBoundary || '',
+                    sourceMessageRange: entry.sourceMessageRange || '',
                 },
             },
         };

@@ -1761,6 +1761,35 @@
 - SillyTavern 1.18.0 本地浏览器 smoke 通过：状态模式、mock 草稿、冲突检测空结果和不自动修改草稿提示。
 - 冲突详情、来源 ID、来源范围和处理建议由定向单元测试覆盖。
 
+### 2026-07-10：完成 TC-36 状态到世界书草稿转换
+
+变更类型：功能 / 测试 / 文档
+
+涉及文件：
+
+- `setting-organizer/src/core/worldbookSyncBuilder.js`
+- `setting-organizer/src/adapters/lorebookAdapter.js`
+- `setting-organizer/tests/worldbookSyncBuilder.test.mjs`
+- `setting-organizer/tests/exporter.test.mjs`
+- `docs/DATA_MODEL.md`
+- `setting_organizer_long_term_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+主要变化：
+
+- 将剧情状态构建为已有世界书草稿兼容结构。
+- 输出分类草稿、来源元数据和不触碰酒馆数据的差异预览。
+
+影响范围：
+
+- 影响剧情状态 core 与世界书 adapter 元数据。
+- 不新增 SillyTavern 写入、覆盖或自动禁用能力。
+
+验证情况：
+
+- 全量回归通过：39 个 JavaScript 文件语法检查，25 个无参数 `.mjs` 测试。
+
 ## 变更记录模板
 
 ```text

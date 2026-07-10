@@ -2,7 +2,7 @@
 
 ## Scope
 
-This document records the data boundary introduced in `TC-27` and extended through `TC-32`. The first campaign-state model is a draft-first structure. It does not change the existing character draft or lorebook draft flow, and it does not write anything to SillyTavern.
+This document records the data boundary introduced in `TC-27` and extended through `TC-36`. The first campaign-state model is a draft-first structure. It does not change the existing character draft or lorebook draft flow, and it does not write anything to SillyTavern.
 
 ## Existing Drafts
 
@@ -107,10 +107,10 @@ Implemented:
 - `TC-32`: deterministic state merge and archive core logic.
 - `TC-34`: deterministic conflict detection core logic.
 - `TC-35`: read-only conflict display and handling suggestions.
+- `TC-36`: campaign-state to lorebook-draft builder and draft-only diff preview.
 
 Still not implemented:
 
-- Worldbook sync.
 - SillyTavern writes.
 
 ## Import And Export
@@ -180,6 +180,16 @@ TC-34 checks:
 Conflict detection is read-only. It returns warning records with `ruleId`, `entityType`, `identity`, `field`, `values`, `itemIds`, `sourceMessageRanges`, `message`, and `suggestion`; it does not edit state, archive entries, call models, or write to storage.
 
 TC-35 renders these records in the state panel. The panel sorts by severity, shows the affected object, source IDs and source message ranges, and gives a handling suggestion. It remains informational: users can continue viewing and editing the draft, while no entry is automatically archived.
+
+## Worldbook Sync Drafts
+
+`worldbookSyncBuilder.js` converts a validated `CampaignState` into ordinary `LorebookDraft`-compatible entries. It does not call a SillyTavern API or save a worldbook.
+
+The builder emits separate categories for `permanent_lore`, `current_state`, `mission_state`, `character_state`, `faction_state`, `item_state`, and `history_archive`. Archived source items remain visible as historical drafts but are emitted with `enabled: false`.
+
+Each generated draft keeps `sourceStateId`, `sourceBoundary`, and `sourceMessageRange`. `lorebookAdapter.js` carries those values into `extensions.settingOrganizer` when a later, user-confirmed export or import occurs.
+
+The builder also returns a draft-only preview containing `added`, `updated`, `unchanged`, and `removed` records against caller-supplied prior drafts. This comparison neither reads existing SillyTavern worldbooks nor overwrites them.
 
 ## Maintenance Notes
 

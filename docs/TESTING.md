@@ -249,3 +249,26 @@ SillyTavern browser smoke:
 - The visible status states that detection does not automatically modify the draft.
 - Positive detail rendering for severity, source IDs, source ranges, and suggestions is covered by `conflictPanel.test.mjs` and `conflictDetector.test.mjs`.
 - No real model call, character creation, worldbook creation, or import action was performed in this TC-35 smoke test.
+
+## TC-36 Verification Record
+
+Date: 2026-07-10
+
+Targeted tests:
+
+```powershell
+node --check setting-organizer\src\core\worldbookSyncBuilder.js
+node --check setting-organizer\src\adapters\lorebookAdapter.js
+node setting-organizer\tests\worldbookSyncBuilder.test.mjs
+node setting-organizer\tests\exporter.test.mjs
+```
+
+Expected coverage:
+
+- Current and archived campaign state becomes independent lorebook drafts.
+- All required state categories are represented without mixing permanent lore and dynamic state.
+- Archived drafts default to disabled.
+- Draft previews classify additions, changes, unchanged entries, and removed source records.
+- Adapter metadata preserves the source state boundary for later confirmed import.
+
+Full local regression result: passed, 39 JavaScript files checked and 25 no-argument tests run.
