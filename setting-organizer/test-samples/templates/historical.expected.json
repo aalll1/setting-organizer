@@ -1,0 +1,5 @@
+{
+  "template": "historical",
+  "sourceMessageRange": "0-0",
+  "expected": { "characterCount": 1, "missionCount": 1, "locationPrefix": "雾城议会厅" }
+}

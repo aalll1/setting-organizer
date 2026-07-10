@@ -319,3 +319,21 @@ Expected coverage:
 - State UI tabs are derived from the template UI-group contract.
 
 Full local regression result: passed, 40 JavaScript files checked and 27 no-argument tests run.
+
+## TC-39 Verification Record
+
+Date: 2026-07-10
+
+Targeted test:
+
+```powershell
+node setting-organizer\tests\templateSamples.test.mjs
+```
+
+Coverage:
+
+- Generic, historical, and DND fixtures each include an input text and expected draft boundary.
+- The mock analyzer creates the expected stable structure and location prefix for each fixture.
+- Each fixture's template ID is present in the state extraction prompt.
+
+Full local regression result: passed, 40 JavaScript files checked and 28 no-argument tests run.

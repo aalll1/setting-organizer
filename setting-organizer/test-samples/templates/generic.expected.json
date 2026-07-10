@@ -1,0 +1,5 @@
+{
+  "template": "generic",
+  "sourceMessageRange": "0-0",
+  "expected": { "characterCount": 1, "missionCount": 1, "locationPrefix": "旧城区" }
+}

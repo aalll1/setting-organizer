@@ -1,0 +1,5 @@
+{
+  "template": "dnd",
+  "sourceMessageRange": "0-0",
+  "expected": { "characterCount": 1, "missionCount": 1, "locationPrefix": "钟楼入口" }
+}

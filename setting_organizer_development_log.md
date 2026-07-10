@@ -848,3 +848,11 @@
 - 设置层持久化模板 ID；状态 prompt 和状态面板均从同一模板定义消费配置。
 - 默认通用模板保持已有字段集与草稿兼容，不支持用户自定义脚本模板。
 - 新增 `stateTemplates.test.mjs`，扩展 settings/statePanel 测试；全量回归通过：40 个 JavaScript 文件语法检查，27 个无参数 `.mjs` 测试。
+
+## 2026-07-10 TC-39 模板测试样例与文档
+
+- 完成 `TC-39`。
+- 新增通用、历史模拟、跑团 / DND 的文本输入和期望草稿样例。
+- 新增 `templateSamples.test.mjs`，在 mock 模式验证模板 ID、结构数量、地点前缀和 prompt 标识。
+- 新增 `docs/USER_GUIDE.md`，说明模板适用场景与不支持范围。
+- 全量回归：40 个 JavaScript 文件语法检查通过，28 个无参数 `.mjs` 测试通过。
