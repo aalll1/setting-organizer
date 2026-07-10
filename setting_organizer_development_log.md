@@ -656,3 +656,18 @@
   - 已验证 GitHub `main` 和 `v0.2.1` tag 下的 `manifest.json` 版本均为 `0.2.1`。
 - 解耦说明：
   - TC-26 只做版本、发布目录、文档和测试收口，不新增业务逻辑。
+
+## 2026-07-10 TC-27 剧情状态数据模型与 schema 草案
+
+- 完成 `TC-27`。
+- 代码变更：
+  - 新增 `campaignState.schema.json`，定义 `CampaignState` 顶层结构和角色、势力、任务、关键道具状态草案。
+  - 新增 `stateTypes.js`，集中管理 `campaign-state-v0.1`、状态实体类型、任务状态和状态边界常量。
+  - 新增 `createEmptyCampaignState()`，用于后续 parser / normalizer 的空状态基线。
+- 文档变更：
+  - 新增 `docs/DATA_MODEL.md`，明确当前状态、历史归档和永久设定的边界。
+- 测试变更：
+  - 新增 `stateTypes.test.mjs`，验证 schema 版本、类型常量、基础空状态和 schema defs 边界。
+- 解耦说明：
+  - TC-27 不接入现有设定整理 parser、UI、storage 或 SillyTavern adapter。
+  - `CampaignState` 与现有 `AnalysisResult`、角色草稿、世界书草稿保持独立。

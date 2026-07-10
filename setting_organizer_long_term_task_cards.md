@@ -340,7 +340,7 @@
 
 ### TC-27 剧情状态数据模型与 schema 草案
 
-状态：未开始
+状态：已完成
 
 阶段：v0.3.0
 
@@ -366,6 +366,14 @@
 
 - 数据结构文档可单独指导实现。
 - 不与现有角色草稿、世界书草稿结构混用。
+
+完成记录：
+
+- 新增 `setting-organizer/src/schemas/campaignState.schema.json`。
+- 新增 `setting-organizer/src/core/stateTypes.js`，集中定义 `campaign-state-v0.1`、状态实体类型、任务状态和边界常量。
+- 新增 `docs/DATA_MODEL.md`，说明 `CampaignState`、当前状态、历史归档和永久设定的边界。
+- 新增 `setting-organizer/tests/stateTypes.test.mjs`。
+- 未接入 UI、持久化、世界书同步或 SillyTavern 写入。
 
 风险点：
 

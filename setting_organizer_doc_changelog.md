@@ -1425,6 +1425,39 @@
 - SillyTavern 1.18.0 本地浏览器 smoke test 覆盖扩展加载、mock 分析、结果页、备份、诊断导出和真实模式错误路径。
 - GitHub `main` 和 `v0.2.1` tag 下的 `manifest.json` 已验证为 `0.2.1`。
 
+### 2026-07-10：完成 TC-27 剧情状态数据模型与 schema 草案
+
+变更类型：新增 / 文档 / 测试
+
+涉及文件：
+
+- `setting-organizer/src/schemas/campaignState.schema.json`
+- `setting-organizer/src/core/stateTypes.js`
+- `setting-organizer/tests/stateTypes.test.mjs`
+- `docs/DATA_MODEL.md`
+- `setting_organizer_long_term_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 按长期任务卡推进 `TC-27`，先建立剧情状态草稿的数据边界，避免后续 UI 或 parser 直接混用角色 / 世界书草稿结构。
+
+主要变化：
+
+- 新增 `campaign-state-v0.1` schema。
+- 新增状态类型常量和空状态工厂。
+- 新增数据模型文档，说明当前状态、历史归档和永久设定边界。
+
+影响范围：
+
+- 只影响剧情状态数据模型草案和测试。
+- 不改变现有设定整理分析、导入、导出、UI 或 SillyTavern 写入流程。
+
+验证情况：
+
+- 新增 `stateTypes.test.mjs`。
+
 ## 变更记录模板
 
 ```text

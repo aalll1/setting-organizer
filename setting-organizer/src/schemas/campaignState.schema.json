@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Setting Organizer Campaign State Draft",
+  "type": "object",
+  "properties": {
+    "schemaVersion": { "const": "campaign-state-v0.1" },
+    "campaign": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "genre": { "type": "string" },
+        "currentTime": { "type": "string" },
+        "currentLocation": { "type": "string" },
+        "summary": { "type": "string" },
+        "lastUpdatedAtMessage": { "type": "number" },
+        "sourceMessageRange": { "type": "string" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "warnings": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "plotSummary": { "type": "string" },
+    "characters": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/characterState" }
+    },
+    "factions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/factionState" }
+    },
+    "missions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/missionState" }
+    },
+    "items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/itemState" }
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "campaign",
+    "characters",
+    "factions",
+    "missions",
+    "items",
+    "warnings"
+  ],
+  "additionalProperties": true,
+  "$defs": {
+    "stateBase": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "sourceMessageRange": { "type": "string" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "warnings": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "isActive": { "type": "boolean" },
+        "isArchived": { "type": "boolean" },
+        "lastKnownUpdate": { "type": "string" }
+      },
+      "required": ["id", "sourceMessageRange", "confidence", "warnings"],
+      "additionalProperties": true
+    },
+    "characterState": {
+      "allOf": [
+        { "$ref": "#/$defs/stateBase" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "character" },
+            "name": { "type": "string" },
+            "aliases": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "role": { "type": "string" },
+            "faction": { "type": "string" },
+            "location": { "type": "string" },
+            "status": { "type": "string" },
+            "currentTask": { "type": "string" },
+            "attitudeToPlayer": { "type": "string" },
+            "resources": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "relationships": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "required": ["type", "name"]
+        }
+      ]
+    },
+    "factionState": {
+      "allOf": [
+        { "$ref": "#/$defs/stateBase" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "faction" },
+            "name": { "type": "string" },
+            "leader": { "type": "string" },
+            "controlledRegions": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "stance": { "type": "string" },
+            "attitudeToPlayer": { "type": "string" },
+            "resources": { "type": "string" },
+            "militaryStatus": { "type": "string" },
+            "economicStatus": { "type": "string" },
+            "currentGoal": { "type": "string" },
+            "allies": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "enemies": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "required": ["type", "name"]
+        }
+      ]
+    },
+    "missionState": {
+      "allOf": [
+        { "$ref": "#/$defs/stateBase" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "mission" },
+            "title": { "type": "string" },
+            "assignee": { "type": "string" },
+            "assignedAt": { "type": "string" },
+            "destination": { "type": "string" },
+            "objective": { "type": "string" },
+            "status": {
+              "enum": ["pending", "active", "completed", "failed", "unknown"]
+            },
+            "progress": { "type": "string" },
+            "expectedUpdate": { "type": "string" },
+            "result": { "type": "string" },
+            "relatedCharacters": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "relatedFactions": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "relatedItems": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "required": ["type", "title", "status"]
+        }
+      ]
+    },
+    "itemState": {
+      "allOf": [
+        { "$ref": "#/$defs/stateBase" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "item" },
+            "name": { "type": "string" },
+            "holder": { "type": "string" },
+            "origin": { "type": "string" },
+            "purpose": { "type": "string" },
+            "status": { "type": "string" },
+            "risk": { "type": "string" },
+            "isUnique": { "type": "boolean" },
+            "isConsumed": { "type": "boolean" },
+            "relatedCharacters": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "relatedMissions": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "required": ["type", "name"]
+        }
+      ]
+    }
+  }
+}
