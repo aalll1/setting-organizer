@@ -3,6 +3,10 @@ import { ERROR_CODES, SettingOrganizerError } from './errors.js';
 const RAW_OUTPUT_PREVIEW_LENGTH = 500;
 
 export function parseAnalysisJson(rawText) {
+    return parseModelJson(rawText);
+}
+
+export function parseModelJson(rawText) {
     if (typeof rawText !== 'string') {
         throw new SettingOrganizerError(ERROR_CODES.INVALID_JSON, '模型输出不是文本。');
     }

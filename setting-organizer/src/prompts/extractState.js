@@ -1,0 +1,106 @@
+import { CAMPAIGN_STATE_SCHEMA_VERSION, MISSION_STATUSES } from '../core/stateTypes.js';
+
+export const EXTRACT_STATE_PROMPT_VERSION = 'extract-state-v0.3.0';
+
+export function buildExtractStatePrompt(sourceText, options = {}) {
+    const range = options.sourceMessageRange || '';
+
+    return [
+        '你是 SillyTavern 剧情状态整理模块。',
+        '任务：从用户提供的文本或聊天记录中整理“当前剧情状态”草稿。',
+        '',
+        '硬性输出规则：',
+        '- 只输出一个压缩 JSON 对象。',
+        '- 不要输出 Markdown 代码块。',
+        '- 不要输出自然语言解释。',
+        '- 不要在 JSON 前后添加说明、标题、列表或换行解释。',
+        '- 不要把永久世界设定写成当前状态；无法确认时留空或写入 warnings。',
+        '- AI 只提供草稿，不执行保存、写入、覆盖、删除或世界书同步。',
+        '',
+        `promptVersion: ${EXTRACT_STATE_PROMPT_VERSION}`,
+        `schemaVersion: ${CAMPAIGN_STATE_SCHEMA_VERSION}`,
+        `sourceMessageRange: ${range}`,
+        '',
+        '必须返回以下 JSON 结构：',
+        JSON.stringify(createStateOutputShape(range)),
+        '',
+        '字段要求：',
+        '- campaign.summary：当前剧情局面摘要，不写长期世界观百科。',
+        '- characters：人物当前状态，例如位置、任务、生死、阵营、态度。',
+        '- factions：势力当前态势，例如领袖、控制区域、立场、目标。',
+        '- missions：任务当前状态，status 只能是 pending、active、completed、failed、unknown。',
+        '- items：关键道具当前状态，例如持有人、用途、风险。',
+        '- 每个状态条目必须保留 id、sourceMessageRange、confidence、warnings。',
+        '- confidence 是 0 到 1 的数字。',
+        '',
+        '用户原文：',
+        sourceText,
+    ].join('\n');
+}
+
+function createStateOutputShape(sourceMessageRange) {
+    return {
+        schemaVersion: CAMPAIGN_STATE_SCHEMA_VERSION,
+        campaign: {
+            id: '',
+            name: '',
+            genre: '',
+            currentTime: '',
+            currentLocation: '',
+            summary: '',
+            lastUpdatedAtMessage: 0,
+            sourceMessageRange,
+            confidence: 0.8,
+            warnings: [],
+        },
+        plotSummary: '',
+        characters: [
+            {
+                id: '',
+                type: 'character',
+                name: '',
+                aliases: [],
+                role: '',
+                faction: '',
+                location: '',
+                status: '',
+                currentTask: '',
+                attitudeToPlayer: '',
+                resources: [],
+                relationships: [],
+                lastKnownUpdate: '',
+                sourceMessageRange,
+                isActive: true,
+                isArchived: false,
+                confidence: 0.8,
+                warnings: [],
+            },
+        ],
+        factions: [],
+        missions: [
+            {
+                id: '',
+                type: 'mission',
+                title: '',
+                assignee: '',
+                assignedAt: '',
+                destination: '',
+                objective: '',
+                status: MISSION_STATUSES.UNKNOWN,
+                progress: '',
+                expectedUpdate: '',
+                result: '',
+                relatedCharacters: [],
+                relatedFactions: [],
+                relatedItems: [],
+                sourceMessageRange,
+                isActive: true,
+                isArchived: false,
+                confidence: 0.8,
+                warnings: [],
+            },
+        ],
+        items: [],
+        warnings: [],
+    };
+}

@@ -1458,6 +1458,42 @@
 
 - 新增 `stateTypes.test.mjs`。
 
+### 2026-07-10：完成 TC-28 剧情状态提取 prompt 与 parser
+
+变更类型：新增 / 测试 / 解耦增强
+
+涉及文件：
+
+- `setting-organizer/src/prompts/extractState.js`
+- `setting-organizer/src/core/parser.js`
+- `setting-organizer/src/core/stateParser.js`
+- `setting-organizer/src/core/stateNormalizer.js`
+- `setting-organizer/src/core/stateValidator.js`
+- `setting-organizer/tests/stateParser.test.mjs`
+- `setting_organizer_long_term_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 按长期任务卡推进 `TC-28`，在不接入 UI 和写入流程的前提下，建立剧情状态 prompt / parser / normalizer / validator 的独立链路。
+
+主要变化：
+
+- 新增剧情状态提取 prompt。
+- 新增剧情状态解析、规范化和校验模块。
+- 通用 JSON 解析入口提取为 `parseModelJson()`，供设定整理和剧情状态共用。
+
+影响范围：
+
+- 影响 core/parser 的公开 API，但保留 `parseAnalysisJson()` 兼容入口。
+- 不改变现有设定整理 UI、导入、导出或 SillyTavern 写入流程。
+
+验证情况：
+
+- 新增 `stateParser.test.mjs`。
+- 覆盖普通 JSON、Markdown JSON、自然语言包裹 JSON、半截 JSON、缺失字段补全、无效任务状态修正和现有设定整理模式回归。
+
 ## 变更记录模板
 
 ```text

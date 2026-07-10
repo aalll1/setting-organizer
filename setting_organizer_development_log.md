@@ -671,3 +671,19 @@
 - 解耦说明：
   - TC-27 不接入现有设定整理 parser、UI、storage 或 SillyTavern adapter。
   - `CampaignState` 与现有 `AnalysisResult`、角色草稿、世界书草稿保持独立。
+
+## 2026-07-10 TC-28 剧情状态提取 prompt 与 parser
+
+- 完成 `TC-28`。
+- 代码变更：
+  - 新增 `extractState.js`，定义剧情状态整理 prompt 和 `extract-state-v0.3.0`。
+  - 新增 `stateParser.js`，提供 `parseCampaignStateJson()` 和 `parseValidateNormalizeCampaignState()`。
+  - 新增 `stateNormalizer.js`，补全缺失字段、统一 confidence、修正无效任务状态。
+  - 新增 `stateValidator.js`，校验顶层对象、集合字段和标准状态条目。
+  - `parser.js` 增加通用 `parseModelJson()`，现有 `parseAnalysisJson()` 继续保持原 API。
+- 测试变更：
+  - 新增 `stateParser.test.mjs`，覆盖普通 JSON、Markdown JSON、自然语言包裹 JSON、半截 JSON、缺失字段补全、状态修正和现有设定整理模式回归。
+- 解耦说明：
+  - 状态解析链路独立于现有设定整理 validator / normalizer。
+  - 共用层只限通用 JSON 提取与截断识别，不共享角色 / 世界书草稿结构。
+  - 未接入 UI、storage、worldbook sync 或 SillyTavern adapter。

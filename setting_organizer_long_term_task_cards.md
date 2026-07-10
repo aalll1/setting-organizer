@@ -386,7 +386,7 @@
 
 ### TC-28 剧情状态提取 prompt 与 parser
 
-状态：未开始
+状态：已完成
 
 阶段：v0.3.0
 
@@ -414,6 +414,15 @@
 - mock 状态草稿可解析。
 - Markdown JSON、自然语言 + JSON、半截 JSON 测试覆盖。
 - 不影响现有设定整理模式。
+
+完成记录：
+
+- 新增 `setting-organizer/src/prompts/extractState.js`。
+- 新增 `setting-organizer/src/core/stateParser.js`、`stateNormalizer.js`、`stateValidator.js`。
+- `parser.js` 新增通用 `parseModelJson()`，现有 `parseAnalysisJson()` 保持兼容并复用该入口。
+- 新增 `setting-organizer/tests/stateParser.test.mjs`。
+- 覆盖普通状态 JSON、Markdown JSON、自然语言前后缀、半截 JSON、缺失字段补全、无效任务状态修正和现有设定整理模式回归。
+- 未接入 UI、持久化、状态合并、世界书同步或 SillyTavern 写入。
 
 风险点：
 
