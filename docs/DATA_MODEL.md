@@ -2,7 +2,7 @@
 
 ## Scope
 
-This document records the data boundary introduced in `TC-27` and extended through `TC-30`. The first campaign-state model is a draft-only structure. It does not change the existing character draft or lorebook draft flow, and it does not write anything to SillyTavern.
+This document records the data boundary introduced in `TC-27` and extended through `TC-32`. The first campaign-state model is a draft-first structure. It does not change the existing character draft or lorebook draft flow, and it does not write anything to SillyTavern.
 
 ## Existing Drafts
 
@@ -98,17 +98,16 @@ The plugin must not merge permanent lore and dynamic state into one uncontrolled
 
 ## Explicit Non-Goals
 
-Implemented in v0.3.x:
+Implemented:
 
 - `TC-27`: campaign state schema and type constants.
 - `TC-28`: state prompt, parser, normalizer, and validator.
 - `TC-29`: state draft UI for viewing, editing, and deleting draft items.
 - `TC-30`: state JSON export/import and recent draft localStorage.
+- `TC-32`: deterministic state merge and archive core logic.
 
 Still not implemented:
 
-- State merge.
-- History archive storage.
 - Conflict detection.
 - Worldbook sync.
 - SillyTavern writes.
@@ -130,6 +129,35 @@ setting-organizer/src/storage/stateStore.js
 ```
 
 It stores only the latest state draft in browser localStorage. It does not merge multiple drafts, write to SillyTavern, or update worldbook entries.
+
+## Merge And Archive
+
+State merge uses:
+
+```text
+setting-organizer/src/core/stateMerger.js
+```
+
+Archive marking uses:
+
+```text
+setting-organizer/src/core/stateArchive.js
+```
+
+TC-32 merge behavior:
+
+- Existing and incoming states are normalized and validated before merge.
+- Identity matching is deterministic:
+  - characters by `name`
+  - factions by `name`
+  - missions by `title`
+  - items by `name`
+- A changed active item is not deleted. The previous active item is marked `isActive: false`, `isArchived: true`, and receives `archiveOperationId`.
+- The incoming changed item becomes the new active item.
+- Re-importing the same incoming state does not create duplicate active items.
+- Each merge returns an `operationId`, merged state, diff entries, and a summary count.
+
+TC-32 does not perform semantic entity disambiguation. Similar names are treated as different entities unless their deterministic identity key matches.
 
 ## Maintenance Notes
 

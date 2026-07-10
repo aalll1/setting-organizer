@@ -746,3 +746,20 @@
 - 安全策略：
   - v0.3.x 没有新增 SillyTavern 写入能力。
   - 剧情状态模式仍只处理草稿、JSON 导入导出和浏览器本地最近草稿。
+
+## 2026-07-10 TC-32 状态合并与历史归档核心逻辑
+
+- 完成 `TC-32` core 层实现。
+- 代码变更：
+  - 新增 `stateArchive.js`，提供 `archiveStateItem()` 和 `isArchivedStateItem()`。
+  - 新增 `stateMerger.js`，按人物名称、势力名称、任务标题、道具名称进行确定性匹配。
+  - 新增 `stateMerger.test.mjs`，覆盖归档、diff 和重复导入。
+- 行为边界：
+  - 旧状态不删除，改为 `isActive: false`、`isArchived: true`，并记录 `archiveOperationId`。
+  - 每次合并返回 `operationId`、merged state、diff 和 summary。
+  - 不做语义级实体消歧。
+  - 不写 localStorage，不写 SillyTavern。
+- 验证记录：
+  - `node --check` 覆盖新增 `stateArchive.js` 和 `stateMerger.js`，通过。
+  - `stateMerger.test.mjs` 通过。
+  - 全量回归：35 个 JavaScript 文件语法检查通过，21 个无参数 `.mjs` 测试通过。

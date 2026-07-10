@@ -44,6 +44,16 @@ The v0.3.x campaign-state MVP must verify:
 - State JSON export can be imported again.
 - Recent state draft storage does not affect existing setting draft backups.
 
+## v0.4.x Regression Scope
+
+TC-32 state merge tests must verify:
+
+- Same character with a changed location archives the old active character and creates one new active character.
+- Same item with a changed holder produces a readable diff entry.
+- Re-importing the same incoming state does not create duplicate active items.
+- Merge returns a deterministic `operationId` when supplied by the caller.
+- Merge does not write to localStorage or SillyTavern.
+
 ## Runtime Smoke
 
 SillyTavern smoke should cover:
@@ -93,3 +103,31 @@ foreach ($test in $tests) { node $test.FullName }
 Result: passed, 20 no-argument tests run.
 
 MuMu smoke result: blocked by adb daemon startup failure. The failure is recorded above with the exact adb path and `adb.log` permission error.
+
+## TC-32 Verification Record
+
+Date: 2026-07-10
+
+Targeted syntax and unit test:
+
+```powershell
+node --check setting-organizer\src\core\stateArchive.js
+node --check setting-organizer\src\core\stateMerger.js
+node setting-organizer\tests\stateMerger.test.mjs
+```
+
+Result: passed.
+
+Full local regression:
+
+```powershell
+$files = Get-ChildItem -Path setting-organizer -Recurse -File -Include *.js
+foreach ($file in $files) { node --check $file.FullName }
+
+$tests = Get-ChildItem setting-organizer\tests\*.mjs |
+  Where-Object { $_.Name -ne 'cdp-check.mjs' } |
+  Sort-Object Name
+foreach ($test in $tests) { node $test.FullName }
+```
+
+Result: passed, 35 JavaScript files checked and 21 no-argument tests run.

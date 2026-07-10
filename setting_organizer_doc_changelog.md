@@ -1609,6 +1609,43 @@
 - TC-31 后执行无参数单元测试：20 个 `.mjs` 测试通过。
 - MuMu 页面 smoke 因 adb daemon 无法写入 Temp `adb.log` 被阻塞，已记录明确环境原因。
 
+### 2026-07-10：完成 TC-32 状态合并与历史归档核心逻辑
+
+变更类型：功能 / 测试 / 文档
+
+涉及文件：
+
+- `setting-organizer/src/core/stateArchive.js`
+- `setting-organizer/src/core/stateMerger.js`
+- `setting-organizer/tests/stateMerger.test.mjs`
+- `docs/DATA_MODEL.md`
+- `docs/TESTING.md`
+- `setting_organizer_long_term_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 按长期任务卡推进 `TC-32`，为后续状态差异预览 UI 和冲突检测提供可复用 core 层。
+
+主要变化：
+
+- 新增状态归档 helper。
+- 新增状态合并器，支持人物、势力、任务、道具合并。
+- 合并结果返回 `operationId`、merged state、diff 和 summary。
+- 旧状态通过归档字段保留，不直接删除。
+
+影响范围：
+
+- 影响剧情状态 core 层。
+- 不影响设定整理、角色创建、世界书创建或 SillyTavern 写入流程。
+
+验证情况：
+
+- 新增模块语法检查通过。
+- `stateMerger.test.mjs` 通过。
+- 全量回归通过：35 个 JavaScript 文件语法检查，21 个无参数 `.mjs` 测试。
+
 ## 变更记录模板
 
 ```text
