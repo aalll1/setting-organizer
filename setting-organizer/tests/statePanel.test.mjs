@@ -37,9 +37,26 @@ assert.ok(overviewHtml.includes('导出状态 JSON'));
 assert.ok(overviewHtml.includes('导入状态 JSON'));
 assert.ok(overviewHtml.includes('保存最近状态草稿'));
 assert.ok(overviewHtml.includes('载入最近状态草稿'));
+assert.ok(overviewHtml.includes('预览合并最近草稿'));
 assert.ok(overviewHtml.includes('人物状态'));
 assert.ok(overviewHtml.includes('关键道具'));
 assert.ok(overviewHtml.includes('confidence 1.00'));
+
+const diffHtml = renderStatePanelHtml(state, 'overview', {
+    operationId: 'op1',
+    summary: { added: 0, updated: 1, archived: 1, unchanged: 0 },
+    diff: [
+        {
+            action: 'updated',
+            entityType: 'character',
+            label: '人物',
+            identity: '林月',
+            changes: [{ field: 'location', before: '旧城区', after: '钟楼' }],
+        },
+    ],
+});
+assert.ok(diffHtml.includes('状态合并预览'));
+assert.ok(diffHtml.includes('确认保存合并结果'));
 
 const characterHtml = renderStatePanelHtml(state, 'characters');
 assert.ok(characterHtml.includes('林月'));

@@ -54,6 +54,14 @@ TC-32 state merge tests must verify:
 - Merge returns a deterministic `operationId` when supplied by the caller.
 - Merge does not write to localStorage or SillyTavern.
 
+TC-33 state diff UI tests must verify:
+
+- Diff panel shows added, updated, archived, and conflict sections.
+- Unchanged entries are hidden from the visible diff list.
+- State panel exposes an explicit merge preview action.
+- Confirm and cancel actions are visible only when a preview exists.
+- Preview generation is separate from save confirmation.
+
 ## Runtime Smoke
 
 SillyTavern smoke should cover:
@@ -131,3 +139,32 @@ foreach ($test in $tests) { node $test.FullName }
 ```
 
 Result: passed, 35 JavaScript files checked and 21 no-argument tests run.
+
+## TC-33 Verification Record
+
+Date: 2026-07-10
+
+Targeted syntax and UI tests:
+
+```powershell
+node --check setting-organizer\src\ui\stateDiffPanel.js
+node --check setting-organizer\src\ui\statePanel.js
+node setting-organizer\tests\stateDiffPanel.test.mjs
+node setting-organizer\tests\statePanel.test.mjs
+```
+
+Result: passed.
+
+Full local regression:
+
+```powershell
+$files = Get-ChildItem -Path setting-organizer -Recurse -File -Include *.js
+foreach ($file in $files) { node --check $file.FullName }
+
+$tests = Get-ChildItem setting-organizer\tests\*.mjs |
+  Where-Object { $_.Name -ne 'cdp-check.mjs' } |
+  Sort-Object Name
+foreach ($test in $tests) { node $test.FullName }
+```
+
+Result: passed, 36 JavaScript files checked and 22 no-argument tests run.

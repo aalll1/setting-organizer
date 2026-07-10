@@ -763,3 +763,20 @@
   - `node --check` 覆盖新增 `stateArchive.js` 和 `stateMerger.js`，通过。
   - `stateMerger.test.mjs` 通过。
   - 全量回归：35 个 JavaScript 文件语法检查通过，21 个无参数 `.mjs` 测试通过。
+
+## 2026-07-10 TC-33 状态差异预览 UI
+
+- 完成 `TC-33` UI 层实现。
+- 代码变更：
+  - 新增 `stateDiffPanel.js`，渲染新增、修改、归档和冲突区域。
+  - `statePanel.js` 增加“预览合并最近草稿”入口，并接入 TC-32 的 `mergeCampaignStates()`。
+  - `style.css` 增加差异预览布局和移动端样式。
+- 行为边界：
+  - 预览阶段不写 localStorage。
+  - 只有用户点击“确认保存合并结果”才保存最近状态草稿。
+  - 用户取消后不改变已有最近状态草稿。
+  - 冲突区域为后续 TC-34 / TC-35 的展示入口，当前不做高级冲突检测。
+- 验证记录：
+  - `node --check` 覆盖 `stateDiffPanel.js` 和 `statePanel.js`，通过。
+  - `stateDiffPanel.test.mjs` 和 `statePanel.test.mjs` 通过。
+  - 全量回归：36 个 JavaScript 文件语法检查通过，22 个无参数 `.mjs` 测试通过。

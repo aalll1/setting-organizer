@@ -1646,6 +1646,45 @@
 - `stateMerger.test.mjs` 通过。
 - 全量回归通过：35 个 JavaScript 文件语法检查，21 个无参数 `.mjs` 测试。
 
+### 2026-07-10：完成 TC-33 状态差异预览 UI
+
+变更类型：功能 / UI / 测试 / 文档
+
+涉及文件：
+
+- `setting-organizer/src/ui/stateDiffPanel.js`
+- `setting-organizer/src/ui/statePanel.js`
+- `setting-organizer/style.css`
+- `setting-organizer/tests/stateDiffPanel.test.mjs`
+- `setting-organizer/tests/statePanel.test.mjs`
+- `setting-organizer/README.md`
+- `docs/TESTING.md`
+- `setting_organizer_long_term_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 按长期任务卡推进 `TC-33`，为状态合并结果提供确认前预览，避免自动接受合并结论。
+
+主要变化：
+
+- 新增状态差异预览 UI。
+- 状态面板新增“预览合并最近草稿”入口。
+- 用户确认前不写 localStorage；确认后才保存最近状态草稿。
+
+影响范围：
+
+- 影响剧情状态 UI。
+- 不影响角色 / 世界书创建流程。
+- 不新增 SillyTavern 写入能力。
+
+验证情况：
+
+- 新增 UI 模块语法检查通过。
+- `stateDiffPanel.test.mjs` 和 `statePanel.test.mjs` 通过。
+- 全量回归通过：36 个 JavaScript 文件语法检查，22 个无参数 `.mjs` 测试。
+
 ## 变更记录模板
 
 ```text

@@ -630,7 +630,7 @@
 
 ### TC-33 状态差异预览 UI
 
-状态：未开始
+状态：已完成
 
 阶段：v0.4.0
 
@@ -654,6 +654,15 @@
 
 - 差异列表可读。
 - 确认前不写 localStorage。
+
+完成记录：
+
+- 新增 `stateDiffPanel.js`，独立渲染状态合并预览。
+- `statePanel.js` 增加“预览合并最近草稿”显式入口。
+- 预览阶段只调用 `mergeCampaignStates()` 生成 diff，不写 localStorage。
+- 用户点击“确认保存合并结果”后才写入最近状态草稿。
+- 用户点击“取消”会关闭预览，并显示未写入提示。
+- 新增 `stateDiffPanel.test.mjs` 并扩展 `statePanel.test.mjs`。
 
 风险点：
 

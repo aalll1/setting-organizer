@@ -280,6 +280,74 @@
     opacity: 0.82;
 }
 
+.setting-organizer-state-diff {
+    border: 1px solid #c8d7e6;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 12px 0;
+    background: #f8fbff;
+}
+
+.setting-organizer-state-diff-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.setting-organizer-state-diff-summary span {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 8px;
+    border: 1px solid #dce6ef;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 12px;
+}
+
+.setting-organizer-state-diff-list {
+    display: grid;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.setting-organizer-state-diff-entry {
+    border: 1px solid #dce6ef;
+    border-radius: 6px;
+    padding: 10px;
+    background: #fff;
+}
+
+.setting-organizer-state-diff-title {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.setting-organizer-state-diff-changes {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+.setting-organizer-state-diff-changes li {
+    display: grid;
+    grid-template-columns: minmax(80px, 120px) minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 6px;
+    align-items: center;
+    font-size: 12px;
+}
+
+.setting-organizer-state-diff-changes code {
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
 .setting-organizer-confidence {
     display: inline-flex;
     align-items: center;
@@ -346,5 +414,16 @@
     .setting-organizer-card-header {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .setting-organizer-state-diff-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .setting-organizer-state-diff-title,
+    .setting-organizer-state-diff-changes li {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
     }
 }
