@@ -2,7 +2,7 @@
 
 ## Scope
 
-This document records the data boundary introduced in `TC-27`. The first campaign-state model is a draft-only structure. It does not change the existing character draft or lorebook draft flow, and it does not write anything to SillyTavern.
+This document records the data boundary introduced in `TC-27` and extended through `TC-30`. The first campaign-state model is a draft-only structure. It does not change the existing character draft or lorebook draft flow, and it does not write anything to SillyTavern.
 
 ## Existing Drafts
 
@@ -98,16 +98,38 @@ The plugin must not merge permanent lore and dynamic state into one uncontrolled
 
 ## Explicit Non-Goals
 
-TC-27 does not implement:
+Implemented in v0.3.x:
 
-- Prompting or parsing campaign state.
-- State UI.
-- State persistence.
+- `TC-27`: campaign state schema and type constants.
+- `TC-28`: state prompt, parser, normalizer, and validator.
+- `TC-29`: state draft UI for viewing, editing, and deleting draft items.
+- `TC-30`: state JSON export/import and recent draft localStorage.
+
+Still not implemented:
+
 - State merge.
 - History archive storage.
 - Conflict detection.
 - Worldbook sync.
 - SillyTavern writes.
+
+## Import And Export
+
+State export uses:
+
+```text
+setting-organizer/src/core/stateExporter.js
+```
+
+State import must pass `schemaVersion: "campaign-state-v0.1"`. Incompatible versions fail fast instead of being normalized into the current schema.
+
+Recent state draft storage uses:
+
+```text
+setting-organizer/src/storage/stateStore.js
+```
+
+It stores only the latest state draft in browser localStorage. It does not merge multiple drafts, write to SillyTavern, or update worldbook entries.
 
 ## Maintenance Notes
 

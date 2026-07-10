@@ -1574,6 +1574,41 @@
 - 新增 `stateExporter.test.mjs`。
 - 扩展 `statePanel.test.mjs`。
 
+### 2026-07-10：完成 TC-31 v0.3.x 回归测试与文档收口
+
+变更类型：文档 / 测试记录 / 范围说明
+
+涉及文件：
+
+- `setting-organizer/README.md`
+- `docs/DATA_MODEL.md`
+- `docs/TESTING.md`
+- `setting_organizer_long_term_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 按长期任务卡推进 `TC-31`，完成 v0.3.x 剧情状态 MVP 的文档收口和回归范围记录。
+
+主要变化：
+
+- README 更新到 v0.3.x 完成状态。
+- 数据模型文档补充状态导入导出和最近草稿存储边界。
+- 新增测试文档，记录本地测试命令、v0.3.x 回归范围和 MuMu smoke 前置条件。
+- 记录 MuMu adb 的环境问题。
+
+影响范围：
+
+- 只影响文档。
+- 不改变代码逻辑和 SillyTavern 写入策略。
+
+验证情况：
+
+- TC-31 后执行语法检查：33 个 JavaScript 文件通过。
+- TC-31 后执行无参数单元测试：20 个 `.mjs` 测试通过。
+- MuMu 页面 smoke 因 adb daemon 无法写入 Temp `adb.log` 被阻塞，已记录明确环境原因。
+
 ## 变更记录模板
 
 ```text

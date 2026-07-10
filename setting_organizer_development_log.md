@@ -727,3 +727,22 @@
   - 状态导出 / 导入独立于现有设定草稿 `exporter.js` 和备份模块。
   - 最近状态草稿使用独立 localStorage key，不影响设定草稿备份。
   - TC-30 不做状态合并，不写入 SillyTavern。
+
+## 2026-07-10 TC-31 v0.3.x 回归测试与文档收口
+
+- 完成 `TC-31` 文档收口。
+- 文档变更：
+  - README 更新当前完成状态到 `TC-31 v0.3.x`。
+  - README 补充剧情状态整理使用流程、功能清单、已知限制和 v0.3.x 路线图。
+  - `docs/DATA_MODEL.md` 补充 TC-27 到 TC-30 实际落地范围、导入导出和最近草稿存储边界。
+  - 新增 `docs/TESTING.md`，记录本地测试命令、v0.3.x 回归范围和 MuMu smoke 前置条件。
+- 环境记录：
+  - 遵循后续要求，不再进行全盘递归搜索。
+  - MuMu adb 定点路径：`C:\Program Files\Netease\MuMu\nx_main\adb.exe`。
+  - adb daemon 启动失败，原因是无法写入 `C:\Users\ADMINI~1\AppData\Local\Temp\adb.log`。
+- 验证记录：
+  - `node --check` 覆盖 33 个 JavaScript 文件，通过。
+  - 无参数单元测试覆盖 20 个 `.mjs` 测试文件，通过；`cdp-check.mjs` 仍作为需要 websocket 参数的运行时 helper 排除。
+- 安全策略：
+  - v0.3.x 没有新增 SillyTavern 写入能力。
+  - 剧情状态模式仍只处理草稿、JSON 导入导出和浏览器本地最近草稿。

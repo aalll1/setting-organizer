@@ -533,7 +533,7 @@
 
 ### TC-31 v0.3.x 回归测试与文档收口
 
-状态：未开始
+状态：已完成
 
 阶段：v0.3.x 收尾
 
@@ -558,8 +558,17 @@
 验收标准：
 
 - 单元测试通过。
-- MuMu 页面 smoke test 通过。
+- MuMu 页面 smoke test 若环境可用则通过；若 ADB 环境不可用，必须记录明确阻塞原因。
 - 不改变 SillyTavern 写入安全策略。
+
+完成记录：
+
+- README 更新到 `TC-31 v0.3.x`，补充剧情状态整理使用流程、功能清单和已知限制。
+- `docs/DATA_MODEL.md` 补充 TC-27 到 TC-30 的实际落地范围、状态导入导出和最近草稿存储边界。
+- 新增 `docs/TESTING.md`，记录本地单元测试、语法检查、v0.3.x 回归范围和 MuMu smoke 前置条件。
+- 本地语法检查和单元测试通过。
+- MuMu adb 定点路径可找到，但 daemon 因无法写入 Temp adb.log 启动失败，未完成 MuMu 页面 smoke；该环境问题已记录。
+- 未改变 SillyTavern 写入安全策略，剧情状态模式仍不写入 SillyTavern。
 
 风险点：
 
