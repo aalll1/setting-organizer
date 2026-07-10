@@ -1,9 +1,11 @@
 import { CAMPAIGN_STATE_SCHEMA_VERSION, MISSION_STATUSES } from '../core/stateTypes.js';
+import { getStateTemplate } from '../templates/stateTemplates.js';
 
 export const EXTRACT_STATE_PROMPT_VERSION = 'extract-state-v0.3.0';
 
 export function buildExtractStatePrompt(sourceText, options = {}) {
     const range = options.sourceMessageRange || '';
+    const template = getStateTemplate(options.stateTemplate);
 
     return [
         '你是 SillyTavern 剧情状态整理模块。',
@@ -20,6 +22,8 @@ export function buildExtractStatePrompt(sourceText, options = {}) {
         `promptVersion: ${EXTRACT_STATE_PROMPT_VERSION}`,
         `schemaVersion: ${CAMPAIGN_STATE_SCHEMA_VERSION}`,
         `sourceMessageRange: ${range}`,
+        `stateTemplate: ${template.id} (${template.label})`,
+        `模板侧重点: ${template.focus}`,
         '',
         '必须返回以下 JSON 结构：',
         JSON.stringify(createStateOutputShape(range)),

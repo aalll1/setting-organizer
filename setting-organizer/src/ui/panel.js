@@ -8,6 +8,7 @@ import { loadSettings, saveSettings } from '../storage/settings.js';
 import { bindDiagnosticsControls, renderDiagnosticsControls } from './diagnostics.js';
 import { mountResults } from './results.js';
 import { mountStatePanel } from './statePanel.js';
+import { listStateTemplates } from '../templates/stateTemplates.js';
 
 const EXTENSION_DISPLAY_NAME = '设定整理器';
 const PANEL_ID = 'setting-organizer-panel';
@@ -62,6 +63,13 @@ function renderPanel(settings) {
             <select id="setting-organizer-mode">
                 <option value="${ORGANIZE_MODES.SETTING}" ${settings.organizeMode === ORGANIZE_MODES.SETTING ? 'selected' : ''}>设定整理</option>
                 <option value="${ORGANIZE_MODES.STATE}" ${settings.organizeMode === ORGANIZE_MODES.STATE ? 'selected' : ''}>剧情状态整理</option>
+            </select>
+        </label>
+
+        <label class="setting-organizer-field" id="setting-organizer-state-template-wrap">
+            <span>剧情状态模板</span>
+            <select id="setting-organizer-state-template">
+                ${listStateTemplates().map((template) => `<option value="${template.id}" ${settings.stateTemplate === template.id ? 'selected' : ''}>${template.label}</option>`).join('')}
             </select>
         </label>
 
@@ -157,6 +165,7 @@ function bindPanel(panel, settings) {
     elements.organizeMode.addEventListener('change', () => {
         persist();
     });
+    elements.stateTemplate.addEventListener('change', persist);
     elements.characterTarget.addEventListener('change', persist);
     elements.lorebookTarget.addEventListener('change', persist);
     elements.budgetMode.addEventListener('change', persist);
@@ -234,7 +243,7 @@ function bindPanel(panel, settings) {
             if (currentSettings.organizeMode === ORGANIZE_MODES.STATE) {
                 const stateResult = await analyzeCampaignStateText(currentSettings.sourceText, currentSettings);
                 setStatus(elements, 'success', buildStatePlaceholderResult(currentSettings, stateResult));
-                mountStatePanel(elements.resultsMount, stateResult);
+                mountStatePanel(elements.resultsMount, stateResult, currentSettings.stateTemplate);
                 logInfo('state-analysis-completed', {
                     characterStateCount: stateResult.characters.length,
                     factionStateCount: stateResult.factions.length,
@@ -271,6 +280,8 @@ function getElements(panel) {
     return {
         input: panel.querySelector('#setting-organizer-input'),
         organizeMode: panel.querySelector('#setting-organizer-mode'),
+        stateTemplate: panel.querySelector('#setting-organizer-state-template'),
+        stateTemplateWrap: panel.querySelector('#setting-organizer-state-template-wrap'),
         targetFieldset: panel.querySelector('#setting-organizer-target-fieldset'),
         characterTarget: panel.querySelector('#setting-organizer-target-character'),
         lorebookTarget: panel.querySelector('#setting-organizer-target-lorebook'),
@@ -296,6 +307,7 @@ function readSettingsFromPanel(elements) {
     return {
         sourceText: elements.input.value,
         organizeMode: elements.organizeMode.value,
+        stateTemplate: elements.stateTemplate.value,
         targets: {
             character: elements.characterTarget.checked,
             lorebook: elements.lorebookTarget.checked,
@@ -313,6 +325,7 @@ function readSettingsFromPanel(elements) {
 
 function updateModeVisibility(elements, settings) {
     const isStateMode = settings.organizeMode === ORGANIZE_MODES.STATE;
+    elements.stateTemplateWrap.hidden = !isStateMode;
     elements.targetFieldset.hidden = isStateMode;
     elements.budgetMode.closest('.setting-organizer-field').hidden = isStateMode;
     elements.customBudget.hidden = isStateMode || settings.tokenBudgetMode !== 'custom';

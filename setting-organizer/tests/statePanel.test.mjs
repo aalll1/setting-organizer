@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { removeStateItem, renderStatePanelHtml, updateStateField } from '../src/ui/statePanel.js';
 import { createEmptyCampaignState } from '../src/core/stateTypes.js';
+import { getStateTemplate } from '../src/templates/stateTemplates.js';
 
 const state = createEmptyCampaignState({
     campaign: {
@@ -85,6 +86,10 @@ assert.ok(worldbookPreviewHtml.includes('状态世界书草稿预览'));
 assert.ok(worldbookPreviewHtml.includes('创建新世界书'));
 assert.ok(worldbookPreviewHtml.includes('current_state'));
 assert.ok(worldbookPreviewHtml.includes('character_state'));
+
+const dndTemplateHtml = renderStatePanelHtml(state, 'overview', null, null, null, new Set(), getStateTemplate('dnd'));
+assert.ok(dndTemplateHtml.includes('人物'));
+assert.ok(dndTemplateHtml.includes('任务'));
 
 const characterHtml = renderStatePanelHtml(state, 'characters');
 assert.ok(characterHtml.includes('林月'));

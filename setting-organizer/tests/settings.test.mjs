@@ -4,6 +4,7 @@ import { DEFAULT_SETTINGS, normalizeSettings } from '../src/storage/settings.js'
 const defaults = normalizeSettings(null);
 assert.equal(defaults.organizeMode, DEFAULT_SETTINGS.organizeMode);
 assert.equal(defaults.analysisMode, DEFAULT_SETTINGS.analysisMode);
+assert.equal(defaults.stateTemplate, 'generic');
 
 const stateSettings = normalizeSettings({
     sourceText: '测试',
@@ -22,6 +23,7 @@ const stateSettings = normalizeSettings({
 });
 
 assert.equal(stateSettings.organizeMode, 'state');
+assert.equal(stateSettings.stateTemplate, 'generic');
 assert.equal(stateSettings.targets.character, false);
 assert.equal(stateSettings.customBudget.character, 1200);
 

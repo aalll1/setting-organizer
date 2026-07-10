@@ -108,6 +108,7 @@ Implemented:
 - `TC-34`: deterministic conflict detection core logic.
 - `TC-35`: read-only conflict display and handling suggestions.
 - `TC-36`: campaign-state to lorebook-draft builder and draft-only diff preview.
+- `TC-38`: built-in campaign-state templates for prompt focus and UI groups.
 
 Still not implemented:
 
@@ -190,6 +191,12 @@ The builder emits separate categories for `permanent_lore`, `current_state`, `mi
 Each generated draft keeps `sourceStateId`, `sourceBoundary`, and `sourceMessageRange`. `lorebookAdapter.js` carries those values into `extensions.settingOrganizer` when a later, user-confirmed export or import occurs.
 
 The builder also returns a draft-only preview containing `added`, `updated`, `unchanged`, and `removed` records against caller-supplied prior drafts. This comparison neither reads existing SillyTavern worldbooks nor overwrites them.
+
+## State Templates
+
+`src/templates/stateTemplates.js` supplies fixed built-in templates: `generic`, `historical`, and `dnd`. A template has an ID, display label, prompt focus, and allowed state UI groups. The selected ID is stored in settings and passed to the state prompt and state panel.
+
+The default `generic` template preserves the previous field set. The historical and DND templates currently retain the same normalized campaign-state schema, while changing only extraction emphasis and the template-owned UI grouping contract. User-defined script templates are not supported.
 
 ## Maintenance Notes
 

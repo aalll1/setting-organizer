@@ -295,3 +295,27 @@ Runtime result:
 - New-worldbook creation and legacy-worldbook verification completed; no existing worldbook was overwritten or deleted.
 
 Full local regression result: passed, 39 JavaScript files checked and 26 no-argument tests run.
+
+## TC-38 Verification Record
+
+Date: 2026-07-10
+
+Targeted tests:
+
+```powershell
+node --check setting-organizer\src\templates\stateTemplates.js
+node --check setting-organizer\src\prompts\extractState.js
+node --check setting-organizer\src\ui\panel.js
+node setting-organizer\tests\stateTemplates.test.mjs
+node setting-organizer\tests\settings.test.mjs
+node setting-organizer\tests\statePanel.test.mjs
+```
+
+Expected coverage:
+
+- Three built-in template IDs resolve deterministically, and invalid IDs fall back to generic.
+- Each template appears in the state prompt and carries a template-owned focus.
+- Settings preserve the default generic template for old configuration.
+- State UI tabs are derived from the template UI-group contract.
+
+Full local regression result: passed, 40 JavaScript files checked and 27 no-argument tests run.

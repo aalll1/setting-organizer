@@ -6,6 +6,7 @@ import { mergeCampaignStates } from '../core/stateMerger.js';
 import { loadRecentCampaignState, saveRecentCampaignState } from '../storage/stateStore.js';
 import { buildWorldbookSyncDraft } from '../core/worldbookSyncBuilder.js';
 import { runCampaignStateWorldbookImport } from './confirm.js';
+import { getStateTemplate } from '../templates/stateTemplates.js';
 import { renderConflictPanelHtml } from './conflictPanel.js';
 import { renderStateDiffPanelHtml } from './stateDiffPanel.js';
 
@@ -18,7 +19,7 @@ const STATE_TABS = [
     { id: 'warnings', label: '警告' },
 ];
 
-export function mountStatePanel(container, campaignState) {
+export function mountStatePanel(container, campaignState, templateId = 'generic') {
     const state = {
         activeTab: 'overview',
         campaignState: cloneState(campaignState),
@@ -26,18 +27,20 @@ export function mountStatePanel(container, campaignState) {
         conflicts: null,
         worldbookSyncPreview: null,
         selectedWorldbookCategories: new Set(['permanent_lore', 'current_state', 'mission_state', 'character_state', 'faction_state', 'item_state', 'history_archive']),
+        template: getStateTemplate(templateId),
     };
 
     render(container, state);
 }
 
 function render(container, state) {
-    container.innerHTML = renderStatePanelHtml(state.campaignState, state.activeTab, state.diffPreview, state.conflicts, state.worldbookSyncPreview, state.selectedWorldbookCategories);
+    container.innerHTML = renderStatePanelHtml(state.campaignState, state.activeTab, state.diffPreview, state.conflicts, state.worldbookSyncPreview, state.selectedWorldbookCategories, state.template);
 
     bindStatePanel(container, state);
 }
 
-export function renderStatePanelHtml(campaignState, activeTab = 'overview', diffPreview = null, conflicts = null, worldbookSyncPreview = null, selectedWorldbookCategories = new Set()) {
+export function renderStatePanelHtml(campaignState, activeTab = 'overview', diffPreview = null, conflicts = null, worldbookSyncPreview = null, selectedWorldbookCategories = new Set(), template = getStateTemplate()) {
+    const visibleTabs = STATE_TABS.filter((tab) => tab.id === 'overview' || tab.id === 'warnings' || template.uiGroups.includes(tab.id));
     return `
         <div class="setting-organizer-state-note">剧情状态草稿，未写入、未保存、未同步世界书。</div>
         <div class="setting-organizer-export-actions">
@@ -55,7 +58,7 @@ export function renderStatePanelHtml(campaignState, activeTab = 'overview', diff
         ${renderConflictPanelHtml(conflicts)}
         ${renderWorldbookSyncPreviewHtml(worldbookSyncPreview, selectedWorldbookCategories)}
         <div class="setting-organizer-tabs" role="tablist">
-            ${STATE_TABS.map((tab) => `
+            ${visibleTabs.map((tab) => `
                 <button type="button" data-state-tab="${tab.id}" class="${activeTab === tab.id ? 'active' : ''}">
                     ${tab.label}
                 </button>
