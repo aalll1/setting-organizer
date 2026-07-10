@@ -321,7 +321,9 @@
 - 运行 14 个无参数单元测试；`cdp-check.mjs` 记录为需要 CDP websocket 参数的辅助脚本。
 - 在本地 SillyTavern 1.18.0 中验证扩展加载、mock 分析、结果页、备份、诊断导出和真实模型错误路径。
 - 当前环境未发现 `adb`，MuMu/Android CDP 未执行；本轮实测采用宿主机浏览器页面。
-- 本地提交、tag 和 GitHub 发布同步需在最终发布命令完成后确认。
+- 已创建本地提交 `2d9ad65` 和本地 tag `v0.2.1`。
+- 已推送 GitHub 发布仓库 `aalll1/setting-organizer` 的 `main` 分支到提交 `5051dba`。
+- 已推送 GitHub tag `v0.2.1`，并验证 tag 下 `manifest.json` 版本为 `0.2.1`。
 
 风险点：
 

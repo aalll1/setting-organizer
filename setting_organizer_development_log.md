@@ -648,5 +648,11 @@
 - 环境限制：
   - 当前 PATH 未发现 `adb`，本轮没有完成 MuMu/Android CDP 实测。
   - 点击复制原始模型输出触发隐私确认弹窗后，Codex in-app Browser 控制 API 被确认弹窗阻塞；已在测试报告中记录。
+- Git 发布状态：
+  - 已创建本地提交 `2d9ad65`：`chore: prepare v0.2.1 release`。
+  - 已创建本地 tag：`v0.2.1`。
+  - 已推送 GitHub 发布仓库 `aalll1/setting-organizer` 的 `main` 分支到提交 `5051dba`。
+  - 已推送 GitHub tag：`v0.2.1`。
+  - 已验证 GitHub `main` 和 `v0.2.1` tag 下的 `manifest.json` 版本均为 `0.2.1`。
 - 解耦说明：
   - TC-26 只做版本、发布目录、文档和测试收口，不新增业务逻辑。
