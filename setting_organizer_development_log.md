@@ -710,3 +710,20 @@
 - 解耦说明：
   - 状态草稿 UI 独立于 `results.js` 的角色 / 世界书导入导出按钮。
   - TC-29 不实现持久化、导出导入、状态合并、世界书同步或 SillyTavern 写入。
+
+## 2026-07-10 TC-30 剧情状态导出与导入
+
+- 完成 `TC-30`。
+- 代码变更：
+  - 新增 `stateExporter.js`，提供状态草稿导出 JSON 和导入 JSON 校验。
+  - 新增 `stateStore.js`，保存和读取最近剧情状态草稿。
+  - `statePanel.js` 增加导出状态 JSON、导入状态 JSON、保存最近状态草稿、载入最近状态草稿。
+  - `stateValidator.js` 增加 `schemaVersion` 不兼容的 fail-fast 校验。
+  - `style.css` 增加状态面板操作提示状态样式。
+- 测试变更：
+  - 新增 `stateExporter.test.mjs`。
+  - 扩展 `statePanel.test.mjs`，确认状态面板显示导入 / 导出 / 最近草稿操作。
+- 解耦说明：
+  - 状态导出 / 导入独立于现有设定草稿 `exporter.js` 和备份模块。
+  - 最近状态草稿使用独立 localStorage key，不影响设定草稿备份。
+  - TC-30 不做状态合并，不写入 SillyTavern。

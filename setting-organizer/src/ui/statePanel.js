@@ -1,4 +1,7 @@
 import { removeArrayItem, updateArrayItem } from './editor.js';
+import { formatError } from '../core/errors.js';
+import { buildCampaignStateExportJson, parseCampaignStateImportJson } from '../core/stateExporter.js';
+import { loadRecentCampaignState, saveRecentCampaignState } from '../storage/stateStore.js';
 
 const STATE_TABS = [
     { id: 'overview', label: '总览' },
@@ -27,6 +30,14 @@ function render(container, state) {
 export function renderStatePanelHtml(campaignState, activeTab = 'overview') {
     return `
         <div class="setting-organizer-state-note">剧情状态草稿，未写入、未保存、未同步世界书。</div>
+        <div class="setting-organizer-export-actions">
+            <button type="button" data-export-state-json>导出状态 JSON</button>
+            <button type="button" data-import-state-json>导入状态 JSON</button>
+            <button type="button" data-save-recent-state>保存最近状态草稿</button>
+            <button type="button" data-load-recent-state>载入最近状态草稿</button>
+            <input type="file" accept="application/json,.json" data-import-state-file hidden>
+        </div>
+        <div class="setting-organizer-export-error" data-state-panel-status hidden></div>
         <div class="setting-organizer-tabs" role="tablist">
             ${STATE_TABS.map((tab) => `
                 <button type="button" data-state-tab="${tab.id}" class="${activeTab === tab.id ? 'active' : ''}">
@@ -58,6 +69,67 @@ function bindStatePanel(container, state) {
     bindCollectionFields(container, state, 'factions');
     bindCollectionFields(container, state, 'missions');
     bindCollectionFields(container, state, 'items');
+    bindStateActions(container, state);
+}
+
+function bindStateActions(container, state) {
+    const statusBox = container.querySelector('[data-state-panel-status]');
+    const importInput = container.querySelector('[data-import-state-file]');
+
+    container.querySelector('[data-export-state-json]')?.addEventListener('click', () => {
+        try {
+            downloadText(buildCampaignStateExportJson(state.campaignState), 'campaign-state.json');
+            showStatus(statusBox, '已导出剧情状态 JSON。', 'success');
+        } catch (error) {
+            showStatus(statusBox, formatError(error), 'error');
+        }
+    });
+
+    container.querySelector('[data-import-state-json]')?.addEventListener('click', () => {
+        importInput?.click();
+    });
+
+    importInput?.addEventListener('change', async () => {
+        const file = importInput.files && importInput.files[0];
+        if (!file) {
+            return;
+        }
+
+        try {
+            state.campaignState = parseCampaignStateImportJson(await file.text());
+            render(container, state);
+            showStatus(container.querySelector('[data-state-panel-status]'), '已导入剧情状态 JSON。', 'success');
+        } catch (error) {
+            showStatus(statusBox, formatError(error), 'error');
+        } finally {
+            importInput.value = '';
+        }
+    });
+
+    container.querySelector('[data-save-recent-state]')?.addEventListener('click', () => {
+        try {
+            state.campaignState = saveRecentCampaignState(state.campaignState);
+            showStatus(statusBox, '最近状态草稿已保存到本地浏览器。', 'success');
+        } catch (error) {
+            showStatus(statusBox, formatError(error), 'error');
+        }
+    });
+
+    container.querySelector('[data-load-recent-state]')?.addEventListener('click', () => {
+        try {
+            const loaded = loadRecentCampaignState();
+            if (!loaded) {
+                showStatus(statusBox, '暂无最近状态草稿。', 'warning');
+                return;
+            }
+
+            state.campaignState = loaded;
+            render(container, state);
+            showStatus(container.querySelector('[data-state-panel-status]'), '已载入最近状态草稿。', 'success');
+        } catch (error) {
+            showStatus(statusBox, formatError(error), 'error');
+        }
+    });
 }
 
 function bindCollectionFields(container, state, collectionName) {
@@ -281,6 +353,26 @@ function readFieldValue(field) {
 
 function cloneState(value) {
     return JSON.parse(JSON.stringify(value));
+}
+
+function showStatus(container, message, state) {
+    if (!container) {
+        return;
+    }
+
+    container.hidden = false;
+    container.dataset.state = state;
+    container.textContent = message;
+}
+
+function downloadText(text, filename) {
+    const blob = new Blob([text], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
 }
 
 function escapeHtml(value) {

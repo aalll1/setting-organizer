@@ -18,6 +18,10 @@ export function validateAndNormalizeCampaignState(value) {
 }
 
 function validateRawStateShape(value) {
+    if ('schemaVersion' in value && value.schemaVersion !== CAMPAIGN_STATE_SCHEMA_VERSION) {
+        throw new SettingOrganizerError(ERROR_CODES.SCHEMA_VALIDATION_FAILED, '剧情状态 schemaVersion 不兼容。');
+    }
+
     for (const key of ['characters', 'factions', 'missions', 'items']) {
         if (key in value && !Array.isArray(value[key])) {
             throw new SettingOrganizerError(ERROR_CODES.SCHEMA_VALIDATION_FAILED, `${key} 必须是数组。`);

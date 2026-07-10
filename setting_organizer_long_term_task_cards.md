@@ -486,7 +486,7 @@
 
 ### TC-30 剧情状态导出与导入
 
-状态：未开始
+状态：已完成
 
 阶段：v0.3.1
 
@@ -513,6 +513,15 @@
 - 导出的状态 JSON 可再次导入。
 - schemaVersion 不匹配时有明确提示。
 - 不影响现有设定草稿备份。
+
+完成记录：
+
+- 新增 `setting-organizer/src/core/stateExporter.js`，支持状态 JSON 导出和导入校验。
+- 新增 `setting-organizer/src/storage/stateStore.js`，保存 / 读取最近剧情状态草稿。
+- `statePanel.js` 增加导出状态 JSON、导入状态 JSON、保存最近状态草稿、载入最近状态草稿。
+- 导入会校验 `schemaVersion`，不兼容时显示明确错误。
+- 新增 `setting-organizer/tests/stateExporter.test.mjs`，扩展 `statePanel.test.mjs`。
+- 未实现多份状态合并，未写入 SillyTavern。
 
 风险点：
 

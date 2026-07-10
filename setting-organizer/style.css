@@ -203,6 +203,14 @@
     border-radius: 6px;
 }
 
+.setting-organizer-export-error[data-state="success"] {
+    border-color: #3f8f5f;
+}
+
+.setting-organizer-export-error[data-state="warning"] {
+    border-color: #b8a15c;
+}
+
 .setting-organizer-backup-status,
 .setting-organizer-import-status {
     padding: 10px;

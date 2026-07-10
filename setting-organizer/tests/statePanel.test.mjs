@@ -33,6 +33,10 @@ const state = createEmptyCampaignState({
 
 const overviewHtml = renderStatePanelHtml(state);
 assert.ok(overviewHtml.includes('剧情状态草稿，未写入、未保存、未同步世界书。'));
+assert.ok(overviewHtml.includes('导出状态 JSON'));
+assert.ok(overviewHtml.includes('导入状态 JSON'));
+assert.ok(overviewHtml.includes('保存最近状态草稿'));
+assert.ok(overviewHtml.includes('载入最近状态草稿'));
 assert.ok(overviewHtml.includes('人物状态'));
 assert.ok(overviewHtml.includes('关键道具'));
 assert.ok(overviewHtml.includes('confidence 1.00'));

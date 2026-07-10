@@ -1536,6 +1536,44 @@
 - 新增状态分析、状态面板、设置归一化测试。
 - 扩展 SillyTavern API 测试，确认状态 prompt 独立调用。
 
+### 2026-07-10：完成 TC-30 剧情状态导出与导入
+
+变更类型：新增 / 测试 / 文档
+
+涉及文件：
+
+- `setting-organizer/src/core/stateExporter.js`
+- `setting-organizer/src/core/stateValidator.js`
+- `setting-organizer/src/storage/stateStore.js`
+- `setting-organizer/src/ui/statePanel.js`
+- `setting-organizer/style.css`
+- `setting-organizer/tests/stateExporter.test.mjs`
+- `setting-organizer/tests/statePanel.test.mjs`
+- `setting_organizer_long_term_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 按长期任务卡推进 `TC-30`，让剧情状态草稿可以导出为 JSON、从 JSON 重新载入，并可保存最近草稿。
+
+主要变化：
+
+- 新增状态 JSON 导出 / 导入模块。
+- 新增最近状态草稿 localStorage 模块。
+- 状态面板增加导入、导出、保存最近草稿、载入最近草稿操作。
+- schemaVersion 不兼容时 fail-fast。
+
+影响范围：
+
+- 影响剧情状态草稿面板和状态数据层。
+- 不影响现有设定草稿备份、角色 / 世界书导入导出或 SillyTavern 写入流程。
+
+验证情况：
+
+- 新增 `stateExporter.test.mjs`。
+- 扩展 `statePanel.test.mjs`。
+
 ## 变更记录模板
 
 ```text
