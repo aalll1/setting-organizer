@@ -77,6 +77,15 @@ assert.ok(conflictHtml.includes('状态冲突检测'));
 assert.ok(conflictHtml.includes('确认最新位置'));
 assert.ok(conflictHtml.includes('来源范围'));
 
+const worldbookPreviewHtml = renderStatePanelHtml(state, 'overview', null, null, {
+    lorebookEntries: [],
+    preview: { summary: { added: 2, updated: 1 } },
+}, new Set(['current_state', 'character_state']));
+assert.ok(worldbookPreviewHtml.includes('状态世界书草稿预览'));
+assert.ok(worldbookPreviewHtml.includes('创建新世界书'));
+assert.ok(worldbookPreviewHtml.includes('current_state'));
+assert.ok(worldbookPreviewHtml.includes('character_state'));
+
 const characterHtml = renderStatePanelHtml(state, 'characters');
 assert.ok(characterHtml.includes('林月'));
 assert.ok(characterHtml.includes('来源：0-2'));

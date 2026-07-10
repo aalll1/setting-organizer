@@ -4,6 +4,8 @@ import { formatError } from '../core/errors.js';
 import { buildCampaignStateExportJson, parseCampaignStateImportJson } from '../core/stateExporter.js';
 import { mergeCampaignStates } from '../core/stateMerger.js';
 import { loadRecentCampaignState, saveRecentCampaignState } from '../storage/stateStore.js';
+import { buildWorldbookSyncDraft } from '../core/worldbookSyncBuilder.js';
+import { runCampaignStateWorldbookImport } from './confirm.js';
 import { renderConflictPanelHtml } from './conflictPanel.js';
 import { renderStateDiffPanelHtml } from './stateDiffPanel.js';
 
@@ -22,18 +24,20 @@ export function mountStatePanel(container, campaignState) {
         campaignState: cloneState(campaignState),
         diffPreview: null,
         conflicts: null,
+        worldbookSyncPreview: null,
+        selectedWorldbookCategories: new Set(['permanent_lore', 'current_state', 'mission_state', 'character_state', 'faction_state', 'item_state', 'history_archive']),
     };
 
     render(container, state);
 }
 
 function render(container, state) {
-    container.innerHTML = renderStatePanelHtml(state.campaignState, state.activeTab, state.diffPreview, state.conflicts);
+    container.innerHTML = renderStatePanelHtml(state.campaignState, state.activeTab, state.diffPreview, state.conflicts, state.worldbookSyncPreview, state.selectedWorldbookCategories);
 
     bindStatePanel(container, state);
 }
 
-export function renderStatePanelHtml(campaignState, activeTab = 'overview', diffPreview = null, conflicts = null) {
+export function renderStatePanelHtml(campaignState, activeTab = 'overview', diffPreview = null, conflicts = null, worldbookSyncPreview = null, selectedWorldbookCategories = new Set()) {
     return `
         <div class="setting-organizer-state-note">剧情状态草稿，未写入、未保存、未同步世界书。</div>
         <div class="setting-organizer-export-actions">
@@ -43,11 +47,13 @@ export function renderStatePanelHtml(campaignState, activeTab = 'overview', diff
             <button type="button" data-load-recent-state>载入最近状态草稿</button>
             <button type="button" data-preview-state-merge>预览合并最近草稿</button>
             <button type="button" data-detect-state-conflicts>检测状态冲突</button>
+            <button type="button" data-preview-state-worldbook>预览状态世界书草稿</button>
             <input type="file" accept="application/json,.json" data-import-state-file hidden>
         </div>
         <div class="setting-organizer-export-error" data-state-panel-status hidden></div>
         ${renderStateDiffPanelHtml(diffPreview)}
         ${renderConflictPanelHtml(conflicts)}
+        ${renderWorldbookSyncPreviewHtml(worldbookSyncPreview, selectedWorldbookCategories)}
         <div class="setting-organizer-tabs" role="tablist">
             ${STATE_TABS.map((tab) => `
                 <button type="button" data-state-tab="${tab.id}" class="${activeTab === tab.id ? 'active' : ''}">
@@ -194,6 +200,38 @@ function bindStateActions(container, state) {
             showStatus(statusBox, formatError(error), 'error');
         }
     });
+
+    container.querySelectorAll('[data-state-worldbook-category]').forEach((field) => {
+        field.addEventListener('change', () => {
+            if (field.checked) state.selectedWorldbookCategories.add(field.value);
+            else state.selectedWorldbookCategories.delete(field.value);
+        });
+    });
+
+    container.querySelector('[data-preview-state-worldbook]')?.addEventListener('click', () => {
+        try {
+            state.worldbookSyncPreview = buildWorldbookSyncDraft(state.campaignState);
+            render(container, state);
+            showStatus(container.querySelector('[data-state-panel-status]'), '已生成状态世界书草稿预览，尚未创建世界书。', 'warning');
+        } catch (error) { showStatus(statusBox, formatError(error), 'error'); }
+    });
+
+    container.querySelector('[data-confirm-state-worldbook]')?.addEventListener('click', async () => {
+        const categories = [...state.selectedWorldbookCategories];
+        if (!categories.length) { showStatus(statusBox, '请至少选择一个状态世界书分类。', 'warning'); return; }
+        await runCampaignStateWorldbookImport(state.campaignState, statusBox, { categories });
+    });
+}
+
+function renderWorldbookSyncPreviewHtml(preview, selectedCategories) {
+    if (!preview) return '';
+    const categories = ['permanent_lore', 'current_state', 'mission_state', 'character_state', 'faction_state', 'item_state', 'history_archive'];
+    return `<section class="setting-organizer-state-diff" data-state-worldbook-preview>
+        <div class="setting-organizer-card-header"><h4>状态世界书草稿预览</h4><span class="setting-organizer-confidence">新增 ${preview.preview.summary.added} / 修改 ${preview.preview.summary.updated}</span></div>
+        <p>仅会创建新的世界书；当前预览不会写入酒馆。</p>
+        <div class="setting-organizer-inline-toggle">${categories.map((category) => `<label><input type="checkbox" data-state-worldbook-category value="${category}" ${selectedCategories.has(category) ? 'checked' : ''}><span>${category}</span></label>`).join('')}</div>
+        <button type="button" data-confirm-state-worldbook>创建新世界书</button>
+    </section>`;
 }
 
 function bindCollectionFields(container, state, collectionName) {

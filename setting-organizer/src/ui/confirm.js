@@ -1,6 +1,6 @@
 import { formatError } from '../core/errors.js';
 import { logError, logInfo } from '../core/logger.js';
-import { getCharacterImportReadiness, importCharacterDraft, importLorebookDraft, getLorebookImportReadiness } from '../core/importer.js';
+import { getCharacterImportReadiness, importCampaignStateWorldbook, importCharacterDraft, importLorebookDraft, getLorebookImportReadiness } from '../core/importer.js';
 import { openWorldInfoEditor } from '../adapters/sillytavernApi.js';
 import { createAndSaveBackup } from '../storage/backups.js';
 
@@ -113,6 +113,19 @@ export async function runCharacterImportPreview(result, statusContainer, options
     }
 }
 
+export async function runCampaignStateWorldbookImport(campaignState, statusContainer, options = {}) {
+    try {
+        const report = await importCampaignStateWorldbook(campaignState, options);
+        logImportReport('campaign-state-worldbook', report);
+        renderImportReport(statusContainer, report, 'worldbook');
+        return report;
+    } catch (error) {
+        logError('campaign-state-worldbook-import-unhandled-failed', error);
+        renderImportReport(statusContainer, { ok: false, error, steps: [], completedSteps: [], pendingSteps: [], possibleImpact: ['状态世界书创建流程在创建报告前失败。'] }, 'worldbook');
+        return null;
+    }
+}
+
 function logImportReport(type, report) {
     const event = report.ok ? `${type}-import-completed` : `${type}-import-failed`;
     const details = {
@@ -155,7 +168,11 @@ export function renderImportReport(container, report, type = 'worldbook') {
         lines.push(`新建世界书：${report.createdWorldbook.name}`);
     }
 
-    if (report.created?.name || report.created?.avatar) {
+    if (type === 'worldbook' && report.created?.name) {
+        lines.push(`新建世界书：${report.created.name}`);
+    }
+
+    if (type === 'character' && (report.created?.name || report.created?.avatar)) {
         lines.push(`新建角色：${report.created.name || '未命名'}${report.created.avatar ? ` (${report.created.avatar})` : ''}`);
     }
 

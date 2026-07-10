@@ -3,6 +3,24 @@ import { toCharacterCreateFormFields } from '../adapters/characterAdapter.js';
 import { toSillyTavernWorldInfo } from '../adapters/lorebookAdapter.js';
 import { createAndSaveBackup } from '../storage/backups.js';
 import { bindCharacterWorld, createCharacter, createWorldInfo, getCharacterSummaries, getCompatibilitySnapshot, getFreshCharacterSummaries, getWorldInfoNames } from '../adapters/sillytavernApi.js';
+import { buildWorldbookSyncDraft } from './worldbookSyncBuilder.js';
+
+export async function importCampaignStateWorldbook(campaignState, options = {}) {
+    const draft = buildWorldbookSyncDraft(campaignState, { previousEntries: options.previousEntries });
+    const selectedCategories = Array.isArray(options.categories) ? new Set(options.categories) : null;
+    const lorebookEntries = selectedCategories
+        ? draft.lorebookEntries.filter((entry) => selectedCategories.has(entry.category))
+        : draft.lorebookEntries;
+    const report = await importLorebookDraft({ characters: [], lorebookEntries, warnings: [] }, {
+        name: options.name,
+    });
+
+    return {
+        ...report,
+        syncPreview: draft.preview,
+        selectedCategories: selectedCategories ? [...selectedCategories] : [],
+    };
+}
 
 export async function importLorebookDraft(result, options = {}) {
     const enabledEntries = (result.lorebookEntries || []).filter((entry) => entry.enabled);

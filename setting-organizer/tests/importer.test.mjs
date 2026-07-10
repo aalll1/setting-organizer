@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { ERROR_CODES } from '../src/core/errors.js';
-import { getCharacterImportReadiness, getLorebookImportReadiness, importCharacterDraft, importLorebookDraft } from '../src/core/importer.js';
+import { getCharacterImportReadiness, getLorebookImportReadiness, importCampaignStateWorldbook, importCharacterDraft, importLorebookDraft } from '../src/core/importer.js';
+import { createEmptyCampaignState } from '../src/core/stateTypes.js';
 
 function createMemoryStorage() {
     const values = new Map();
@@ -75,6 +76,13 @@ const successReport = await importLorebookDraft(result, { name: '测试世界书
 assert.equal(successReport.ok, true);
 assert.equal(successReport.created.name, '测试世界书');
 assert.equal(successReport.created.entryCount, 1);
+
+const stateWorldbookReport = await importCampaignStateWorldbook(createEmptyCampaignState({
+    campaign: { id: 'campaign-tc37', name: 'TC37', summary: '测试当前状态', sourceMessageRange: '0-1', confidence: 0.8 },
+}), { name: 'SO_TC37_StateWorldbook', categories: ['current_state'] });
+assert.equal(stateWorldbookReport.ok, true);
+assert.equal(stateWorldbookReport.created.name, 'SO_TC37_StateWorldbook');
+assert.equal(stateWorldbookReport.selectedCategories[0], 'current_state');
 assert.ok(successReport.steps.every((step) => step.status === 'completed'));
 
 const characterResult = {

@@ -272,3 +272,26 @@ Expected coverage:
 - Adapter metadata preserves the source state boundary for later confirmed import.
 
 Full local regression result: passed, 39 JavaScript files checked and 25 no-argument tests run.
+
+## TC-37 Verification Record
+
+Date: 2026-07-10
+
+Targeted tests:
+
+```powershell
+node --check setting-organizer\src\core\importer.js
+node --check setting-organizer\src\ui\confirm.js
+node --check setting-organizer\src\ui\statePanel.js
+node setting-organizer\tests\confirm.test.mjs
+node setting-organizer\tests\importer.test.mjs
+node setting-organizer\tests\statePanel.test.mjs
+```
+
+Runtime result:
+
+- SillyTavern 1.18.0 at `http://127.0.0.1:8001/` completed mock analysis, preview, and explicit new-worldbook creation.
+- Test worldbook `设定整理器导入 20260710103723705` and backup `backup_20260710103723706_u6pp7f` are retained.
+- New-worldbook creation and legacy-worldbook verification completed; no existing worldbook was overwritten or deleted.
+
+Full local regression result: passed, 39 JavaScript files checked and 26 no-argument tests run.
