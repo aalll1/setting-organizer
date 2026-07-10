@@ -951,7 +951,7 @@
 
 ### TC-40 正式 docs 目录拆分
 
-状态：未开始
+状态：已完成（2026-07-10）
 
 阶段：工程化
 
@@ -986,6 +986,12 @@
 - 旧长期参考文档保留为历史材料或索引。
 
 风险点：
+
+完成记录：
+
+- 新增 ROADMAP、DEVELOPMENT、ARCHITECTURE、API_COMPATIBILITY、CHANGELOG、KNOWN_ISSUES、AGENT_GUIDE 等正式维护文档。
+- DATA_MODEL、TESTING、USER_GUIDE 统一位于 `docs/`。
+- README 增加正式文档索引；根目录旧规划和日志保留为历史材料与索引。
 
 - 一次性拆分文档较多，容易造成重复和过期。
 

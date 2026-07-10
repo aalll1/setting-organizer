@@ -337,3 +337,22 @@ Coverage:
 - Each fixture's template ID is present in the state extraction prompt.
 
 Full local regression result: passed, 40 JavaScript files checked and 28 no-argument tests run.
+
+## TC-40 Verification Record
+
+Date: 2026-07-10
+
+Documentation checks:
+
+```powershell
+$required = 'ROADMAP.md','DEVELOPMENT.md','ARCHITECTURE.md','DATA_MODEL.md','TESTING.md','API_COMPATIBILITY.md','CHANGELOG.md','KNOWN_ISSUES.md','AGENT_GUIDE.md','USER_GUIDE.md'
+foreach ($file in $required) { Test-Path "docs\\$file" }
+```
+
+Expected coverage:
+
+- Every formal maintenance document exists under `docs/`.
+- README links users to the formal document set.
+- Root-level planning and runtime reports remain as historical references.
+
+Full local regression result: passed, 40 JavaScript files checked and 28 no-argument tests run.

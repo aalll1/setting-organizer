@@ -2,7 +2,21 @@
 
 SillyTavern 设定整理器扩展，用于把粘贴文本或当前聊天整理成可编辑的角色草稿、世界书草稿和剧情状态草稿，再由用户确认后导出或安全新建到 SillyTavern。
 
-当前完成到 `TC-35 v0.5.0 状态冲突检测 UI 与处理建议`。世界书创建已在 SillyTavern 1.18.0 测试环境中通过 `saveWorldInfo(name, data, true)` 验证；角色创建已通过 `/api/characters/create` 验证；角色绑定世界书已通过 `/api/characters/merge-attributes` 验证。v0.5.0 提供确定性规则冲突检测和只读处理建议，不自动修改状态。其他 SillyTavern 版本请先查看 `API_COMPATIBILITY.md`。
+当前完成到 `TC-39 v0.7.0 模板样例与用户指南`。世界书创建已在 SillyTavern 1.18.0 测试环境中通过 `saveWorldInfo(name, data, true)` 验证；角色创建已通过 `/api/characters/create` 验证；角色绑定世界书已通过 `/api/characters/merge-attributes` 验证。剧情状态支持通用、历史模拟和跑团 / DND 模板，世界书同步始终经过预览、备份和新建确认流程。
+
+## 文档
+
+README 是安装和快速使用入口。维护、架构、测试、兼容性与路线图请查看仓库根目录的 `docs/`：
+
+- `docs/USER_GUIDE.md`
+- `docs/ARCHITECTURE.md`
+- `docs/DATA_MODEL.md`
+- `docs/TESTING.md`
+- `docs/API_COMPATIBILITY.md`
+- `docs/KNOWN_ISSUES.md`
+- `docs/ROADMAP.md`
+- `docs/DEVELOPMENT.md`
+- `docs/AGENT_GUIDE.md`
 
 ## 安装
 
