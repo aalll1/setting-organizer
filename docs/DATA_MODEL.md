@@ -106,10 +106,10 @@ Implemented:
 - `TC-30`: state JSON export/import and recent draft localStorage.
 - `TC-32`: deterministic state merge and archive core logic.
 - `TC-34`: deterministic conflict detection core logic.
+- `TC-35`: read-only conflict display and handling suggestions.
 
 Still not implemented:
 
-- Conflict UI and resolution suggestions.
 - Worldbook sync.
 - SillyTavern writes.
 
@@ -177,7 +177,9 @@ TC-34 checks:
 - same faction with multiple attitudes to player
 - an item marked as both active current state and archived history
 
-Conflict detection is read-only. It returns warning records with `ruleId`, `entityType`, `identity`, `field`, `values`, `itemIds`, `message`, and `suggestion`; it does not edit state, archive entries, call models, or write to storage.
+Conflict detection is read-only. It returns warning records with `ruleId`, `entityType`, `identity`, `field`, `values`, `itemIds`, `sourceMessageRanges`, `message`, and `suggestion`; it does not edit state, archive entries, call models, or write to storage.
+
+TC-35 renders these records in the state panel. The panel sorts by severity, shows the affected object, source IDs and source message ranges, and gives a handling suggestion. It remains informational: users can continue viewing and editing the draft, while no entry is automatically archived.
 
 ## Maintenance Notes
 

@@ -38,6 +38,7 @@ assert.ok(overviewHtml.includes('导入状态 JSON'));
 assert.ok(overviewHtml.includes('保存最近状态草稿'));
 assert.ok(overviewHtml.includes('载入最近状态草稿'));
 assert.ok(overviewHtml.includes('预览合并最近草稿'));
+assert.ok(overviewHtml.includes('检测状态冲突'));
 assert.ok(overviewHtml.includes('人物状态'));
 assert.ok(overviewHtml.includes('关键道具'));
 assert.ok(overviewHtml.includes('confidence 1.00'));
@@ -57,6 +58,24 @@ const diffHtml = renderStatePanelHtml(state, 'overview', {
 });
 assert.ok(diffHtml.includes('状态合并预览'));
 assert.ok(diffHtml.includes('确认保存合并结果'));
+
+const conflictHtml = renderStatePanelHtml(state, 'overview', null, [
+    {
+        severity: 'warning',
+        entityType: 'character',
+        label: '人物',
+        identity: '林月',
+        field: 'location',
+        values: ['旧城区', '钟楼'],
+        itemIds: ['c1', 'c2'],
+        sourceMessageRanges: ['0-1', '2-3'],
+        message: '同名人物存在多个当前位置。',
+        suggestion: '确认最新位置，并将旧位置归档。',
+    },
+]);
+assert.ok(conflictHtml.includes('状态冲突检测'));
+assert.ok(conflictHtml.includes('确认最新位置'));
+assert.ok(conflictHtml.includes('来源范围'));
 
 const characterHtml = renderStatePanelHtml(state, 'characters');
 assert.ok(characterHtml.includes('林月'));

@@ -108,6 +108,7 @@ function detectFieldConflicts(items, rule) {
             continue;
         }
 
+        const conflictingItems = [...values.values()].flat();
         conflicts.push({
             ruleId: rule.ruleId,
             severity: 'warning',
@@ -116,7 +117,8 @@ function detectFieldConflicts(items, rule) {
             identity,
             field: rule.field,
             values: [...values.keys()],
-            itemIds: [...values.values()].flat().map((item) => item.id),
+            itemIds: conflictingItems.map((item) => item.id),
+            sourceMessageRanges: collectSourceMessageRanges(conflictingItems),
             message: `${rule.message}（${identity}）`,
             suggestion: rule.suggestion,
         });
@@ -137,10 +139,17 @@ function detectActiveArchivedConflicts(items, { collection, entityType, label })
             field: 'isArchived',
             values: ['isArchived:true', 'isActive:true'],
             itemIds: [item.id],
+            sourceMessageRanges: collectSourceMessageRanges([item]),
             message: `${label}条目同时标记为当前状态和历史归档。`,
             suggestion: '确认该条目应为当前状态还是历史归档，不要同时启用两个边界。',
             collection,
         }));
+}
+
+function collectSourceMessageRanges(items) {
+    return [...new Set(items
+        .map((item) => String(item.sourceMessageRange || '').trim())
+        .filter(Boolean))];
 }
 
 function normalizeKey(value) {

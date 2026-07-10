@@ -115,8 +115,12 @@ assert.ok(conflicts.some((conflict) => (
 
 const characterLocation = conflicts.find((conflict) => conflict.ruleId === 'character-location-conflict');
 assert.deepEqual(characterLocation.values.sort(), ['旧城区', '钟楼'].sort());
+assert.deepEqual(characterLocation.sourceMessageRanges.sort(), ['0-1', '2-3']);
 assert.ok(characterLocation.message.includes('林月'.toLocaleLowerCase()));
 assert.equal(characterLocation.severity, 'warning');
+
+const activeArchived = conflicts.find((conflict) => conflict.ruleId === 'active-archived-conflict');
+assert.deepEqual(activeArchived.sourceMessageRanges, ['2-3']);
 
 const cleanState = createEmptyCampaignState({
     characters: [

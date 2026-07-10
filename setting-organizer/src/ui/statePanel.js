@@ -1,8 +1,10 @@
 import { removeArrayItem, updateArrayItem } from './editor.js';
+import { detectCampaignStateConflicts } from '../core/conflictDetector.js';
 import { formatError } from '../core/errors.js';
 import { buildCampaignStateExportJson, parseCampaignStateImportJson } from '../core/stateExporter.js';
 import { mergeCampaignStates } from '../core/stateMerger.js';
 import { loadRecentCampaignState, saveRecentCampaignState } from '../storage/stateStore.js';
+import { renderConflictPanelHtml } from './conflictPanel.js';
 import { renderStateDiffPanelHtml } from './stateDiffPanel.js';
 
 const STATE_TABS = [
@@ -19,18 +21,19 @@ export function mountStatePanel(container, campaignState) {
         activeTab: 'overview',
         campaignState: cloneState(campaignState),
         diffPreview: null,
+        conflicts: null,
     };
 
     render(container, state);
 }
 
 function render(container, state) {
-    container.innerHTML = renderStatePanelHtml(state.campaignState, state.activeTab, state.diffPreview);
+    container.innerHTML = renderStatePanelHtml(state.campaignState, state.activeTab, state.diffPreview, state.conflicts);
 
     bindStatePanel(container, state);
 }
 
-export function renderStatePanelHtml(campaignState, activeTab = 'overview', diffPreview = null) {
+export function renderStatePanelHtml(campaignState, activeTab = 'overview', diffPreview = null, conflicts = null) {
     return `
         <div class="setting-organizer-state-note">剧情状态草稿，未写入、未保存、未同步世界书。</div>
         <div class="setting-organizer-export-actions">
@@ -39,10 +42,12 @@ export function renderStatePanelHtml(campaignState, activeTab = 'overview', diff
             <button type="button" data-save-recent-state>保存最近状态草稿</button>
             <button type="button" data-load-recent-state>载入最近状态草稿</button>
             <button type="button" data-preview-state-merge>预览合并最近草稿</button>
+            <button type="button" data-detect-state-conflicts>检测状态冲突</button>
             <input type="file" accept="application/json,.json" data-import-state-file hidden>
         </div>
         <div class="setting-organizer-export-error" data-state-panel-status hidden></div>
         ${renderStateDiffPanelHtml(diffPreview)}
+        ${renderConflictPanelHtml(conflicts)}
         <div class="setting-organizer-tabs" role="tablist">
             ${STATE_TABS.map((tab) => `
                 <button type="button" data-state-tab="${tab.id}" class="${activeTab === tab.id ? 'active' : ''}">
@@ -102,6 +107,8 @@ function bindStateActions(container, state) {
 
         try {
             state.campaignState = parseCampaignStateImportJson(await file.text());
+            state.conflicts = null;
+            state.diffPreview = null;
             render(container, state);
             showStatus(container.querySelector('[data-state-panel-status]'), '已导入剧情状态 JSON。', 'success');
         } catch (error) {
@@ -129,6 +136,8 @@ function bindStateActions(container, state) {
             }
 
             state.campaignState = loaded;
+            state.conflicts = null;
+            state.diffPreview = null;
             render(container, state);
             showStatus(container.querySelector('[data-state-panel-status]'), '已载入最近状态草稿。', 'success');
         } catch (error) {
@@ -145,6 +154,7 @@ function bindStateActions(container, state) {
             }
 
             state.diffPreview = mergeCampaignStates(existing, state.campaignState);
+            state.diffPreview.conflicts = detectCampaignStateConflicts(state.diffPreview.state);
             render(container, state);
             showStatus(container.querySelector('[data-state-panel-status]'), '已生成状态合并预览，确认前不会写入本地草稿。', 'warning');
         } catch (error) {
@@ -161,6 +171,7 @@ function bindStateActions(container, state) {
 
             state.campaignState = saveRecentCampaignState(state.diffPreview.state);
             state.diffPreview = null;
+            state.conflicts = null;
             render(container, state);
             showStatus(container.querySelector('[data-state-panel-status]'), '状态合并结果已保存到最近状态草稿。', 'success');
         } catch (error) {
@@ -173,6 +184,16 @@ function bindStateActions(container, state) {
         render(container, state);
         showStatus(container.querySelector('[data-state-panel-status]'), '已取消状态合并预览，未写入本地草稿。', 'warning');
     });
+
+    container.querySelector('[data-detect-state-conflicts]')?.addEventListener('click', () => {
+        try {
+            state.conflicts = detectCampaignStateConflicts(state.campaignState);
+            render(container, state);
+            showStatus(container.querySelector('[data-state-panel-status]'), '状态冲突检测完成；检测结果只作提示，不会自动修改草稿。', 'warning');
+        } catch (error) {
+            showStatus(statusBox, formatError(error), 'error');
+        }
+    });
 }
 
 function bindCollectionFields(container, state, collectionName) {
@@ -181,12 +202,15 @@ function bindCollectionFields(container, state, collectionName) {
             const id = field.dataset.id;
             const fieldName = field.dataset.field;
             state.campaignState = updateStateField(state.campaignState, collectionName, id, fieldName, readFieldValue(field));
+            state.conflicts = null;
         });
     });
 
     container.querySelectorAll(`[data-remove-state][data-collection="${collectionName}"]`).forEach((button) => {
         button.addEventListener('click', () => {
             state.campaignState = removeStateItem(state.campaignState, collectionName, button.dataset.removeState);
+            state.conflicts = null;
+            state.diffPreview = null;
             render(container, state);
         });
     });

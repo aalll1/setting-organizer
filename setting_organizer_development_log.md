@@ -795,3 +795,23 @@
   - `node --check setting-organizer\src\core\conflictDetector.js` 通过。
   - `node setting-organizer\tests\conflictDetector.test.mjs` 通过。
   - 全量回归：37 个 JavaScript 文件语法检查通过，23 个无参数 `.mjs` 测试通过。
+
+## 2026-07-10 TC-35 冲突检测 UI 与处理建议
+
+- 完成 `TC-35`。
+- 代码变更：
+  - 新增 `conflictPanel.js`，按严重程度渲染冲突、受影响对象、字段、取值、来源 ID、来源消息范围和处理建议。
+  - `statePanel.js` 增加显式“检测状态冲突”入口；状态编辑、导入、载入、合并确认后会清除过期检测结果。
+  - `conflictDetector.js` 为冲突记录补充去重后的 `sourceMessageRanges`。
+- 行为边界：
+  - 冲突检查和面板均为只读提示，不会阻塞查看或编辑状态草稿。
+  - 不自动归档、不写 localStorage、不写 SillyTavern、不调用模型。
+- 测试变更：
+  - 新增 `conflictPanel.test.mjs`。
+  - 扩展 `conflictDetector.test.mjs` 和 `statePanel.test.mjs`，覆盖来源范围与 UI 渲染。
+- 验证记录：
+  - `node --check` 全量覆盖 38 个 JavaScript 文件，通过。
+  - 24 个无参数 `.mjs` 测试通过。
+  - SillyTavern 1.18.0 本地页面 smoke 通过：状态模式、mock 状态草稿、冲突检测空结果和不修改草稿提示均已验证。
+  - 正向冲突详情展示由 `conflictPanel.test.mjs` 与 `conflictDetector.test.mjs` 验证。
+  - 本任务未调用真实模型，也未创建角色、世界书或执行导入。

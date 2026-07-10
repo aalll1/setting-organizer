@@ -205,3 +205,47 @@ foreach ($test in $tests) { node $test.FullName }
 ```
 
 Result: passed, 37 JavaScript files checked and 23 no-argument tests run.
+
+## TC-35 Verification Record
+
+Date: 2026-07-10
+
+Targeted syntax and UI tests:
+
+```powershell
+node --check setting-organizer\src\ui\conflictPanel.js
+node --check setting-organizer\src\ui\statePanel.js
+node setting-organizer\tests\conflictDetector.test.mjs
+node setting-organizer\tests\conflictPanel.test.mjs
+node setting-organizer\tests\statePanel.test.mjs
+```
+
+Expected coverage:
+
+- Conflict records include source message ranges without mutating draft state.
+- The panel renders severity, object, source ID, source range, and suggestion.
+- An empty result is rendered as an informational empty state.
+- Rendering conflict results does not remove or block the state draft.
+
+Full local regression:
+
+```powershell
+$files = rg --files setting-organizer -g "*.js"
+foreach ($file in $files) { node --check $file }
+
+$tests = rg --files setting-organizer\tests -g "*.mjs" |
+  Where-Object { (Split-Path $_ -Leaf) -ne 'cdp-check.mjs' } |
+  Sort-Object
+foreach ($test in $tests) { node $test }
+```
+
+Result: passed, 38 JavaScript files checked and 24 no-argument tests run.
+
+SillyTavern browser smoke:
+
+- Local SillyTavern 1.18.0 was available at `http://127.0.0.1:8001/`.
+- The current extension source was mounted through a separate local test extension so the pre-existing global extension was not overwritten.
+- The state-mode panel loaded, mock analysis created a draft, and the explicit conflict action rendered the empty-state result.
+- The visible status states that detection does not automatically modify the draft.
+- Positive detail rendering for severity, source IDs, source ranges, and suggestions is covered by `conflictPanel.test.mjs` and `conflictDetector.test.mjs`.
+- No real model call, character creation, worldbook creation, or import action was performed in this TC-35 smoke test.

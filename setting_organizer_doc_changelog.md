@@ -1721,6 +1721,46 @@
 - `conflictDetector.test.mjs` 通过。
 - 全量回归通过：37 个 JavaScript 文件语法检查，23 个无参数 `.mjs` 测试。
 
+### 2026-07-10：完成 TC-35 冲突检测 UI 与处理建议
+
+变更类型：功能 / UI / 测试 / 文档
+
+涉及文件：
+
+- `setting-organizer/src/core/conflictDetector.js`
+- `setting-organizer/src/ui/conflictPanel.js`
+- `setting-organizer/src/ui/statePanel.js`
+- `setting-organizer/style.css`
+- `setting-organizer/tests/conflictDetector.test.mjs`
+- `setting-organizer/tests/conflictPanel.test.mjs`
+- `setting-organizer/tests/statePanel.test.mjs`
+- `setting-organizer/README.md`
+- `docs/DATA_MODEL.md`
+- `setting_organizer_long_term_task_cards.md`
+- `setting_organizer_development_log.md`
+- `setting_organizer_doc_changelog.md`
+
+变更原因：
+
+- 按长期任务卡推进 `TC-35`，让规则级冲突结果可理解、可追溯且不改变草稿。
+
+主要变化：
+
+- 新增按严重程度排序的冲突提示面板。
+- 展示冲突对象、字段、取值、来源 ID 和来源消息范围，并提供处理建议。
+- 状态面板增加显式检测操作；检测不会自动归档或写入酒馆。
+
+影响范围：
+
+- 影响剧情状态 UI 与冲突记录数据。
+- 不影响角色 / 世界书创建流程，不新增 SillyTavern 写入能力。
+
+验证情况：
+
+- 全量回归通过：38 个 JavaScript 文件语法检查，24 个无参数 `.mjs` 测试。
+- SillyTavern 1.18.0 本地浏览器 smoke 通过：状态模式、mock 草稿、冲突检测空结果和不自动修改草稿提示。
+- 冲突详情、来源 ID、来源范围和处理建议由定向单元测试覆盖。
+
 ## 变更记录模板
 
 ```text
