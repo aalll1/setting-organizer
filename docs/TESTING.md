@@ -377,6 +377,15 @@ Result:
 - `cdp-check.mjs` is excluded because it requires an explicit websocket URL and is a runtime helper, not a unit test.
 - The package has no dependencies and introduces no build step.
 
+## v0.7.0 Manifest Verification
+
+Date: 2026-07-11
+
+- `setting-organizer/manifest.json` and `setting-organizer-native-install/manifest.json` both declare `0.7.0`.
+- `npm run check` passed with 43 JavaScript files checked.
+- `npm test` passed with 29 unit tests run.
+- No tag was created and no remote push was performed.
+
 ## TC-40 Verification Record
 
 Date: 2026-07-10

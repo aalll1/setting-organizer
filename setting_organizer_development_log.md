@@ -877,3 +877,8 @@
 - 新增零依赖 package 脚本：`npm run check` 进行语法检查，`npm test` 运行单元测试。
 - `cdp-check.mjs` 保持运行时辅助脚本身份，需要 websocket URL，不纳入默认测试。
 - 实测 `npm run check` 通过 43 个 JS 文件，`npm test` 通过 29 个单元测试。
+
+## 2026-07-11 v0.7.0 版本对齐
+
+- `setting-organizer/manifest.json` 与 `setting-organizer-native-install/manifest.json` 同步更新为 `0.7.0`。
+- 不创建 tag、不推送远程；`npm run check` 通过 43 个 JS 文件，`npm test` 通过 29 个单元测试。

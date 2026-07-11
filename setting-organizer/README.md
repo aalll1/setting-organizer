@@ -2,7 +2,7 @@
 
 SillyTavern 设定整理器扩展，用于把粘贴文本或当前聊天整理成可编辑的角色草稿、世界书草稿和剧情状态草稿，再由用户确认后导出或安全新建到 SillyTavern。
 
-当前完成到 `TC-39 v0.7.0 模板样例与用户指南`。世界书创建已在 SillyTavern 1.18.0 测试环境中通过 `saveWorldInfo(name, data, true)` 验证；角色创建已通过 `/api/characters/create` 验证；角色绑定世界书已通过 `/api/characters/merge-attributes` 验证。剧情状态支持通用、历史模拟和跑团 / DND 模板，世界书同步始终经过预览、备份和新建确认流程。
+当前版本为 `0.7.0`，完成到 `TC-42`。世界书创建已在 SillyTavern 1.18.0 测试环境中通过 `saveWorldInfo(name, data, true)` 验证；角色创建已通过 `/api/characters/create` 验证；角色绑定世界书已通过 `/api/characters/merge-attributes` 验证。剧情状态支持通用、历史模拟和跑团 / DND 模板，世界书同步始终经过预览、备份和新建确认流程。
 
 ## 文档
 
