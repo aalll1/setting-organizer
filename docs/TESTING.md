@@ -386,6 +386,12 @@ Date: 2026-07-11
 - `npm test` passed with 29 unit tests run.
 - No tag was created and no remote push was performed.
 
+## v0.7.0 Real Runtime Test Record
+
+Date: 2026-07-11
+
+See [V070_REAL_RUNTIME_TEST_20260711.md](V070_REAL_RUNTIME_TEST_20260711.md) for the local runtime, browser, MuMu ADB, and real-model API test matrix. It records successful local regression and mock analysis alongside two external blockers: MuMu ADB temporary-directory permissions and real API HTTP 401 authentication.
+
 ## TC-40 Verification Record
 
 Date: 2026-07-10
