@@ -43,6 +43,33 @@
 .setting-organizer-budget-grid input {
     box-sizing: border-box;
     width: 100%;
+    color: #1f2933;
+    background-color: #ffffff;
+    border-color: #64707d;
+    font-size: 1rem;
+    line-height: 1.4;
+    text-shadow: none;
+}
+
+.setting-organizer-field textarea::placeholder,
+.setting-organizer-field input::placeholder,
+.setting-organizer-budget-grid input::placeholder {
+    color: #5b6672;
+    opacity: 1;
+}
+
+.setting-organizer-field select option {
+    color: #1f2933;
+    background-color: #ffffff;
+}
+
+.setting-organizer-panel button:disabled {
+    color: #4b5560;
+    background-color: #dfe4e8;
+    border-color: #77818c;
+    font-weight: 600;
+    opacity: 1;
+    text-shadow: none;
 }
 
 .setting-organizer-field textarea {
@@ -133,7 +160,6 @@
 
 .setting-organizer-actions button:disabled {
     cursor: wait;
-    opacity: 0.65;
 }
 
 .setting-organizer-error {

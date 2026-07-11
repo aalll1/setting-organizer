@@ -28,6 +28,27 @@
 
 ## 变更记录
 
+### 2026-07-11：移动端表单可读性修复记录
+
+变更类型：修改文档 / 样式优化
+
+涉及文件：
+
+- `setting-organizer/style.css`
+- `setting-organizer-native-install/style.css`
+- `setting_organizer_development_log.md`
+
+变更内容：
+
+- 为输入框、下拉框、占位符和原生下拉选项补充高对比度颜色。
+- 为禁用按钮补充可读的前景色与背景色，移除导致文字过浅的 opacity 样式。
+- 记录 MuMu Android 浏览器中主题颜色继承造成的表单可读性问题及预防规则。
+- 将开发目录和原生安装包的 manifest 版本提升至 `0.7.1`，作为 `v0.7.0` 的样式修复补丁。
+
+影响范围：
+
+- 仅影响扩展表单的视觉表现；不修改业务逻辑、数据格式或 SillyTavern 写入接口。
+
 ### 2026-07-07：新增 Agent 版开发计划与任务卡
 
 变更类型：新增文档
