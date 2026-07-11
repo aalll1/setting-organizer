@@ -28,6 +28,23 @@
 
 ## 变更记录
 
+### 2026-07-11：v0.7.1 原生发布说明更新
+
+变更类型：发布文档更新
+
+涉及文件：
+
+- `setting-organizer-native-install/README.md`
+- `setting-organizer-native-install/FEATURES.md`
+- `setting-organizer-native-install/NATIVE_INSTALL.md`
+- `setting_organizer_development_log.md`
+
+变更内容：
+
+- 更新原生安装分支的版本说明、插件定位和功能清单至 `0.7.1`。
+- 明确 GitHub `main` 是根目录可直接安装的发布分支，`master` 保留开发材料。
+- 记录此前原生安装仍取得 `0.2.1` 的分支错配原因。
+
 ### 2026-07-11：移动端表单可读性修复记录
 
 变更类型：修改文档 / 样式优化
