@@ -1,0 +1,9 @@
+{
+  "name": "setting-organizer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node scripts/check-syntax.mjs",
+    "test": "node scripts/run-tests.mjs"
+  }
+}

@@ -870,3 +870,10 @@
 - 新增常量模块，集中聊天范围、默认 confidence、日志预览与截断阈值、关键日志事件名。
 - 保留 `chatAdapter` 的 `CHAT_RANGES` 兼容导出；内部 `lorebook` 与 adapter `worldInfo` 命名边界已记录。
 - 新增 `constants.test.mjs`，全量回归通过：43 个 JavaScript 文件语法检查，29 个无参数 `.mjs` 测试。
+
+## 2026-07-11 TC-42 质量脚本与测试入口工程化
+
+- 完成 `TC-42`。
+- 新增零依赖 package 脚本：`npm run check` 进行语法检查，`npm test` 运行单元测试。
+- `cdp-check.mjs` 保持运行时辅助脚本身份，需要 websocket URL，不纳入默认测试。
+- 实测 `npm run check` 通过 43 个 JS 文件，`npm test` 通过 29 个单元测试。

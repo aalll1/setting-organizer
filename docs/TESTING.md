@@ -360,6 +360,23 @@ Coverage:
 
 Full local regression result: passed, 43 JavaScript files checked and 29 no-argument tests run.
 
+## TC-42 Verification Record
+
+Date: 2026-07-11
+
+```powershell
+Set-Location setting-organizer
+npm run check
+npm test
+```
+
+Result:
+
+- `npm run check` checked 43 JavaScript files.
+- `npm test` ran 29 `*.test.mjs` files.
+- `cdp-check.mjs` is excluded because it requires an explicit websocket URL and is a runtime helper, not a unit test.
+- The package has no dependencies and introduces no build step.
+
 ## TC-40 Verification Record
 
 Date: 2026-07-10
