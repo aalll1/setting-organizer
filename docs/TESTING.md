@@ -338,6 +338,28 @@ Coverage:
 
 Full local regression result: passed, 40 JavaScript files checked and 28 no-argument tests run.
 
+## TC-41 Verification Record
+
+Date: 2026-07-11
+
+Targeted tests:
+
+```powershell
+node setting-organizer\tests\constants.test.mjs
+node setting-organizer\tests\chatAdapter.test.mjs
+node setting-organizer\tests\logger.test.mjs
+node setting-organizer\tests\validator.test.mjs
+node setting-organizer\tests\stateParser.test.mjs
+```
+
+Coverage:
+
+- Chat range constants retain the adapter compatibility export.
+- Default confidence and log text thresholds are fixed in shared constants.
+- Chat selection, log sanitation and existing parser behavior remain unchanged.
+
+Full local regression result: passed, 43 JavaScript files checked and 29 no-argument tests run.
+
 ## TC-40 Verification Record
 
 Date: 2026-07-10

@@ -1,6 +1,7 @@
+import { LOG_TEXT_PREVIEW_LENGTH, MAX_LOG_TEXT_LENGTH } from '../constants/quality.js';
+
 const LOG_STORAGE_KEY = 'setting-organizer.runtimeLogs.v1';
 const MAX_LOG_RECORDS = 200;
-const MAX_STRING_LENGTH = 2000;
 const REDACTED_VALUE = '<redacted>';
 const SENSITIVE_KEY_PATTERN = /(api.?key|authorization|auth|cookie|csrf|token|secret|password|headers?)/i;
 const LARGE_TEXT_KEY_PATTERN = /(prompt|sourceText|chat|content|description|personality|scenario|firstMes|mesExample|creatorNotes)/i;
@@ -140,8 +141,8 @@ function sanitizeValue(value, key = '') {
             return summarizeLongText(value);
         }
 
-        return value.length > MAX_STRING_LENGTH
-            ? `${value.slice(0, MAX_STRING_LENGTH)}...<truncated ${value.length - MAX_STRING_LENGTH} chars>`
+        return value.length > MAX_LOG_TEXT_LENGTH
+            ? `${value.slice(0, MAX_LOG_TEXT_LENGTH)}...<truncated ${value.length - MAX_LOG_TEXT_LENGTH} chars>`
             : value;
     }
 
@@ -165,8 +166,8 @@ function sanitizeValue(value, key = '') {
 function summarizeLongText(value) {
     return {
         length: value.length,
-        preview: value.length > 160 ? `${value.slice(0, 160)}...` : value,
-        truncated: value.length > 160,
+        preview: value.length > LOG_TEXT_PREVIEW_LENGTH ? `${value.slice(0, LOG_TEXT_PREVIEW_LENGTH)}...` : value,
+        truncated: value.length > LOG_TEXT_PREVIEW_LENGTH,
     };
 }
 

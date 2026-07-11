@@ -4,6 +4,7 @@ import { estimateAnalysisTokens } from './tokenEstimate.js';
 import { captureModelOutputDebug } from './modelOutputDebug.js';
 import { parseValidateNormalize, validateAndNormalizeAnalysisResult } from './validator.js';
 import { applyWarnings } from './warnings.js';
+import { DEFAULT_CONFIDENCE } from '../constants/quality.js';
 
 export async function analyzeSettingText(sourceText, options) {
     validateSourceText(sourceText);
@@ -33,7 +34,7 @@ export async function analyzeSettingText(sourceText, options) {
                 mesExample: '',
                 creatorNotes: `来源文本长度：${trimmedText.length} 字符。`,
                 sourceText: trimmedText,
-                confidence: 0.8,
+                confidence: DEFAULT_CONFIDENCE,
                 warnings: [],
             },
         ],
@@ -49,7 +50,7 @@ export async function analyzeSettingText(sourceText, options) {
                 enabled: Boolean(options.targets.lorebook),
                 priority: 100,
                 stability: 'permanent',
-                confidence: 0.8,
+                confidence: DEFAULT_CONFIDENCE,
                 warnings: [],
             },
         ],

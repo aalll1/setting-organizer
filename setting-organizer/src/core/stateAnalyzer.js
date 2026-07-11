@@ -2,6 +2,7 @@ import { callCurrentStateModel } from '../adapters/sillytavernApi.js';
 import { ERROR_CODES, SettingOrganizerError } from './errors.js';
 import { parseValidateNormalizeCampaignState } from './stateParser.js';
 import { MISSION_STATUSES } from './stateTypes.js';
+import { DEFAULT_CONFIDENCE } from '../constants/quality.js';
 
 export async function analyzeCampaignStateText(sourceText, options = {}) {
     validateStateSourceText(sourceText);
@@ -41,7 +42,7 @@ function createMockState(sourceText, options) {
             summary: firstLine,
             lastUpdatedAtMessage: 0,
             sourceMessageRange: options.sourceMessageRange || '',
-            confidence: 0.8,
+            confidence: DEFAULT_CONFIDENCE,
             warnings: [],
         },
         plotSummary: firstLine,
@@ -54,7 +55,7 @@ function createMockState(sourceText, options) {
                 status: '待确认',
                 currentTask: firstLine,
                 sourceMessageRange: options.sourceMessageRange || '',
-                confidence: 0.8,
+                confidence: DEFAULT_CONFIDENCE,
                 warnings: ['当前为 mock 剧情状态草稿，用于验证展示和编辑流程。'],
             },
         ],

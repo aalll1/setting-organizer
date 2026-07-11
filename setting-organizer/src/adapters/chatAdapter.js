@@ -2,13 +2,10 @@ import { ERROR_CODES, SettingOrganizerError } from '../core/errors.js';
 import { logError, logInfo } from '../core/logger.js';
 import { assessInputScale, estimateTextTokens } from '../core/tokenEstimate.js';
 import { getCurrentChatMessages } from './sillytavernApi.js';
+import { CHAT_RANGE_LIMITS, CHAT_RANGES } from '../constants/chat.js';
+import { LOG_EVENTS } from '../constants/logEvents.js';
 
-export const CHAT_RANGES = Object.freeze({
-    RECENT_20: 'recent20',
-    RECENT_50: 'recent50',
-    ALL: 'all',
-    MANUAL: 'manual',
-});
+export { CHAT_RANGES };
 
 export function readCurrentChatSource(options = {}) {
     try {
@@ -20,7 +17,7 @@ export function readCurrentChatSource(options = {}) {
             throw new SettingOrganizerError(ERROR_CODES.CHAT_READ_FAILED, '当前聊天读取结果为空。');
         }
 
-        logInfo('chat-read-completed', {
+        logInfo(LOG_EVENTS.CHAT_READ_COMPLETED, {
             range: options.range || CHAT_RANGES.RECENT_20,
             totalMessages: messages.length,
             selectedMessages: selected.length,
@@ -41,7 +38,7 @@ export function readCurrentChatSource(options = {}) {
             inputScale: assessInputScale(sourceText),
         };
     } catch (error) {
-        logError('chat-read-failed', error, {
+        logError(LOG_EVENTS.CHAT_READ_FAILED, error, {
             range: options.range || CHAT_RANGES.RECENT_20,
         });
 
@@ -82,7 +79,7 @@ export function selectChatMessages(messages, options = {}) {
     }
 
     if (range === CHAT_RANGES.RECENT_50) {
-        return messages.slice(-50);
+        return messages.slice(-CHAT_RANGE_LIMITS[CHAT_RANGES.RECENT_50]);
     }
 
     if (range === CHAT_RANGES.MANUAL) {
@@ -91,7 +88,7 @@ export function selectChatMessages(messages, options = {}) {
         return messages.filter((message) => selected.has(message.index));
     }
 
-    return messages.slice(-20);
+    return messages.slice(-CHAT_RANGE_LIMITS[CHAT_RANGES.RECENT_20]);
 }
 
 export function buildChatSourceText(messages) {

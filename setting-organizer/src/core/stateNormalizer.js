@@ -4,6 +4,7 @@ import {
     STATE_ENTITY_TYPES,
     createEmptyCampaignState,
 } from './stateTypes.js';
+import { DEFAULT_CONFIDENCE } from '../constants/quality.js';
 
 const VALID_MISSION_STATUSES = new Set(Object.values(MISSION_STATUSES));
 
@@ -185,13 +186,13 @@ function normalizeStringArray(value) {
 
 function normalizeConfidence(value, warnings, label) {
     if (value === undefined || value === null || value === '') {
-        return 0.8;
+        return DEFAULT_CONFIDENCE;
     }
 
     const numberValue = Number(value);
     if (!Number.isFinite(numberValue)) {
-        warnings.push(`${label} confidence 非数字，已重置为 0.8。`);
-        return 0.8;
+        warnings.push(`${label} confidence 非数字，已重置为 ${DEFAULT_CONFIDENCE}。`);
+        return DEFAULT_CONFIDENCE;
     }
 
     if (numberValue < 0 || numberValue > 1) {

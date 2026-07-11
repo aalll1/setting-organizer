@@ -1,3 +1,5 @@
+import { DEFAULT_CONFIDENCE } from '../constants/quality.js';
+
 export function normalizeAnalysisResult(value) {
     const result = value && typeof value === 'object' && !Array.isArray(value) ? { ...value } : value;
     const warnings = [];
@@ -120,13 +122,13 @@ function normalizeStringArray(value, warnings, label) {
 
 function normalizeConfidence(value, warnings, label) {
     if (value === undefined || value === null || value === '') {
-        return 0.8;
+        return DEFAULT_CONFIDENCE;
     }
 
     const numberValue = Number(value);
     if (!Number.isFinite(numberValue)) {
-        warnings.push(`${label} confidence 非数字，已重置为 0.8。`);
-        return 0.8;
+        warnings.push(`${label} confidence 非数字，已重置为 ${DEFAULT_CONFIDENCE}。`);
+        return DEFAULT_CONFIDENCE;
     }
 
     if (numberValue < 0 || numberValue > 1) {
